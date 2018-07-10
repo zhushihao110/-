@@ -1,0 +1,327 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .Gift {
+    &-form {
+      background-color: $primary;
+      padding: 27px;
+      padding-top: 17px;
+      margin-top: 5px;
+      margin-bottom: 13px;
+      font-size: 30rpx;
+    }
+
+    &-row {
+      color: $text-secondary;
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    &-key {
+      width: 160rpx;
+      padding-right: 10px;
+    }
+
+    &-inputCtn {
+      flex: 1;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+
+    &-input {
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+
+    &-inputPlaceHolder {
+      font-size: 30rpx;
+      color: rgb(128, 128, 128);
+    }
+
+    &-checkCtn {
+      display: flex;
+      align-items: center;
+      font-size: 24rpx;
+      color: $red;
+      padding-top: 10px;
+    }
+
+    &-checkBtn {
+      color: white;
+      background-color: $green;
+      border-radius: 4px;
+      font-size: 24rpx;
+      height: 46rpx;
+      line-height: 46rpx;
+      text-align: center;
+      width: 180rpx;
+      margin-right: 10px;
+    }
+
+    &-nickName {
+      flex: 1;
+    }
+
+    &-sendBtn {
+      color: white;
+      background-color: $orange;
+      border-radius: 4px;
+      width: 420rpx;
+      margin: 0 auto;
+    }
+
+    &-confirmCtn {
+      background-color: $primary;
+      height: max-content;
+      width: 520rpx;
+      padding: 20px 15px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-confirmTitle {
+      font-size: 48rpx;
+      color: rgb(51, 51, 51);
+      text-align: center;
+    }
+
+    &-confirmMsg {
+      padding: 14px 0;
+      font-size: 30rpx;
+      color: $text-secondary;
+      span {
+        color: $red;
+      }
+    }
+
+    &-confirmBottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 36rpx;
+    }
+
+    &-confirmBtn, &-cancelBtn {
+      width: 210rpx;
+      color: white;
+    }
+
+    &-confirmBtn {
+      background-color: $orange;
+    }
+
+    &-cancelBtn {
+      background-color: rgb(128, 128, 128);
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="Gift">
+    <userTab />
+
+    <view class="Gift-form">
+      <view class="Gift-row">
+        <view class="Gift-key">
+          赠送给
+        </view>
+        <view class="Gift-inputCtn">
+          <input
+            class="Gift-input"
+            type="number"
+            placeholder="请输入接受金币的用户ID"
+            placeholder-class="Gift-inputPlaceHolder"
+            @input="handleIdInput"
+          />
+        </view>
+      </view>
+      <view class="Gift-row">
+        <view class="Gift-key">
+          赠送金额
+        </view>
+        <view class="Gift-inputCtn">
+          <input
+            class="Gift-input"
+            type="number"
+            placeholder="最少500金币"
+            placeholder-class="Gift-inputPlaceHolder"
+            @blur="handleCoinInput"
+          />
+        </view>
+      </view>
+      <view class="Gift-checkCtn">
+        <view
+          class="Gift-checkBtn"
+          @tap="handleCheck"
+        >
+          点击核对用户名
+        </view>
+        <view class="Gift-nickName">
+          {{nickName}}
+        </view>
+      </view>
+    </view>
+    <button
+      class="Gift-sendBtn"
+      @tap="open"
+      disabled="{{!checked}}"
+    >
+      赠送
+    </button>
+  </view>
+
+  <!-- 赠送确认 -->
+  <alert :show.sync="show" :onClose="close">
+    <view class="Gift-confirmCtn" slot="content">
+        <view class="Gift-confirmTitle">
+          赠送确认
+        </view>
+        <view class="Gift-confirmMsg">
+          <block wx:if="{{checked}}">
+            确定赠送给{{nickName}} <span>{{coin}}</span>金币吗？赠送后不可取消
+          </block>
+          <block wx:else>
+            请先核对用户名
+          </block>
+        </view>
+        <view class="Gift-confirmBottom">
+          <button
+            class="Gift-cancelBtn"
+          >
+            取消
+          </button>
+          <button
+            class="Gift-confirmBtn"
+            loading="{{sendLoading}}"
+            @tap="handleSend"
+          >
+            确定
+          </button>
+        </view> 
+    </view>
+  </alert>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import req from '@/network'
+  import { connect } from 'wepy-redux'
+  import { fromwhere } from '@/config'
+  import UserTab from '@/components/userTab'
+  import Alert from '@/components/alert'
+  import LoginDialog from '@/components/loginDialog'
+  import {
+    fetchUserInfoSuc,
+    fetchUserInfoErr
+  } from '@/store/actions'
+  import { throttle } from '@/utils/helper'
+
+  @connect({
+  }, {
+    fetchUserInfoSuc,
+    fetchUserInfoErr
+  })
+
+  export default class Gift extends wepy.page {
+    config = {
+      navigationBarTitleText: '赠送金币'
+    }
+
+    components = {
+      alert: Alert,
+      loginDialog: LoginDialog,
+      userTab: UserTab
+    }
+
+    mixins = []
+
+    data = {
+      nickName: '',
+      checked: false,
+      uid: null,
+      coin: null,
+      show: false,
+      sendLoading: false
+    }
+
+    computed = {
+    }
+
+    methods = {
+      handleIdInput(e) {
+        const newUid = e.detail.value
+        if (this.uid !== newUid) {
+          this.nickName = ''
+          this.checked = false
+        }
+        this.uid = newUid
+      },
+      handleCoinInput(e) {
+        this.coin = e.detail.value
+      },
+      handleCheck() {
+        this.checkUserInfo()
+      },
+      open() {
+        this.checkUserInfo()
+        this.show = true
+      },
+      handleSend: throttle(function() {
+        if (this.sendLoading) {
+          return
+        }
+        this.sendLoading = true
+        req.post('/api/Givecoin/giveCoin', {
+          fromwhere,
+          uid: this.uid,
+          coin: this.coin
+        }).then(res => {
+          wepy.showToast({ title: res.msg, icon: 'none' })
+          this.sendLoading = false
+          this.$apply()
+          req.get('/api/Version/userInfo').then(res => {
+            this.methods.fetchUserInfoSuc(res.data)
+          }).catch(res => {
+            this.methods.fetchUserInfoErr(res)
+          })
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.sendLoading = false
+          this.$apply()
+        })
+      }, 500)
+    }
+
+    checkUserInfo() {
+      req.get('/api/Givecoin/findNickname', {uid: this.uid}).then(res => {
+        const nickName = res.data && res.data.nickName
+        if (this.checked && this.nickName !== nickName) {
+          this.checked = false
+          this.nickName = ''
+        } else {
+          this.nickName = nickName
+          this.checked = true
+        }
+        this.$apply()
+      }).catch(err => {
+        this.nickName = ''
+        this.checked = false
+        this.$apply()
+        wepy.showToast({ title: err.msg, icon: 'none' })
+      })
+    }
+
+    close = () => {
+      this.show = false
+      this.$apply()
+    }
+
+    events = {
+    }
+
+    onLoad() {
+    }
+}
+</script>

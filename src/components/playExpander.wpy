@@ -1,0 +1,67 @@
+<template>
+  <view class="PlayExpander">
+    <div class="PlayExpander-titleCtn" @tap="handleExpand">
+      <slot name="title"></slot>
+      <image
+        class="PlayExpander-icon"
+        :class="{is-expand: expand}"
+        src="../img/skip-forward-down.png"
+      />
+    </div>
+    <div class="PlayExpander-ctn" wx:if="{{expand}}">
+      <slot name="content"></slot>
+    </div>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.PlayExpander {
+  background-color: $primary;
+
+  &-titleCtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  &-ctn {
+    width: 100%;
+    display: block;
+  }
+
+  &-icon {
+    width: 32rpx;
+    height: 18rpx;
+  }
+
+  &-icon.is-expand {
+    transform: rotate(180deg);
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+
+export default class PlayExpander extends wepy.component {
+  props = {
+  }
+
+  data = {
+    expand: true
+  }
+
+  computed = {
+  }
+
+  methods = {
+    handleExpand() {
+      this.expand = !this.expand
+    }
+  }
+
+  onLoad() {
+  }
+}
+</script>

@@ -1,0 +1,124 @@
+<template>
+  <view class="UserTab">
+    <view class="UserTab-leftCtn">
+      <avatar
+        class="UserTab-avatar"
+        :userInfo.sync="userInfo"
+        :disableAvatarLink="disableAvatarLink"
+      />
+      <view class="UserTab-nameCtn">
+        <view class="UserTab-name">
+          {{userInfo.nickName}}
+        </view>
+        <view class="UserTab-id">
+          {{userInfo.id ? 'ID: ' + userInfo.id : ''}}
+        </view>
+      </view>
+    </view>
+    <view class="UserTab-moneyCtn">
+      <coin class="UserTab-coin"/>
+      <blueDiamond class="UserTab-blueDiamond" />
+    </view>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.UserTab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $primary;
+  padding: 6px 10px;
+
+  &-leftCtn {
+    min-width: 200rpx;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  &-moneyCtn {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: 210rpx;
+  }
+
+  &-coin {
+    margin-left:12rpx;
+  }
+
+  &-blueDiamond {
+    margin-left:12rpx;
+  }
+
+  &-avatar {
+    min-height: 60rpx;
+    min-width: 60rpx;
+    width: 60rpx;
+    height: 60rpx;
+    border-radius: 8rpx;
+  }
+
+  &-nameCtn {
+    font-size: 24rpx;
+    color: rgb(77, 77, 77);
+    padding: 0px 6px;
+    overflow: hidden;
+  }
+
+  &-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    // max-width: 100%;
+  }
+
+  &-id {
+    color: rgb(153, 153, 153);
+    display: block;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import Avatar from '@/components/avatar'
+import Coin from '@/components/coin'
+import BlueDiamond from '@/components/blueDiamond'
+
+@connect({
+  userInfo (state) {
+    return state.user.info
+  }
+}, {
+})
+
+export default class UserTab extends wepy.component {
+  props = {
+    disableAvatarLink: {
+      type: Boolean,
+      default: false
+    }
+  }
+
+  components = {
+    avatar: Avatar,
+    coin: Coin,
+    blueDiamond: BlueDiamond
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+  }
+
+  onLoad() {
+  }
+}
+</script>

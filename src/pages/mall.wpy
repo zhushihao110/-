@@ -1,0 +1,304 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .Mall {
+    &-title {
+      font-size: 30rpx;
+      color: $text-secondary;
+      padding-top: 8px;
+      text-align: center;
+      background-color: $primary;
+    }
+
+    &-list {
+      display: flex;
+      flex-wrap: wrap;
+      background-color: $primary;
+      padding: 0 10px;
+    }
+
+    &-item {
+      margin-top: 24px;
+      padding-bottom: 24px;
+      flex: 1 0 50%;
+      max-width: 50%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      border-bottom: 4rpx solid $secondary;
+      position: relative;
+    }
+
+    &-item.is-left {
+      &:after {
+        content:""; 
+        background: $secondary; 
+        position: absolute;
+        top: 0; 
+        bottom: 24px; 
+        right: 0; 
+        width: 4rpx;
+      }
+    }
+
+    &-img {
+      width: 240rpx;
+      height: 240rpx;
+    }
+
+    &-name, &-marketPrice, &-exchangePrice {
+      width: 100%;
+      text-align: center;
+      display: block;
+    }
+
+    &-name {
+      font-size: 30rpx;
+      padding: 5px 0;
+      color: $text-secondary;
+    }
+
+    &-marketPrice {
+      font-size: 20rpx;
+      color: rgb(153, 153, 153);
+      text-decoration: line-through;
+    }
+
+    &-exchangePrice {
+      font-size: 24rpx;
+      color: rgb(243, 152, 0);
+    }
+
+    &-goldIcon {
+      width: 24rpx;
+      height: 24rpx;
+    }
+
+    &-noticeListCtn {
+      padding: 0 15px;
+      background-color: $primary;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    &-noticeIcon {
+      height: 26rpx;
+      width: 26rpx;
+      padding-right: 10px;
+    }
+
+    &-noticeList {
+      flex: 1;
+    }
+
+    &-noticeSwiper {
+      height: 36rpx;
+      padding: 10px 0;
+    }
+
+    &-noticeItem {
+      font-size: 24rpx;
+      height: 36rpx;
+      line-height: 36rpx;
+      color: rgb(165, 98, 57);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+</style>
+<template>
+  <block wx:if="{{getFlagSuc && !shamFlag}}">
+    <loginDialog />
+    <view class="Mall">
+      <view wx:if="{{notice.length}}" class="Mall-noticeListCtn">
+        <image
+          class="Mall-noticeIcon"
+          src="../img/notice-icon.png"
+        />
+        <view class="Mall-noticeList">
+          <swiper
+            class="Mall-noticeSwiper"
+            autoplay
+            vertical
+          >
+            <repeat for="{{notice}}">
+              <swiper-item>
+                <view class="Mall-noticeItem">
+                  {{item.msg}}
+                </view>
+              </swiper-item>
+            </repeat>
+          </swiper>
+        </view>
+      </view>
+
+      <view class="Mall-title">
+        热门推荐
+      </view>
+      
+      <view class="Mall-list">
+        <repeat for="{{mall.list}}">
+          <view
+            class="Mall-item"
+            :class="{is-left: !(index % 2)}"
+            @tap="goToDetail({{item.id}})"
+          >
+            <image
+              class="Mall-img"
+              src="{{item.img_small}}"
+              mode="widthFix"
+              lazy-load
+            />
+            <view class="Mall-name">
+              {{item.goods_name}}
+            </view>
+            <view wx:if="{{item.market_price}}" class="Mall-marketPrice">
+              (参考价: {{item.market_price}})
+            </view>
+            <view wx:if="{{item.exchange_price}}" class="Mall-exchangePrice">
+              <image
+                class="Mall-goldIcon"
+                src="../img/00-jinbi-icon.png"
+              />
+              {{item.exchange_price}}金币
+            </view>
+          </view>
+        </repeat>
+      </view>
+      <block wx:if="{{loadingList}}">
+        <loading />
+      </block>
+    </view>
+    <charge />
+  </block>
+  <block wx:if="{{getFlagSuc && shamFlag}}">
+    <noData :msg.sync="fakeMsg" />
+  </block>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import Charge from '@/components/charge'
+  import LoginDialog from '@/components/loginDialog'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import {
+    fetchMallSuc,
+    fetchMallErr,
+    initMall,
+    fetchMallNoticeSuc,
+    fetchMallNoticeErr,
+    fetchMallMoreSuc,
+    fetchMallMoreErr,
+    updateShowCharge
+  } from '@/store/actions'
+
+  @connect({
+    mall (state) {
+      return state.mall
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    getFlagSuc (state) {
+      return state.home.getFlagSuc
+    },
+    notice (state) {
+      return state.mall.notice
+    }
+  }, {
+    fetchMallSuc,
+    fetchMallErr,
+    initMall,
+    fetchMallNoticeSuc,
+    fetchMallNoticeErr,
+    fetchMallMoreSuc,
+    fetchMallMoreErr,
+    updateShowCharge
+  })
+
+  export default class Mall extends wepy.page {
+    config = {
+      navigationBarTitleText: '礼品商城'
+    }
+
+    components = {
+      charge: Charge,
+      loginDialog: LoginDialog,
+      loading: Loading,
+      noData: NoData
+    }
+
+    data = {
+      page: 1,
+      loadingList: true,
+      fakeMsg: '暂未开放'
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      goToDetail(id) {
+        wepy.navigateTo({
+          url: `goodsDetail?id=${id}`
+        })
+      },
+      openCharge() {
+        this.methods.updateShowCharge(true)
+      }
+    }
+
+    events = {
+    }
+
+    onShow() {
+      // 获取商城页公告
+      req.get('/api/notice/list', { type: 2 }).then(res => {
+        this.methods.fetchMallNoticeSuc(res.data)
+      }).catch(err => {
+        this.methods.fetchMallNoticeErr(err)
+      })
+    }
+
+    onLoad() {
+      this.loadingList = true
+      req.get('/api/Goods/getGoods', { page: this.page, limit: 20 }).then(res => {
+        this.methods.fetchMallSuc(res.data)
+      }).then(res => {
+        this.page = this.page + 1
+      }).catch(res => {
+        this.methods.fetchMallErr(res)
+      }).then(() => {
+        this.loadingList = false
+        this.$apply()
+      })
+    }
+
+    onUnload() {
+      this.methods.initMall()
+    }
+
+    onReachBottom() {
+      if (this.mall.hasMore) {
+        this.loadingList = true
+        req.get('/api/Goods/getGoods', { page: this.page, limit: 20 }).then(res => {
+          this.methods.fetchMallMoreSuc(res.data)
+        }).then(res => {
+          this.page = this.page + 1
+        }).catch(res => {
+          this.methods.fetchMallMoreErr(res)
+        }).then(() => {
+          this.loadingList = false
+          this.$apply()
+        })
+      }
+    }
+  }
+</script>

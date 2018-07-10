@@ -1,0 +1,301 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+@import '../base/cssBase/table.scss';
+  .Rank {
+    box-sizing: border-box;
+    &-titleCtn {
+      position: relative;
+      font-size: 36rpx;
+      color: white;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &-coin {
+      position: absolute;
+      left: 68rpx;
+      top: 238rpx;
+      text-align: center;
+    }
+
+    &-myRank {
+      position: absolute;
+      top: 238rpx;
+      right: 68rpx;
+      text-align: center;
+    }
+
+    &-subTitle {
+      font-size: 26rpx;
+      color: rgb(225, 99 ,29);
+    }
+
+    &-avatarCtn {
+      position: absolute;
+      top: 215rpx;
+      left: 50%;
+      margin-left: -60rpx;
+    }
+
+    &-avatar {
+      width: 120rpx;
+      height: 120rpx;
+      border-radius: 60rpx;
+    }
+
+    &-banner {
+      width: 100%;
+    }
+
+    &-list {
+      box-sizing: border-box;
+    }
+
+    &-table {
+      font-size: 24rpx;
+      color: rgb(51, 51, 51);
+      background-color: $primary;
+      .Rank-itemNickName {
+        min-width: 60%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+    }
+
+    &-itemNickNameTh {
+      padding-left: 32rpx;
+    }
+
+    &-th {
+      font-size: 26rpx;
+      color: rgb(255, 219, 40);
+      height: 48rpx;
+      line-height: 48rpx;
+      background-color: $orange;
+    }
+
+    &-itemRankCtn, &-itemCoinCtn {
+      min-width: 20%;
+    }
+
+    &-item {
+      border-bottom: 1px solid rgb(253, 211, 28);
+      min-height: 86rpx;
+    }
+
+    &-itemAvatar {
+      min-width: 64rpx;
+      min-height: 64rpx;
+      width: 64rpx;
+      height: 64rpx;
+      box-sizing: border-box;
+      border-radius: 32rpx;
+      border: 1px solid $orange;
+      margin-right: 23rpx;
+    }
+
+    &-itemRank {
+      height: 54rpx;
+      width: 54rpx;
+      border-radius: 27rpx;
+      line-height: 54rpx;
+      text-align: center;
+      font-size: 30rpx;
+      color: rgb(255, 219, 40);
+      background-color: $orange;
+    }
+
+    &-itemCoin {
+      width: 100%;
+      height: 56rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 28rpx 0 0 28rpx;
+      background-color: $orange;
+      color: white;
+      word-break:break-all;
+    }
+
+    &-itemRankImg {
+      width: 48rpx;
+      height: 62rpx;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="Rank">
+    <block wx:if="{{loadingList}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadListFail}}">
+      <noData :msg.sync="loadListFail" />
+    </block>
+    <block wx:else>
+      <view class="Rank-titleCtn">
+        <image
+          class="Rank-banner"
+          src="../img/rank-banner.png"
+          mode="widthFix"
+        />
+        <view class="Rank-coin">
+          <view class="Rank-subTitle">
+            我的财富
+          </view>
+          {{userInfo.coin || '-'}}
+        </view>
+        <view class="Rank-myRank">
+          <view class="Rank-subTitle">
+            我的排名
+          </view>
+          {{myRank ? myRank : '未上榜'}}
+        </view>
+        <view class="Rank-avatarCtn">
+          <image
+            class="Rank-avatar"
+            src="{{userInfo.avatarUrl}}"
+          />
+        </view>
+      </view>
+      <view class="Rank-list">
+        <view class="table Rank-table">
+          <view class="tr Rank-th">
+            <view class="th Rank-itemRankCtn">
+              排名
+            </view>
+            <view class="th Rank-itemNickName Rank-itemNickNameTh">
+              竞猜达人
+            </view>
+            <view class="th Rank-itemCoinCtn">
+              财富值
+            </view>
+          </view>
+          <repeat for="{{list}}">
+            <view class="tr Rank-item">
+              <view class="td Rank-itemRankCtn">
+                <view wx:if="{{item.rank <= 3}}">
+                  <image
+                    class="Rank-itemRankImg"
+                    src="{{'../img/rank-' + item.rank + '.png'}}"
+                  />
+                </view>
+                <view wx:else class="Rank-itemRank">
+                  {{item.rank}}
+                </view>
+              </view>
+              <view class="td Rank-itemNickName">
+                <image
+                  class="Rank-itemAvatar"
+                  src="{{item.avatarUrl}}"
+                />
+                {{item.nickName}}
+              </view>
+              <view class="td Rank-itemCoinCtn">
+                <view class="Rank-itemCoin">
+                  {{item.val}}
+                </view>
+              </view>
+            </view>
+          </repeat>
+        </view>
+        
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import {
+    fetchRankSuc,
+    fetchRankErr,
+    initRank,
+    fetchUserInfoSuc,
+    fetchUserInfoErr
+  } from '@/store/actions'
+  import LoginDialog from '@/components/loginDialog'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import { MSG } from '@/utils/const'
+
+  @connect({
+    list (state) {
+      return state.rank.list
+    },
+    myRank (state) {
+      return state.rank.myRank
+    },
+    userInfo (state) {
+      return state.user.info
+    }
+  }, {
+    fetchRankSuc,
+    fetchRankErr,
+    initRank,
+    fetchUserInfoSuc,
+    fetchUserInfoErr
+  })
+
+  export default class Rank extends wepy.page {
+    config = {
+      navigationBarTitleText: '金币排行榜'
+    }
+
+    components = {
+      loginDialog: LoginDialog,
+      loading: Loading,
+      noData: NoData
+    }
+
+    data = {
+      loadingList: true,
+      loadListFail: ''
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+    }
+
+    events = {
+    }
+
+    onLoad() {
+    }
+
+    onUnload() {
+      this.methods.initRank()
+    }
+
+    onShow() {
+      this.loadingList = true
+      req.get('/api/rank/wealth').then(res => {
+        this.methods.fetchRankSuc(res.data)
+        this.loadListFail = ''
+      }).catch(err => {
+        this.methods.fetchRankErr(err)
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.loadListFail = MSG.LOAD_FAIL
+      }).then(() => {
+        this.loadingList = false
+        this.$apply()
+      })
+
+      req.get('/api/Version/userInfo').then(res => {
+        this.methods.fetchUserInfoSuc(res.data)
+      }).catch(res => {
+        this.methods.fetchUserInfoErr(res)
+      })
+    }
+  }
+</script>

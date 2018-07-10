@@ -1,0 +1,581 @@
+<template>
+  <alert :show.sync="show" :onClose="handleClose" >
+    <view class="ShareBetImgDialog" slot="content">
+      <view class="ShareBetImgDialog-ctn" style="width: {{width}}px;height: {{height}}px;">
+        <!-- <image
+          wx:if="{{imgPath}}"
+          class="ShareBetImgDialog-img"
+          src="{{imgPath}}"
+          style="width: {{width}}px;height: {{height}}px;"
+        />
+
+        <canvas
+          wx:if="{{show}}"
+          class="ShareBetImgDialog-canvas"
+          canvas-id="shareImgCanvas"
+          style="width: 720px;height: 1280px;"
+          binderror="handleCanvasError"
+        /> -->
+
+        <canvas
+          wx:if="{{show}}"
+          class="ShareBetImgDialog-canvas"
+          hidden
+          canvas-id="shareImgCanvas"
+          style="width: 720px;height: 1280px;"
+          binderror="handleCanvasError"
+        />
+
+        <image
+          wx:if="{{imgPath}}"
+          class="ShareBetImgDialog-img"
+          src="{{imgPath}}"
+          style="width: {{width}}px;height: {{height}}px;"
+        />
+
+        <view
+          wx:if="{{msg}}"
+          class="ShareBetImgDialog-msg"
+        >
+          {{msg}}
+        </view>
+
+        <button
+          wx:if="{{imageCreate === 'fail'}}"
+          class="ShareBetImgDialog-retryBtn"
+          @tap.stop="handleRetry"
+        >
+          点击重试
+        </button>
+      </view>
+    </view>
+  </alert>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.ShareBetImgDialog {
+  background-color: $primary;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+
+  &-canvas {
+    border-radius: 8rpx;
+  }
+
+  &-img {
+    width: 100%;
+  }
+
+  &-msg {
+    padding-top: 30%;
+    color: $text-secondary;
+    font-size: 30rpx;
+    width: 100%;
+    text-align: center;
+  }
+
+  &-retryBtn {
+    margin-top: 30rpx;
+    background-color: $orange;
+    color: white;
+    font-size: 36rpx;
+    width: 570rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { connect } from 'wepy-redux'
+import XYError from '@/utils/error'
+import {
+  updateBetShareImgInfo
+} from '@/store/actions'
+import { BET_OPTION, BET_CONTENT_ABBR } from '@/utils/const'
+import { fromwhere, staticUrl, baseUrl } from '@/config'
+import * as constants from '@/network/constants'
+import Session from '@/network/session'
+
+@connect({
+  selected (state) {
+    return state.bets.shareImgInfo.selected
+  },
+  betCoins (state) {
+    return state.bets.shareImgInfo.betCoins
+  },
+  betMoneyType (state) {
+    return state.bets.shareImgInfo.betMoneyType
+  },
+  betStatus (state) {
+    return state.bets.shareImgInfo.betStatus
+  },
+  betBonus (state) {
+    return state.bets.shareImgInfo.betBonus
+  },
+  support (state) {
+    return state.bets.shareImgInfo.support
+  },
+  projectid (state) {
+    return state.bets.shareImgInfo.projectid
+  },
+  userInfo (state) {
+    return state.user.info
+  }
+}, {
+  updateBetShareImgInfo
+})
+
+export default class ShareBetImgDialog extends wepy.component {
+  components = {
+    alert: Alert
+  }
+
+  props = {
+    show: {
+      type: Boolean,
+      default: false,
+      twoWay: true
+    }
+  }
+
+  data = {
+    imgPath: '',
+    msg: '图片生成中...',
+    imageCreate: 'init',
+    height: 1280,
+    width: 720
+  }
+
+  computed = {
+  }
+
+  watch = {
+    show(newValue, oldValue) {
+      if (oldValue === false && newValue === true) {
+        this.createImage()
+      }
+    }
+  }
+
+  methods = {
+    handleCanvasError(err) {
+      console.log(err)
+    },
+    handleRetry() {
+      this.createImage()
+    }
+  }
+
+  downloadFilePromise(url, type, header={}, haveBackUp=false) {
+    if (!url) {
+      return new Promise((resolve, reject) => {
+        resolve('')
+      })
+    }
+    return wepy.downloadFile({
+      url,
+      header
+    }).then(res => {
+      if (res.statusCode === 200) {
+        console.log('### downloadFile success ###', type)
+        return res.tempFilePath
+      } else {
+        console.log('### downloadFile fail ###', type, res.errMsg)
+        throw new XYError(constants.QR_CREATE_FAIL, '图片下载失败')
+      }
+    }).catch(err => {
+      console.log('### downloadFile fail ###', type, err.errMsg)
+      if (!haveBackUp) {
+        this.msg = '图片下载失败'
+        this.imageCreate = 'fail'
+        this.$apply()
+        throw new XYError(constants.QR_CREATE_FAIL, '图片下载失败')
+      }      
+    })
+  }
+
+  createImage() {
+    console.log('### Start create Image ###')
+    const self = this
+    const systemInfo = wepy.getSystemInfoSync()
+    const windowWidth = systemInfo.windowWidth - 50
+    const windowHeight = systemInfo.windowHeight - 50
+    const maxWidth = 720
+    const maxHeight = 1280
+
+    let tableHeight = 110 + 25 + 20
+    const rowHeight = 49
+    tableHeight = tableHeight + rowHeight * this.selected.length
+    // let scale = 1
+    if (maxWidth / maxHeight > windowWidth / windowHeight) {
+      // 按照宽度适应
+      this.width = windowWidth
+      // scale = windowWidth / maxWidth
+      this.height = this.width * maxHeight / maxWidth
+    } else {
+      // 按照高度适应
+      this.height = windowHeight
+      // scale = windowHeight / maxHeight
+      this.width = this.height * maxWidth / maxHeight
+    }
+    this.$apply()
+
+    let bgUrl = ''
+    switch (this.betStatus) {
+      case '0':
+        bgUrl = `${staticUrl}/attachs/qrcodematch/bet-support.jpg`
+        break
+      case '1':
+        bgUrl = `${staticUrl}/attachs/qrcodematch/bet-wait.jpg`
+        break
+      case '2':
+        bgUrl = `${staticUrl}/attachs/qrcodematch/bet-fail.jpg`
+        break
+      case '3':
+        bgUrl = `${staticUrl}/attachs/qrcodematch/bet-success.jpg`
+        break
+      default:
+        bgUrl = `${staticUrl}/attachs/qrcodematch/bet-wait.jpg`
+    }
+
+    const ctx = wepy.createCanvasContext('shareImgCanvas', self)
+    self.downloadFilePromise(bgUrl, 'bg').then(bgImg => {
+      // ctx.clearRect(0, 0, this.width, this.height)
+      // ctx.draw(false)
+      // ctx.scale(scale, scale)
+      ctx.drawImage(bgImg, 0, 0, maxWidth, maxHeight)
+      ctx.draw(true)
+
+      // top banner
+      const moneyType = this.betMoneyType == 1 ? '金币' : '蓝钻' // eslint-disable-line
+      switch (this.betStatus) {
+        case '0':
+          ctx.drawImage('../img/bet-share-table-bg-fail.png', 9, 510, 702, tableHeight)
+          ctx.drawImage('../img/bet-share-top-support.png', 20, 470, 680, 128)
+          ctx.draw(true)
+          break
+        case '1':
+          ctx.drawImage('../img/bet-share-table-bg-wait.png', 9, 510, 702, tableHeight)
+          ctx.drawImage('../img/bet-share-top-wait.png', 20, 470, 680, 128)
+          ctx.draw(true)
+          break
+        case '2':
+          ctx.drawImage('../img/bet-share-table-bg-fail.png', 9, 510, 702, tableHeight)
+          ctx.drawImage('../img/bet-share-top-fail.png', 20, 470, 680, 128)
+          ctx.draw(true)
+          break
+        case '3':
+          ctx.drawImage('../img/bet-share-table-bg-success.png', 9, 510, 702, tableHeight)
+          ctx.drawImage('../img/bet-share-top-success.png', 20, 470, 680, 128)
+          ctx.draw(true)
+          break
+        default:
+      }
+
+      // draw bonus
+      const line1X = 120
+      const line1Y = 510
+      ctx.setTextAlign('center')
+      ctx.setFontSize(24)
+      ctx.setFillStyle('white')
+      ctx.setTextBaseline('top')
+      ctx.fillText(`投注${moneyType}`, line1X, line1Y)
+      ctx.fillText(`${this.betCoins}`, line1X, line1Y + 26)
+      ctx.draw(true)
+      let earnings = ''
+      const odds = this.selected.reduce((acc, item) => {
+        return acc * item.odd
+      }, 1)
+      earnings = Math.floor(this.betCoins * odds)
+      ctx.setFontSize(24)
+      ctx.setFillStyle('white')
+      ctx.setTextAlign('center')
+      ctx.setTextBaseline('top')
+      if (this.betStatus === '3') {
+        ctx.fillText('获得奖金', maxWidth - line1X, line1Y)
+        ctx.setFillStyle('rgb(255,255,0)')
+        ctx.fillText(`${this.betBonus}`, maxWidth - line1X, line1Y + 26)
+      } else {
+        ctx.fillText('预计奖金', maxWidth - line1X, line1Y)
+        ctx.setFillStyle('rgb(255,255,0)')
+        ctx.fillText(`${earnings}`, maxWidth - line1X, line1Y + 26)
+      }
+
+      if (this.betStatus === '0') {
+        const supportTimeX = 242
+        const supportTimeY = 475
+        ctx.setFontSize(34)
+        ctx.setFillStyle('white')
+        ctx.setTextAlign('left')
+        ctx.setTextBaseline('top')
+        ctx.fillText('还剩', supportTimeX, supportTimeY)
+        ctx.setFillStyle('rgb(255,255,0)')
+        ctx.fillText(`${this.support.timeLeft}`, supportTimeX + 34*2 + 5, supportTimeY)
+        ctx.setFillStyle('white')
+        ctx.fillText('结束', supportTimeX + 34*5, supportTimeY)
+      }
+
+      // middle
+      const line2X = maxWidth / 2
+      const line2Y = 470 + 120
+      if (this.betStatus === '2') {
+        ctx.setFillStyle('black')
+      } else if (this.betStatus === '0') {
+        ctx.setFillStyle('rgb(44,60,157)')
+      } else {
+        ctx.setFillStyle('white')
+      }
+      ctx.setFontSize(18)
+      ctx.setTextAlign('center')
+      ctx.setTextBaseline('top')
+      const title = this.selected.length > 1 ? `竞猜内容：${this.selected.length}串1` : '竞猜内容：单关'
+      ctx.fillText(title, line2X, line2Y)
+
+      // draw table
+      const line3Y = 625
+      const col1BaseX = 120
+      const col2BaseX = maxWidth / 2 + 20
+      const col3BaseX = maxWidth - 100
+
+      if (this.betStatus === '2') {
+        ctx.setFillStyle('rgb(26,122,43)')
+      } else if (this.betStatus === '0') {
+        ctx.setFillStyle('rgb(44,60,157)')
+      } else {
+        ctx.setFillStyle('rgb(182,226,255)')
+      }
+      ctx.setFontSize(20)
+      ctx.setTextAlign('center')
+      ctx.setTextBaseline('top')
+      ctx.fillText('主队VS客队', col1BaseX, line3Y)
+      ctx.draw(true)
+      ctx.setFontSize(20)
+      ctx.setTextAlign('center')
+      ctx.setTextBaseline('top')
+      ctx.fillText('投注内容', col2BaseX, line3Y)
+      ctx.draw(true)
+      ctx.setFontSize(20)
+      ctx.setTextAlign('center')
+      ctx.setTextBaseline('top')
+      ctx.fillText('开奖结果', col3BaseX, line3Y)
+      ctx.draw(true)
+
+      const line4X = 48
+      const line4Y = line3Y + 23
+      const paddingLine4Y = line4Y + 10
+      for (let i = 0; i < this.selected.length; i++) {
+        const item = this.selected[i]
+        if (item) {
+          const betType = BET_CONTENT_ABBR[item.type]
+          const fixedodds = item.type === 'hhad' ? `${item.match.fixedodds > 0 ? '+' : ''}${item.match.fixedodds}` : ''
+          const betOption = BET_OPTION[item.type][item.option]
+          const result = item.result || '--'
+
+          if (this.betStatus === '2' || this.betStatus === '0') {
+            ctx.setFillStyle('black')
+          } else {
+            ctx.setFillStyle('white')
+          }
+          ctx.setFontSize(20)
+          ctx.setTextAlign('center')
+          ctx.setTextBaseline('top')
+          ctx.fillText(`${item.match.h_cn_abbr}VS${item.match.a_cn_abbr}`, col1BaseX, paddingLine4Y + rowHeight * i)
+          ctx.draw(true)
+
+          if (this.betStatus === '2' || this.betStatus === '0') {
+            ctx.setFillStyle('rgb(255,0,0)')
+          } else {
+            ctx.setFillStyle('rgb(255,255,0)')
+          }
+          ctx.setFontSize(20)
+          ctx.setTextAlign('center')
+          ctx.setTextBaseline('top')
+          ctx.fillText(`${betType} ${betOption} ${fixedodds} (${item.odd})`, col2BaseX, paddingLine4Y + rowHeight * i)
+          ctx.draw(true)
+
+          if (this.betStatus === '2' || this.betStatus === '0') {
+            ctx.setFillStyle('black')
+          } else {
+            ctx.setFillStyle('white')
+          }
+          ctx.setFontSize(20)
+          ctx.setTextAlign('center')
+          ctx.setTextBaseline('top')
+          ctx.fillText(`${result}`, col3BaseX, paddingLine4Y + rowHeight * i)
+          ctx.draw(true)
+
+          if (i + 1 < this.selected.length) {
+            if (this.betStatus === '3') {
+              ctx.setFillStyle('rgb(168,168,168)')
+            } else if (this.betStatus === '0') {
+              ctx.setFillStyle('rgb(221,221,221)')
+            } else {
+              ctx.setFillStyle('rgb(19,36,107)')
+            }
+            ctx.fillRect(9, line4Y + (rowHeight - 1) * (i + 1), 702, 1)
+          }
+        }
+      }
+
+      if (this.betStatus === '0') {
+        const supportDataX1 = 102
+        const supportDataY = maxHeight - 368 - 25
+        ctx.setFontSize(24)
+        ctx.setFillStyle('white')
+        ctx.setTextAlign('left')
+        ctx.setTextBaseline('middle')
+        ctx.fillText('已有', supportDataX1, supportDataY)
+        ctx.setFontSize(36)
+        ctx.setTextAlign('left')
+        ctx.setTextBaseline('middle')
+        ctx.setFillStyle('rgb(255,255,0)')
+        const supportDataX2 = supportDataX1 + 24*2 + 5
+        ctx.fillText(`${this.support.personNum}人`, supportDataX2, supportDataY)
+        const supportDataX3 = supportDataX2 + `${this.support.personNum}人`.length * 36
+        ctx.setFontSize(24)
+        ctx.setTextAlign('left')
+        ctx.setTextBaseline('middle')
+        ctx.setFillStyle('white')
+        ctx.fillText('为他助力，成功提高', supportDataX3, supportDataY)
+        const supportDataX4 = supportDataX3 + 24 * 9 + 5
+        ctx.setFontSize(36)
+        ctx.setTextAlign('left')
+        ctx.setTextBaseline('middle')
+        ctx.setFillStyle('rgb(255,255,0)')
+        ctx.fillText(`${this.support.extraOdds}赔率`, supportDataX4, supportDataY)
+      }
+
+      let qrUrl = `${baseUrl}/api/Enlightcode/matchlistQrcode?fromwhere=${fromwhere}`
+
+      if (this.betStatus === '0') {
+        qrUrl = `${baseUrl}/api/Enlightcode/helpoddsQrcode?projectid=${this.projectid}&fromwhere=${fromwhere}`
+      }
+      const session = Session.get()
+      Promise.all([
+        self.downloadFilePromise(qrUrl, 'qr', {
+          [constants.WX_HEADER_ID]: session.sessionId
+        }).then(path => {
+          return wepy.getImageInfo({src: path}).then(res => {
+            return path
+          }).catch(err => {
+            return self.downloadFilePromise(`${staticUrl}/attachs/qrcodematch/qr_${fromwhere}_matches.png`, 'backUpQr')
+          })
+        }),
+        self.downloadFilePromise(self.userInfo.avatarUrl, 'avatar', {}, true).then(path => {
+          if (!path) {
+            return ''
+          }
+          return wepy.getImageInfo({src: path}).then(res => {
+            return path
+          }).catch(err => {
+            return ''
+          })
+        })
+      ]).then(pathArr => {
+        // bottom
+        if (this.betStatus === '0') {
+          ctx.drawImage('../img/white-circle-bg.jpg', maxWidth / 2 - 94, maxHeight - 368, 188, 188)
+          ctx.drawImage(pathArr[0], maxWidth / 2 - 94, maxHeight - 368, 188, 188)
+
+          pathArr[1] && ctx.drawImage(pathArr[1], maxWidth / 2 + 30, maxHeight - 165, 60, 60)
+
+          ctx.setFontSize(24)
+          ctx.setTextAlign('left')
+          ctx.setTextBaseline('middle')
+          ctx.setFillStyle('white')
+          ctx.fillText(`${self.userInfo.nickName}`, maxWidth / 2 + 100, maxHeight - 135)
+        } else {
+          ctx.save()
+          ctx.beginPath()
+          ctx.arc(maxWidth / 2, maxHeight - 294, 94, 0, 2*Math.PI)
+          ctx.clip()
+          pathArr[1] && ctx.drawImage(pathArr[1], maxWidth / 2 - 94, maxHeight - 388, 188, 188)
+          ctx.restore()
+          ctx.drawImage('../img/white-circle-bg.jpg', maxWidth / 2 + 30, maxHeight - 189, 124, 124)
+          ctx.drawImage(pathArr[0], maxWidth / 2 + 30, maxHeight - 189, 124, 124)
+
+          ctx.setFontSize(24)
+          ctx.setTextAlign('left')
+          ctx.setTextBaseline('middle')
+          if (this.betStatus === '3') {
+            ctx.setFillStyle('black')
+          } else {
+            ctx.setFillStyle('white')
+          }
+          ctx.fillText('扫一扫', maxWidth / 2 + 174, maxHeight - 127)
+        }
+        
+
+        ctx.draw(true, () => {
+          debugger
+          console.log('### draw callback ###')
+          self.$apply()
+          wepy.canvasToTempFilePath({
+            canvasId: 'shareImgCanvas'
+          }, self).then(res => {
+            self.imgPath = res.tempFilePath
+            self.msg = ''
+            self.imageCreate = 'success'
+            self.$apply()
+            console.log('### canvasToTempFilePath success ###')
+            if (self.imgPath) {
+              self.saveImage().catch(() => {
+                wepy.getSetting().then(res => {
+                  if (!res.authSetting['scope.writePhotosAlbum']) {
+                    wepy.openSetting().then(res => {
+                      if (res.authSetting['scope.writePhotosAlbum']) {
+                        self.saveImage()
+                      }
+                    })
+                  }
+                })
+              })
+            }
+          }).catch(err => {
+            self.imageCreate = 'fail'
+            self.msg = '图片保存失败'
+            self.$apply()
+            console.log('### canvasToTempFilePath fail ###', err)
+          })
+        })
+      }).catch(err => {
+        debugger
+        self.msg = err.msg || '图片生成失败'
+        self.imageCreate = 'fail'
+        self.$apply()
+      })
+    })
+  }
+
+  saveImage() {
+    return wepy.saveImageToPhotosAlbum({
+      filePath: this.imgPath
+    }).then(() => {
+      wepy.showToast({ title: '图片已保存到相册，快去朋友圈分享吧', icon: 'none', duration: 3000 })
+    }).catch(() => {
+      wepy.showToast({ title: '图片无法保存，无保存权限', icon: 'none' })
+    })
+  }
+
+  handleClose = () => {
+    this.show = false
+    this.imgPath = ''
+    this.msg = '图片生成中...'
+    this.imageCreate = 'init'
+    this.height = 1287
+    this.methods.updateBetShareImgInfo({
+      selected: [],
+      betCoins: 0,
+      betMoneyType: '1',
+      betStatus: '1',
+      support: {},
+      projectid: ''
+    })
+    this.$apply()
+  }
+}
+</script>

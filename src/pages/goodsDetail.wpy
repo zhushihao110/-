@@ -1,0 +1,825 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .GoodsDetail {
+    padding-bottom: 210rpx;
+
+    &-banner {
+
+    }
+
+    &-ctn {
+      background-color: $primary;
+    }
+
+    &-phoneBannerCtn {
+      position: relative;
+      height: 320rpx;
+      color: rgb(248, 184, 81);
+      font-size: 36rpx;
+      padding: 0 10px;
+    }
+
+    &-phoneCtn {
+      background-color: transparent;
+    }
+
+    &-goodsCtn {
+      padding: 10px 10px;
+    }
+
+    &-jdCtn {
+      padding: 0 10px;
+    }
+
+    &-jdBannerCtn {
+      height: 240rpx;
+    }
+
+    &-jdEcardBanner {
+      width: 100%;
+      height: 240rpx;
+    }
+
+    &-phoneBanner {
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 320rpx;
+      width: 100%;
+    }
+
+    &-goodsBannerCtn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &-img {
+      width: 100%;
+    }
+
+    &-phoneTitle {
+      text-align: center;
+      padding-top: 10px;
+      padding-bottom: 30px;
+    }
+
+    &-phoneInputHolder {
+      font-size: 48rpx;
+      color: rgb(248, 184, 81);
+    }
+
+    &-phoneInput {
+      font-size: 48rpx;
+      color: white;
+    }
+
+    &-phoneSubTitle {
+      font-size: 30rpx;
+      color: $text-secondary;
+      padding: 0 19px;
+      padding-top: 15px;
+      padding-bottom: 7px;
+      background-color: $primary;
+    }
+
+    &-jdSubTitle {
+      font-size: 30rpx;
+      color: $text-secondary;
+      padding: 5px 0;
+      span {
+        display: block;
+        font-size: 24rpx;
+        color: rgb(153, 153, 153);
+      }
+    }
+
+    &-optionsTitle {
+      font-size: 24rpx; 
+      color: $text-secondary;
+      padding: 5px 0;
+      border-top: 4rpx solid $secondary;
+    }
+
+    &-options {
+      background-color: $primary;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+
+      .GoodsDetail-option.is-selected {
+        background-color: $red;
+        color: rgb(248, 181, 81);
+        span {
+          color: rgb(248, 181, 81);
+        }
+      }
+
+      .GoodsDetail-option.is-disabled {
+        background-color: $secondary;
+      }
+    }
+
+    &-optionCtn {
+      flex: 1 0 50%;
+      max-width: 50%;
+    }
+
+    &-option {
+      padding: 20px 0px;
+      font-size: 36rpx;
+      color: white;
+      border-radius: 8rpx;
+      box-sizing: border-box;
+      background-color: $orange;
+      margin: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      span {
+        font-size: 30rpx;
+        padding: 5px 0px;
+      }
+    }
+
+    &-goldIcon {
+      width: 24rpx;
+      height: 24rpx;
+    }
+
+    &-name {
+      font-size: 30rpx;
+      color: $text-secondary;
+    }
+
+    &-exchangePrice {
+      color: rgb(243, 152, 0);
+      font-size: 24rpx;
+    }
+
+    &-marketPrice {
+      font-size: 20rpx;
+      color: rgb(153, 153, 153);
+    }
+
+    &-extraCtn {
+      background-color: $primary;
+      padding: 0 10px;
+      font-size: 24rpx;
+    }
+
+    &-title {
+      color: $text-secondary;
+      border-top: 4rpx solid $secondary;
+      padding: 10px 0;
+    }
+
+    &-desc {
+      color: rgb(153, 153, 153);
+      padding-bottom: 10px;
+    }
+
+    &-bottom {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      padding: 0 10px;
+      padding-bottom: 40rpx;
+      color: $text-secondary;
+      text-align: center;
+      background-color: $primary;
+    }
+
+    &-bottomTitle {
+      padding-top: 20rpx;
+      border-top: 4rpx solid $secondary;
+    }
+
+    &-exchangeBtn {
+      background-color: $red;
+      color: white;
+      font-size: 30rpx;
+      margin-top: 20rpx;
+    }
+
+    &-confirmCtn {
+      box-sizing: border-box;
+    }
+
+    &-confirmMsgCtn {
+      padding: 20px;
+      padding-top: 30px;
+      margin: 0 auto;
+      margin-top: -25rpx;
+      background-color: $primary;
+      border-radius: 8rpx;
+      width: 520rpx;
+      font-size: 36rpx;
+      color: rgb(128, 128, 128);
+    }
+
+    &-confirmMsg {
+      padding-bottom: 15px;
+    }
+
+    &-confirmBottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 36rpx;
+    }
+
+    &-confirmBtn, &-cancelBtn {
+      width: 210rpx;
+      color: white;
+    }
+
+    &-confirmBtn {
+      background-color: $red;
+    }
+
+    &-cancelBtn {
+      background-color: rgb(128, 128, 128);
+    }
+
+    &-addressForm {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      background-color: rgb(240, 230, 163);
+      height: 140rpx;
+    }
+
+    &-addAddress {
+      font-size: 36rpx;
+      color: rgb(218, 29, 30);
+    }
+
+    &-addressInfo {
+      font-size: 24rpx;
+      color: rgb(173, 61, 39);
+    }
+
+    &-addressRow1 {
+      color: rgb(218, 29, 30);
+    }
+
+    &-addressRow2 {
+
+    }
+
+    &-exchangeGoodsBtn {
+      margin: 0 auto;
+      margin-top: 62rpx;
+      color: white;
+      font-size: 36rpx;
+      background-color: $orange;
+      width: 420rpx;
+      text-align: center;
+      border-radius: 4px;
+    }
+
+    &-headerBG {
+      position: absolute;
+      width: 699rpx;
+      height: 144rpx;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    &-header {
+      position: relative;
+      width: 699rpx;
+      height: 144rpx;
+      font-size: 48rpx;
+      color: rgb(248, 243, 72);
+      text-align: center;
+      box-sizing: border-box;
+      padding-top: 24rpx;
+      span {
+        z-index: $z-first;
+        position: absolute;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+      }
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="GoodsDetail">
+    <block wx:if="{{loadingDetail}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadDetailFail}}">
+      <noData :msg.sync="loadDetailFail" />
+    </block>
+    <block wx:else>
+      <view class="GoodsDetail-banner">
+        <block wx:if="{{detail.type === '0'}}">
+          <view class="GoodsDetail-jdBannerCtn">
+            <image class="GoodsDetail-jdEcardBanner" src="../img/jd-ecard-banner.png" />
+          </view>
+        </block>
+
+        <block wx:elif="{{detail.type === '1'}}">
+          <view class="GoodsDetail-phoneBannerCtn">
+            <image class="GoodsDetail-phoneBanner" src="../img/phone-charge-banner.png" />
+            <view class="GoodsDetail-phoneTitle">
+              话费
+            </view>
+            <input
+              class="GoodsDetail-phoneInput"
+              placeholder-class="GoodsDetail-phoneInputHolder"
+              type="number"
+              maxlength="11"
+              @input="handleNumberInput"
+              placeholder="请输入手机号码"
+            />
+          </view>
+        </block>
+
+        <block wx:elif="{{detail.type === '2'}}">
+          <view class="GoodsDetail-goodsBannerCtn">
+            <image
+              class="GoodsDetail-img"
+              src="{{detail.img_big}}"
+              mode="widthFix"
+              lazy-load
+            />
+          </view>
+        </block>
+      </view>
+
+      <!-- 京东卡 -->
+      <view class="GoodsDetail-ctn GoodsDetail-jdCtn" wx:if="{{detail.type === '0'}}">
+        <view class="GoodsDetail-jdSubTitle">
+          抽京东电子购物卡
+          <span>
+            可在京东商城购物使用
+          </span>
+        </view>
+        <view class="GoodsDetail-optionsTitle">
+          请选择面值
+        </view>
+        <view class="GoodsDetail-options">
+          <repeat for="{{detail.arr}}">
+            <view
+              class="GoodsDetail-optionCtn"
+              @tap="handleSelectCard({{index}}, {{item.inventory}})"
+            >
+              <view
+                class="GoodsDetail-option"
+                :class="{is-selected: selected === index, is-disabled: !item.inventory}"
+              >
+                {{detail.goods_name}}{{item.market_price}}
+                <span>
+                  {{item.exchange_price}} | {{item.inventory}}库存
+                </span>
+              </view>
+            </view>
+          </repeat>
+        </view>
+      </view>
+
+      <!-- 话费 -->
+      <view class="GoodsDetail-ctn GoodsDetail-phoneCtn" wx:elif="{{detail.type === '1'}}">
+        <view class="GoodsDetail-phoneSubTitle">
+          话费充值快速到账
+        </view>
+        <view class="GoodsDetail-options">
+          <repeat for="{{detail.arr}}">
+            <view
+              class="GoodsDetail-optionCtn"
+              @tap="handleSelectCard({{index}}, {{item.inventory}})"
+            >
+              <view
+                class="GoodsDetail-option"
+                :class="{is-selected: selected === index, is-disabled: !item.inventory }"
+              >
+                {{item.market_price}}元
+                <span>
+                  {{item.exchange_price}}金币 | {{item.inventory}}库存
+                </span>
+              </view>
+            </view>
+          </repeat>
+        </view>
+      </view>
+
+      <!-- 实物 -->
+      <view class="GoodsDetail-ctn GoodsDetail-goodsCtn" wx:elif="{{detail.type === '2'}}">
+        <view class="GoodsDetail-name">
+          {{detail.goods_name}}
+        </view>
+        <view>
+          <span class="GoodsDetail-exchangePrice">
+            <image
+              class="GoodsDetail-goldIcon"
+              src="../img/00-jinbi-icon.png"
+            />
+            {{detail.exchange_price}}
+          </span>
+          <span class="GoodsDetail-marketPrice">
+            参考价：{{detail.market_price}}元
+          </span>
+        </view>
+      </view>
+
+      <view class="GoodsDetail-extraCtn">
+        <view wx:if="{{detail.desc}}" class="GoodsDetail-descCtn">
+          <view class="GoodsDetail-title">
+            奖品介绍
+          </view>
+          <view class="GoodsDetail-desc">
+            {{detail.desc}}
+          </view>
+        </view>
+        <view wx:if="{{detail.instructions && !showAddressCard}}" class="GoodsDetail-instructionsCtn">
+          <view class="GoodsDetail-title">
+            兑换说明
+          </view>
+          <view class="GoodsDetail-desc">
+            {{detail.instructions}}
+          </view>
+        </view>
+      </view>
+
+      <view
+        wx:if="{{detail.type === '2' && showAddressCard}}"
+        class="GoodsDetail-addressForm"
+        @tap="getAddress"
+      >
+        <view wx:if="{{!address.userName}}" class="GoodsDetail-addAddress">
+          点击填写你的收货地址
+        </view>
+        <view wx:else class="GoodsDetail-addressInfo">
+          <view class="GoodsDetail-addressRow1">
+            收货人：{{address.userName}}
+            {{address.telNumber}}
+          </view>
+          <view class="GoodsDetail-addressRow2">
+            收货地址：{{address.countyName}}{{address.provinceName}}{{address.cityName}} {{address.detailInfo}}
+          </view>
+        </view>
+      </view>
+
+      <button
+        wx:if="{{showAddressCard}}"
+        class="GoodsDetail-exchangeGoodsBtn"
+        disabled="{{!address.userName}}"
+        loading="{{exchangeLoading}}"
+        @tap="exchangeGoods"
+      >
+        兑换
+      </button>
+
+      <view wx:else class="GoodsDetail-bottom">
+        <view class="GoodsDetail-bottomTitle">
+          我的金币：{{userInfo.coin}}
+        </view>
+        <button
+          wx:if="{{detail.type === '2'}}"
+          class="GoodsDetail-exchangeBtn"
+          @tap="openConfirm"
+        >
+          立即兑换
+        </button>
+        <button
+          wx:else
+          class="GoodsDetail-exchangeBtn"
+          @tap="openConfirm"
+        >
+          本次兑换需要{{detail.arr[selected] && detail.arr[selected].exchange_price}}金币
+        </button>
+      </view>
+    </block>
+  </view>
+  <charge />
+
+  <!-- 兑换确认Dialog -->
+  <alert1 :show.sync="showConfirm" :onClose="closeConfirm">
+    <view class="GoodsDetail-confirmCtn" slot="content">
+      <view class="GoodsDetail-header">
+        <span>兑换礼品</span>
+        <image class="GoodsDetail-headerBG" src="../img/signIn-title.png" />
+      </view>
+
+      <view class="GoodsDetail-confirmMsgCtn">
+        <view wx:if="{{detail.type === '0'}}" class="GoodsDetail-confirmMsg">
+          确定使用{{detail.arr[selected] && detail.arr[selected].exchange_price}}金币兑换{{detail.arr[selected] && detail.arr[selected].market_price}}元京东卡？
+        </view>
+        <view wx:elif="{{detail.type === '1'}}" class="GoodsDetail-confirmMsg">
+          <block wx:if="{{phone}}">
+            确定使用{{detail.arr[selected] && detail.arr[selected].exchange_price}}金币兑换{{detail.arr[selected] && detail.arr[selected].market_price}}元话费给{{phone}}吗？
+          </block>
+          <block wx:else>
+            请先输入手机号
+          </block>
+        </view>
+        <view wx:else class="GoodsDetail-confirmMsg">
+          兑换将使用{{detail.exchange_price}}金币
+        </view>
+        <view class="GoodsDetail-confirmBottom">
+          <button
+            class="GoodsDetail-cancelBtn"
+          >
+            取消
+          </button>
+          <button
+            class="GoodsDetail-confirmBtn"
+            loading="{{exchangeLoading}}"
+            @tap="handleExchange"
+          >
+            确定
+          </button>
+        </view>
+      </view>
+    </view>
+  </alert1>
+
+  <!-- 兑换成功Dialog -->
+  <!-- <alert2 :show.sync="showSuc" :onClose="closeSuc">
+    <view class="GoodsDetail-confirmCtn" slot="content">
+      <view class="GoodsDetail-header">
+        <span>兑换成功</span>
+        <image class="GoodsDetail-headerBG" src="../img/signIn-title.png" />
+      </view>
+      <view class="GoodsDetail-confirmMsgCtn">
+        <view class="GoodsDetail-confirmMsg">
+          <block wx:if="{{detail.type === '1'}}">
+            兑换成功，请留意手机短信（可能会有1-10分钟延迟）
+          </block>
+          <block wx:else>
+            兑换成功，请进入“我的-我的礼品”查看兑换进度
+          </block>
+        </view>
+        <view class="GoodsDetail-confirmBottom">
+          <button
+            class="GoodsDetail-confirmBtn"
+            @tap="closeSuc"
+          >
+            确定
+          </button>
+        </view>
+      </view>
+    </view>
+  </alert2> -->
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import XYError from '@/utils/error'
+  import * as constants from '@/network/constants'
+  import Charge from '@/components/charge'
+  import Alert from '@/components/alert'
+  import LoginDialog from '@/components/loginDialog'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import { MSG } from '@/utils/const'
+  import {
+    fetchGoodsDetailSuc,
+    fetchGoodsDetailErr,
+    initGoodsDetail,
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    updateShowCharge
+  } from '@/store/actions'
+  import { throttle } from '@/utils/helper'
+
+  @connect({
+    userInfo (state) {
+      return state.user.info
+    },
+    detail (state) {
+      return state.goodsDetail.detail
+    }
+  }, {
+    fetchGoodsDetailSuc,
+    fetchGoodsDetailErr,
+    initGoodsDetail,
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    updateShowCharge
+  })
+
+  export default class GoodsDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '商品详情'
+    }
+
+    components = {
+      charge: Charge,
+      alert1: Alert,
+      // alert2: Alert,
+      loginDialog: LoginDialog,
+      loading: Loading,
+      noData: NoData
+    }
+
+    data = {
+      selected: 0,
+      showConfirm: false,
+      // showSuc: false,
+      phone: '',
+      address: {},
+      showAddressCard: false,
+      exchangeLoading: false,
+      loadingDetail: true,
+      loadDetailFail: ''
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      handleSelectCard(index, inventory) {
+        if (inventory) {
+          this.selected = index
+        }
+      },
+      openConfirm() {
+        // 实物
+        if (this.detail.type === '2' && this.detail.exchange_price <= this.userInfo.coin) {
+          this.showConfirm = true
+        // 京东卡&话费
+        } else if (this.detail.type !== '2' && this.detail.arr[this.selected] && this.detail.arr[this.selected].exchange_price <= this.userInfo.coin) {
+          this.showConfirm = true
+        } else {
+          wepy.showToast({ title: '金币不足', icon: 'none'})
+          this.methods.updateShowCharge(true)
+        }
+      },
+      handleExchange: throttle(function() {
+        if (this.exchangeLoading) { return }
+        switch (this.detail.type) {
+          case '0':
+            // 兑换京东卡
+            this.exchangeLoading = true
+            req.post('/api/Chargeorders/jdCard', { jdOffset: this.selected }).then(res => {
+              wepy.navigateTo({
+                url: 'myOrder'
+              })
+              this.getUserInfo()
+              this.exchangeLoading = false
+              this.$apply()
+            }).catch(err => {
+              if (err.code === 10003) {
+                this.methods.updateShowCharge(true)
+              }
+              wepy.showToast({ title: err.msg, icon: 'none' })
+              this.exchangeLoading = false
+              this.$apply()
+            })
+            break
+          case '1':
+            // 充值话费
+            if (this.phone) {
+              this.exchangeLoading = true
+              req.post('/api/Chargeorders/charge', {
+                coinOffset: this.selected,
+                mobile: this.phone
+              }).then(res => {
+                wepy.navigateTo({
+                  url: 'myOrder'
+                })
+                this.getUserInfo()
+                this.exchangeLoading = false
+                this.$apply()
+              }).catch(err => {
+                if (err.code === 10003) {
+                  this.methods.updateShowCharge(true)
+                }
+                wepy.showToast({ title: err.msg, icon: 'none' })
+                this.exchangeLoading = false
+                this.$apply()
+              })
+            }
+            break
+          case '2':
+            // 实物
+            if (this.detail.exchange_price <= this.userInfo.coin) {
+              this.showAddressCard = true
+            }
+            break
+          default:
+            wepy.showToast({ title: `未支持的商品类型${this.detail.type}`, icon: 'none' })
+        }
+      }, 500),
+      handleNumberInput(e) {
+        this.phone = e.detail.value
+      },
+      exchangeGoods() {
+        if (this.exchangeLoading) { return }
+        this.exchangeLoading = true
+        req.post('/api/Orders/exchange', {
+          itemId: this.detail.id,
+          userPhone: this.address.telNumber,
+          userName: this.address.userName,
+          userAddress: `${this.address.provinceName},${this.address.cityName},${this.address.countyName}`,
+          detailAddress: this.address.detailInfo
+        }).then(res => {
+          wepy.navigateTo({
+            url: 'myOrder'
+          })
+          this.exchangeLoading = false
+          this.getUserInfo()
+          this.$apply()
+        }).catch(err => {
+          if (err.code === 10003) {
+            this.methods.updateShowCharge(true)
+          }
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.exchangeLoading = false
+          this.$apply()
+        })
+      },
+      getAddress() {
+        wepy.chooseAddress().then(res => {
+          this.address = res
+          this.$apply()
+        }).catch(err => {
+          console.log(err.errMsg)
+          return wepy.getSetting().then(res => {
+            if (!res.authSetting['scope.address']) {
+              return wepy.authorize({
+                scope: 'scope.address'
+              }).then(() => {
+                return this.methods.getAddress()
+              }).catch(() => {
+                return wepy.openSetting().then(res => {
+                  if (res.authSetting['scope.address']) {
+                    return this.methods.getAddress()
+                  } else {
+                    throw new XYError(constants.ERR_WX_AUTH, '用户未授权')
+                  }
+                })
+              })
+            }
+          }).catch(err => {
+            console.log(err.msg || err.errMsg)
+          })
+        })
+      },
+      openCharge() {
+        this.methods.updateShowCharge(true)
+      }
+    }
+
+    events = {
+    }
+
+    getUserInfo() {
+      req.get('/api/Version/userInfo').then(res => {
+        this.methods.fetchUserInfoSuc(res.data)
+      }).catch(res => {
+        this.methods.fetchUserInfoErr(res)
+      })
+    }
+
+    closeConfirm = () => {
+      this.showConfirm = false
+      this.$apply()
+    }
+
+    // closeSuc = () => {
+    //   this.showSuc = false
+    //   this.$apply()
+    // }
+
+    onLoad(options) {
+      if (options.id) {
+        this.loadingDetail = true
+        req.get('/api/Goods/goDetail', { itemId: options.id }).then(res => {
+          this.methods.fetchGoodsDetailSuc(res.data)
+          this.loadDetailFail = ''
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.fetchGoodsDetailErr(err)
+          this.loadDetailFail = MSG.LOAD_FAIL
+        }).then(() => {
+          this.loadingDetail = false
+          this.$apply()
+        })
+      }
+    }
+
+    onUnload() {
+      this.methods.initGoodsDetail()
+    }
+  }
+</script>

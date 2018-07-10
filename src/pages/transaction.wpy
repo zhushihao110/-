@@ -1,0 +1,186 @@
+<style lang="scss">
+  .Transaction {
+    background-color: #dbdce0;
+    height: 100%;
+
+    &-title {
+      padding: 30rpx;
+      font-size: 30rpx;
+      background-color: #eeeeee;
+      margin-bottom: 10rpx;
+    }
+
+    &-list {
+      padding: 0rpx 30rpx;
+      background-color: #eeeeee;
+    }
+
+    &-item {
+      border: 1rpx solid #dbdce0;
+      border-left: 0rpx;
+      border-right: 0rpx;
+      display: flex;
+      align-items: center;
+      padding: 18rpx;
+    }
+
+    &-leftCtn {
+      flex: 1;
+    }
+
+    &-desc {
+      font-size: 24rpx;
+      height: 24rpx;
+      color: rgb(51, 51, 51);
+      display: block;
+    }
+
+    &-time {
+      font-size: 22rpx;
+      height: 22rpx;
+      color: rgb(153, 153, 153);
+    }
+
+    &-rightCtn {
+      display: flex;
+      align-items: center;
+    }
+
+    &-gold {
+      font-size: 24rpx;
+      color: rgb(102, 102, 102);
+    }
+
+    &-gold.is-red {
+      color: rgb(218, 29, 30);
+    }
+
+    &-goldIcon {
+      height: 40rpx;
+      width: 40rpx;
+      margin-left: 12rpx;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="Transaction">
+    <view class="Transaction-title">
+      金币明细记录
+    </view>
+    <view class="Transaction-list">
+      <repeat for="{{transactions.list}}" key="index" item="item" index="index">
+        <view class="Transaction-item">
+          <div class="Transaction-leftCtn">
+            <div class="Transaction-desc">
+              {{item.desc}}
+            </div>
+            <div class="Transaction-time">
+              {{item.formatTime}}
+            </div>
+          </div>
+          <div class="Transaction-rightCtn">
+            <div
+              class="Transaction-gold"
+              :class="{is-red: item.coin > 0}"
+            >
+              {{item.coin > 0 ? '+' + item.coin : item.coin}}
+            </div>
+            <image class="Transaction-goldIcon" src="../img/00-jinbi-icon.png" />
+          </div>
+        </view>
+      </repeat>
+    </view>
+    <loading hidden="{{!loadingList}}" />
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import {
+    fetchTransactionsSuc,
+    fetchTransactionsErr,
+    initTransactions,
+    clearRedPoint,
+    fetchTransactionsMoreSuc,
+    fetchTransactionsMoreErr
+  } from '@/store/actions'
+  import LoginDialog from '@/components/loginDialog'
+  import Loading from '@/components/loading'
+
+  @connect({
+    transactions (state) {
+      return state.transactions
+    }
+  }, {
+    fetchTransactionsSuc,
+    fetchTransactionsErr,
+    initTransactions,
+    clearRedPoint,
+    fetchTransactionsMoreSuc,
+    fetchTransactionsMoreErr
+  })
+
+  export default class Transaction extends wepy.page {
+    config = {
+      navigationBarTitleText: '金币明细'
+    }
+
+    components = {
+      loginDialog: LoginDialog,
+      loading: Loading
+    }
+
+    data = {
+      page: 1,
+      loadingList: true
+    }
+
+    computed = {
+    }
+
+    methods = {
+    }
+
+    events = {
+    }
+
+    onLoad() {
+      this.loadingList = true
+      req.get('/api/Coinjilu/coinDetail', { page: this.page, limit: 20 }).then(res => {
+        this.methods.fetchTransactionsSuc(res.data)
+      }).catch(res => {
+        this.methods.fetchTransactionsErr(res)
+      }).then(res => {
+        this.page = this.page + 1
+        this.loadingList = false
+        this.$apply()
+      })
+
+      req.get('/Api/Givecoin/clickRed', {type: 1}).then(res => {
+        this.methods.clearRedPoint(1)
+      })
+    }
+
+    onUnload() {
+      this.methods.initTransactions()
+    }
+
+    onReachBottom() {
+      if (this.transactions.hasMore && !this.loadingList) {
+        this.loadingList = true
+        req.get('/api/Coinjilu/coinDetail', { page: this.page, limit: 20 }).then(res => {
+          this.methods.fetchTransactionsMoreSuc(res.data)
+        }).catch(res => {
+          this.methods.fetchTransactionsMoreErr(res)
+        }).then(res => {
+          this.page = this.page + 1
+          this.loadingList = false
+          this.$apply()
+        })
+      }
+    }
+  }
+</script>

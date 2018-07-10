@@ -1,0 +1,189 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .MyInvite {
+    &-listCtn {
+    }
+
+    &-title {
+      background-color: $secondary;
+      font-size: 26rpx;
+      display: flex;
+      padding: 12rpx 30rpx;
+    }
+
+    &-list {
+      background-color: $primary;
+      padding: 0rpx 30rpx;
+      box-sizing: border-box;
+      display: block;
+    }
+
+    &-item {
+      padding-top: 12rpx;
+      padding-bottom: 10rpx;
+      display: flex;
+      background-color: $primary;
+      box-sizing: border-box;
+      font-size: 24rpx;
+      color: rgb(51, 51, 51);
+      border-bottom: 2rpx solid $secondary;
+      align-items: center;
+    }
+
+    &-useravatar {
+      height: 60rpx;
+      width: 60rpx;
+      border-radius: 8rpx;
+    }
+
+    &-avatar {
+      width: 60rpx;
+    }
+
+    &-name {
+      flex: 1;
+      text-align: center;
+      padding: 0rpx 12rpx;
+    }
+
+    &-id {
+      width: 100rpx;
+      text-align: center;
+    }
+
+    &-time {
+      width: 200rpx;
+      text-align: center;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="MyInvite">
+    <userTab />
+    <view class="MyInvite-listCtn">
+      <div class="MyInvite-title">
+        <div class="MyInvite-avatar">
+          头像
+        </div>
+        <div class="MyInvite-name">
+          昵称
+        </div>
+        <div class="MyInvite-id">
+          ID
+        </div>
+        <div class="MyInvite-time">
+          收徒时间
+        </div>
+      </div>
+      <div class="MyInvite-list">
+        <repeat for="{{invitations.list}}" index="index" key="index" item="item">
+          <div class="MyInvite-item">
+            <div class="MyInvite-avatar">
+              <image
+                class="MyInvite-useravatar"
+                src="{{item.avatarUrl}}"
+                background-size="cover"
+              />
+            </div>
+            <div class="MyInvite-name">
+              {{item.nickName}}
+            </div>
+            <div class="MyInvite-id">
+              {{item.id}}
+            </div>
+            <div class="MyInvite-time">
+              {{item.formatTime}}
+            </div>
+          </div>
+        </repeat>
+      </div>
+
+      <loading hidden="{{!loadingList}}" />
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import UserTab from '@/components/userTab'
+  import LoginDialog from '@/components/loginDialog'
+  import Loading from '@/components/loading'
+  import {
+    fetchInviteSuc,
+    fetchInviteErr,
+    initInviteList,
+  } from '@/store/actions'
+
+  @connect({
+    invitations (state) {
+      return state.invitations
+    }
+  }, {
+    fetchInviteSuc,
+    fetchInviteErr,
+    initInviteList,
+  })
+
+  export default class MyInvite extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的徒弟'
+    }
+
+    components = {
+      userTab: UserTab,
+      loginDialog: LoginDialog,
+      loading: Loading
+    }
+
+    data = {
+      page: 1,
+      loadingList: true
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+    }
+
+    events = {
+    }
+
+    onLoad() {
+      this.loadingList = true
+      req.get('/api/Enlightening/tudi', { page: this.page, limit: 20 }).then(res => {
+        this.methods.fetchInviteSuc(res.data)
+      }).catch(res => {
+        this.methods.fetchInviteErr(res)
+      }).then(res => {
+        this.page = this.page + 1
+        this.loadingList = false
+        this.$apply()
+      })
+    }
+
+    onUnload() {
+      this.methods.initInviteList()
+    }
+
+    onReachBottom() {
+      if (this.invitations.hasMore) {
+        this.loadingList = true
+        req.get('/api/Enlightening/tudi', { page: this.page, limit: 20 }).then(res => {
+          this.methods.fetchInviteSuc(res.data)
+        }).catch(res => {
+          this.methods.fetchInviteErr(res)
+        }).then(res => {
+          this.page = this.page + 1
+          this.loadingList = false
+          this.$apply()
+        })
+      }
+    }
+  }
+</script>

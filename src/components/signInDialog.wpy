@@ -1,0 +1,387 @@
+<template>
+  <alert :show.sync="showSignIn" :onClose="onClose" >
+    <view class="SignIn" slot="content">
+      <view class="SignIn-header">
+        <span>每日签到</span>
+        <image class="SignIn-headerBG" src="../img/signIn-title.png" />
+        <image
+          class="SignIn-closeBtn"
+          src="../img/close.png"
+          @tap.stop="closeDialog"
+        />
+      </view>
+      <view class="SignIn-ctn">
+        <div class="SignIn-listCtn">
+          <repeat for="{{daily.list}}">
+            <div
+              class="SignIn-item"
+              :class="{is-selected: daily.current.date === item.date}"
+            >
+              <div wx:if="{{daily.current.date > item.date}}" class="SignIn-itemGot">
+                已领取
+              </div>
+              <div class="SignIn-itemTitle">
+                第{{item.date}}天
+              </div>
+              <div class="SignIn-itemContent">
+                <image
+                  class="SignIn-itemIcon{{index >= 3 ? 3 : index + 1}}"
+                  src="../img/coin{{index >= 3 ? 3 : index + 1}}.png"
+                />
+                <span class="SignIn-itemFee">
+                  {{item.coin}}金币
+                </span>
+              </div>
+            </div>
+          </repeat>
+        </div>
+        <form wx:if="{{!daily.status}}" class="SignIn-btnCtn" @submit.stop="handleClick" report-submit="true">
+          <button class="SignIn-btn" formType="submit">
+            领取奖励
+          </button>
+        </form>
+        <div
+          class="SignIn-signedMsg"
+          wx:else
+        >
+          今日已经签到
+        </div>
+      </view>
+    </view>
+  </alert>
+  <alert1
+    class="SignIn-getSucDialong"
+    :show.sync="showGetSuc"
+    :onClose="closeGetSuc"
+  >
+    <view class="SignIn-getSucContent" slot="content">
+      <image
+        class="SignIn-getSucImg"
+        src="../img/signIn-suc.png"
+      >
+        <view class="SignIn-getSucCoin">
+          +{{daily.current.coin}} 金币
+        </view>
+      </image>
+      <view class="SignIn-getSucMsg">
+        金币还可以兑换iPhoneX等奖品哦！
+      </view>
+      <form class="SignIn-moreBonusBtnCtn" @submit="goToQuests" report-submit="true">
+        <button class="SignIn-moreBonusBtn" formType="submit">
+          更多奖励
+        </button>
+      </form>
+      <view class="SignIn-getSucCloseBtnCtn">
+        <image
+        class="SignIn-getSucCloseBtn"
+        src="../img/close-3.png"
+      />
+      </view>
+    </view>
+  </alert1>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.SignIn {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  &-header {
+    position: relative;
+    width: 600rpx;
+    height: 144rpx;
+    font-size: 48rpx;
+    color: rgb(248, 243, 72);
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 24rpx;
+    span {
+      z-index: $z-first;
+      position: absolute;
+      margin-left: auto;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+    }
+  }
+
+  &-headerBG {
+    position: absolute;
+    width: 600rpx;
+    height: 144rpx;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &-closeBtn {
+    position: absolute;
+    width: 52rpx;
+    height: 52rpx;
+    right: 70rpx;
+    top: 35rpx;
+  }
+
+  &-ctn {
+    width: 552rpx;
+    height: 580rpx;
+    border-radius: 8rpx;
+    background-color: $primary;
+    margin: 0rpx 30rpx;
+    margin-top: -25rpx;
+    padding-bottom: 30rpx;
+    box-sizing: border-box;
+  }
+
+  &-listCtn {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center;
+    padding-top: 50rpx;
+  }
+
+  &-item {
+    box-sizing: border-box;
+    width: 120rpx;
+    border-radius: 8rpx;
+    border: 2rpx solid rgb(255, 194, 5);
+    font-size: 24rpx;
+    margin: 5rpx;
+    position: relative;
+  }
+
+  &-itemGot {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: $z-top;
+  }
+
+  &-itemTitle {
+    text-align: center;
+    width: 100%;
+    height: 36rpx;
+    background-color: rgb(255, 194, 5);
+    color: white;
+    display: block;
+  }
+
+  &-item.is-selected {
+    border: 4rpx solid $red;
+  }
+
+  &-itemContent {
+    width: 100%;
+    height: 132rpx;
+    color: rgb(128, 128, 128);
+    display: flex;
+    justify-content:center;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  &-itemFee {
+    position: absolute;
+    padding-bottom: 5rpx;
+    bottom: 0;
+  }
+
+  &-btn {
+    margin-top: 30rpx;
+    width: 480rpx;
+    font-size: 30rpx;
+    color: rgb(238, 238, 238);
+    background-color: rgb(243, 152, 0);
+  }
+
+  &-signedMsg {
+    font-size: 26rpx;
+    color: $text-secondary;
+    display:block;
+    text-align:center;
+    padding-top: 20rpx;
+  }
+
+  &-itemIcon1 {
+    width: 45rpx;
+    height: 45rpx;
+  }
+
+  &-itemIcon2 {
+    width: 57rpx;
+    height: 48rpx;
+  }
+
+  &-itemIcon3 {
+    width: 82rpx;
+    height: 58rpx;
+  }
+
+  &-getSucDialong {
+    z-index: $z-top + 1;
+  }
+
+  &-getSucContent {
+    font-size: 30rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &-getSucImg {
+    width: 407rpx;
+    height: 320rpx;
+    margin-bottom: 26rpx;
+    position: relative;
+  }
+
+  &-getSucMsg {
+    color: rgb(230, 230, 230);
+  }
+
+  &-getSucCoin {
+    color: $red;
+    position: absolute;
+    bottom: 18rpx;
+    width: 100%;
+    text-align: center;
+  }
+
+  &-getSucCloseBtnCtn {
+    background-color: rgb(128, 128, 128);
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: 70rpx;
+    margin-top: 82rpx;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+  }
+
+  &-getSucCloseBtn {
+    height: 52rpx;
+    width: 52rpx;
+  }
+
+  &-moreBonusBtn {
+    margin-top: 26rpx;
+    font-size: 30rpx;
+    color: rgb(242, 242, 242);
+    width: 240rpx;
+    background-color: $red;
+    border-radius: 4px;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import req from '@/network'
+import { connect } from 'wepy-redux'
+import {
+  getDailyRewardSuc,
+  getDailyRewardErr,
+  fetchUserInfoSuc,
+  fetchUserInfoErr,
+  closeSignIn
+} from '@/store/actions'
+import { fromwhere } from '@/config'
+
+@connect({
+  showSignIn (state) {
+    return state.quests.showSignIn && !state.user.showReward
+  },
+}, {
+  getDailyRewardSuc,
+  getDailyRewardErr,
+  fetchUserInfoSuc,
+  fetchUserInfoErr,
+  closeSignIn
+})
+
+export default class SignIn extends wepy.component {
+  components = {
+    alert: Alert,
+    alert1: Alert
+  }
+
+  props = {
+    show: {
+      type: Boolean,
+      default: false
+    },
+    daily: {
+      type: Object,
+      default: {}
+    }
+  }
+
+  data = {
+    showGetSuc: false
+  }
+
+  computed = {
+  }
+
+  methods = {
+    handleClick(e) {
+      const formId = e.detail.formId
+      this.postFormId(formId)
+      req.post('/api/Sign/clickSign', { date: this.daily.current.date }).then(res => {
+        this.methods.getDailyRewardSuc(res)
+        this.showGetSuc = true
+        this.methods.closeSignIn()
+        this.$apply()
+      }).then(res => {
+        req.get('/api/Version/userInfo').then(res => {
+          this.methods.fetchUserInfoSuc(res.data)
+        }).catch(err => {
+          this.methods.fetchUserInfoErr(err)
+        })
+      }).catch(err => {
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.getDailyRewardErr(err)
+      })
+    },
+    goToQuests(e) {
+      const formId = e.detail.formId
+      this.postFormId(formId)
+      wepy.navigateTo({
+        url: 'quests'
+      })
+    },
+  }
+
+  postFormId(formId) {
+    if (formId) {
+      req.post('/api/Templatemsg/collectFormid', {
+        formIds: formId,
+        fromwhere
+      })
+    }
+  }
+
+  onClose = () => {
+    this.methods.closeSignIn()
+  }
+
+  closeGetSuc = () => {
+    this.showGetSuc = false
+    this.$apply()
+  }
+
+  onLoad() {
+  }
+}
+</script>

@@ -1,0 +1,130 @@
+<template>
+  <alert :show.sync="showActivity" :onClose="onClose" >
+    <view class="ActivityDialog" slot="content">
+      <view class="ActivityDialog-ctn">
+        <image
+          class="ActivityDialog-close"
+          src="../img/close-2.png"
+        />
+        <image
+          class="ActivityDialog-img"
+          src="http://jingcaicdn.szxxapp.cc/lipinlogo/st_advertising.png"
+          mode="widthFix"
+        />
+        <button
+          wx:if="{{loginBtn}}"
+          class="ActivityDialog-btn"
+          @tap.stop="handleLogin"
+        >
+          立即收徒
+        </button>
+        <button
+          wx:else
+          class="ActivityDialog-btn"
+          open-type="share"
+        >
+          立即收徒
+        </button>
+      </view>
+    </view>
+  </alert>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.ActivityDialog {
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+
+  &-ctn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 100%;
+  }
+
+  &-close {
+    position: absolute;
+    width: 52rpx;
+    height: 52rpx;
+    right: 12%;
+    top: 5px;
+  }
+
+  &-img {
+    width: 80%;
+  }
+
+  &-btn {
+    margin-top: 16px;
+    width: 420rpx;
+    border-radius: 8px;
+    color: white;
+    background-color: $red;
+    font-size: 36rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { connect } from 'wepy-redux'
+import req from '@/network'
+import Session from '@/network/session'
+import {
+  updateShowLogin,
+  updateShowActivity
+} from '@/store/actions'
+
+@connect({
+  showActivity (state) {
+    return state.user.showActivity
+  }
+}, {
+  updateShowLogin,
+  updateShowActivity
+})
+
+export default class ActivityDialog extends wepy.component {
+  components = {
+    alert: Alert
+  }
+
+  props = {
+  }
+
+  data = {
+    loginBtn: true
+  }
+
+  computed = {
+  }
+
+  methods = {
+    handleLogin() {
+      this.methods.updateShowLogin(true)
+    }
+  }
+
+  setSessionStorage() {
+    wx.setStorageSync('haveShowActivity', true)
+  }
+
+  onClose = () => {
+    this.methods.updateShowActivity(false)
+    this.setSessionStorage()
+  }
+
+  onLoad() {
+    const session = Session.get()
+    if (session && session.sessionId) {
+      this.loginBtn = false
+    }
+  }
+}
+</script>

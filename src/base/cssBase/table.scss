@@ -1,0 +1,27 @@
+.table {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
+  .tr {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .th {
+    width: 40%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .td {
+    width: 40%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  }
+}
+

@@ -1,0 +1,257 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .OrderDetail {
+    &-ctn {
+      margin-top: 5px;
+      background-color: $primary;
+    }
+
+    &-goodsCtn {
+      padding: 10px 10px;
+    }
+
+    &-priceIcon {
+      width: 24rpx;
+      height: 24rpx;
+    }
+
+    &-name {
+      font-size: 30rpx;
+      color: $text-secondary;
+    }
+
+    &-exchangePrice {
+      color: rgb(243, 152, 0);
+      font-size: 24rpx;
+    }
+
+    &-marketPrice {
+      font-size: 20rpx;
+      color: rgb(153, 153, 153);
+    }
+
+    &-extraCtn {
+      background-color: $primary;
+      padding: 0 10px;
+      font-size: 24rpx;
+    }
+
+    &-title {
+      color: $text-secondary;
+      border-top: 4rpx solid $secondary;
+      padding: 10px 0;
+    }
+
+    &-desc {
+      color: rgb(153, 153, 153);
+      padding-bottom: 10px;
+    }
+
+    &-img {
+      width: 320rpx;
+      height: 320rpx;
+    }
+
+    &-addressForm {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      background-color: rgb(240, 230, 163);
+      height: 140rpx;
+    }
+
+    &-addAddress {
+      font-size: 36rpx;
+      color: rgb(218, 29, 30);
+    }
+
+    &-addressInfo {
+      font-size: 24rpx;
+      color: rgb(173, 61, 39);
+    }
+
+    &-addressRow1 {
+      color: rgb(218, 29, 30);
+    }
+
+    &-addressRow2 {
+
+    }
+
+    &-confirmBtn {
+      margin: 0 auto;
+      margin-top: 62rpx;
+      color: white;
+      font-size: 36rpx;
+      background-color: $orange;
+      width: 420rpx;
+      text-align: center;
+      border-radius: 4px;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="OrderDetail">
+    <userTab />
+    <!-- 实物 -->
+    <view class="OrderDetail-ctn OrderDetail-goodsCtn">
+      <view class="OrderDetail-name">
+        {{detail.goods_name}}
+      </view>
+      <view>
+        <span class="OrderDetail-exchangePrice">
+          <image
+            class="OrderDetail-priceIcon"
+            src="../img/00-jinbi-icon.png"
+          />
+          {{detail.exchange_price}}
+        </span>
+        <span class="OrderDetail-marketPrice">
+          参考价：{{detail.market_price}}元
+        </span>
+      </view>
+    </view>
+
+    <view class="OrderDetail-extraCtn">
+      <view wx:if="{{detail.desc}}" class="OrderDetail-descCtn">
+        <view class="OrderDetail-title">
+          奖品介绍
+        </view>
+        <view class="OrderDetail-desc">
+          {{detail.desc}}
+        </view>
+      </view>
+      <view>
+        <view class="OrderDetail-title">
+          兑换日期
+        </view>
+        <view class="OrderDetail-desc">
+          {{order.formatCreateTime}}
+        </view>
+      </view>
+      <view>
+        <view class="OrderDetail-title">
+          快递单号
+        </view>
+        <view class="OrderDetail-desc">
+          {{order.post_no}}
+        </view>
+      </view>
+    </view>
+
+    <view
+      class="OrderDetail-addressForm"
+    >
+      <view class="OrderDetail-addressInfo">
+        <view class="OrderDetail-addressRow1">
+          收货人：{{order.user_name}}
+          {{order.user_phone}}
+        </view>
+        <view class="OrderDetail-addressRow2">
+          收货地址：{{order.user_address1}}{{order.user_address2}}{{order.user_address3}} {{order.user_detail_address}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <button
+    wx:if="{{order.order_status === '2'}}"
+    class="OrderDetail-confirmBtn"
+    @tap="handleConfirm"
+  >
+    确认收货
+  </button>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import UserTab from '@/components/userTab'
+  import {
+    fetchGoodsDetailSuc,
+    fetchGoodsDetailErr,
+    initGoodsDetail,
+    fetchOrderDetailSuc,
+    fetchOrderDetailErr,
+    initOrderDetail
+  } from '@/store/actions'
+  import LoginDialog from '@/components/loginDialog'
+
+  @connect({
+    detail (state) {
+      return state.goodsDetail.detail
+    },
+    order (state) {
+      return state.orderDetail.detail
+    }
+  }, {
+    fetchGoodsDetailSuc,
+    fetchGoodsDetailErr,
+    initGoodsDetail,
+    fetchOrderDetailSuc,
+    fetchOrderDetailErr,
+    initOrderDetail
+  })
+
+  export default class OrderDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '订单详情'
+    }
+
+    components = {
+      userTab: UserTab,
+      loginDialog: LoginDialog
+    }
+
+    data = {
+      orderId: ''
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      handleConfirm() {
+        req.post('/Api/Orders/changeOrder', {orderId: this.orderId}).then(res => {
+          wepy.showToast({ title: res.msg, icon: 'none' })
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+        })
+      }
+    }
+
+    events = {
+    }
+
+    onLoad(options) {
+      if (options.id) {
+        req.get('/api/Goods/goDetail', { itemId: options.id }).then(res => {
+          this.methods.fetchGoodsDetailSuc(res.data)
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.fetchGoodsDetailErr(err)
+        })
+      }
+      if (options.orderId) {
+        this.orderId = options.orderId
+        req.get('/api/Orders/seekGifts', { orderId: options.orderId }).then(res => {
+          this.methods.fetchOrderDetailSuc(res.data)
+          this.$apply()
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.fetchOrderDetailErr(err)
+        })
+      }
+    }
+
+    onUnload() {
+      this.methods.initGoodsDetail()
+      this.methods.initOrderDetail()
+    }
+  }
+</script>

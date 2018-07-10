@@ -1,0 +1,106 @@
+<template>
+  <alert :show.sync="showWechatGroup" :onClose="onClose" >
+    <view class="WeChatGroupDialog" slot="content">
+      <view class="WeChatGroupDialog-title">
+        加群领福利
+      </view>
+      <view class="WeChatGroupDialog-msg">
+        在客服会话中回复“1”，获得官方进群二维码，进群领取福利！
+      </view>
+      <image
+        class="WeChatGroupDialog-img"
+        src="../img/wechat-group-img.png"
+      />
+      <button
+        class="WeChatGroupDialog-btn"
+        open-type="contact"
+        session-from="{kefu:['197']}"
+      >
+        好  的
+      </button>
+    </view>
+  </alert>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.WeChatGroupDialog {
+  background-color: $primary;
+  width: 480rpx;
+  min-height: 690rpx;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28rpx;
+  padding-top: 0;
+
+  &-title {
+    font-size: 30rpx;
+    color: $text-secondary;
+    height: 76rpx;
+    line-height: 76rpx;
+  }
+
+  &-msg {
+    font-size: 24rpx;
+    color: rgb(153, 153, 153);
+    text-align: center;
+  }
+
+  &-img {
+    margin-top: 20rpx;
+    margin-bottom: 60rpx;
+    width: 292rpx;
+    height: 380rpx;
+  }
+
+  &-btn {
+    background-color: $orange;
+    color: $text-primary;
+    font-size: 30rpx;
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { connect } from 'wepy-redux'
+import { updateShowWeChatGroup } from '@/store/actions'
+
+@connect({
+  showWechatGroup(state) {
+    return state.user.showWechatGroup
+  }
+}, {
+  updateShowWeChatGroup
+})
+
+export default class WeChatGroupDialog extends wepy.component {
+  components = {
+    alert: Alert
+  }
+
+  props = {
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+  }
+
+  onClose = () => {
+    this.methods.updateShowWeChatGroup(false)
+  }
+
+  onLoad() {
+  }
+}
+</script>

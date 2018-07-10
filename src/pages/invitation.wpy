@@ -1,0 +1,437 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .Invitation {
+    &-banner {
+      width: 100%;
+    }
+
+    &-infoCtn {
+      background-color: $primary;
+    }
+
+    &-info {
+      display: flex;
+      border-top: 2rpx solid $secondary;
+      margin: 0 30rpx;
+    }
+
+    &-item {
+      margin: 8px 0px;
+      flex: 1;
+      border-right: 2rpx solid $secondary;
+      color: $text-secondary;
+      font-size: 25rpx;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      span {
+        padding-bottom: 12rpx;
+        color: $red;
+      }
+
+      &:last-child {
+        border-right: 0;
+      }
+    }
+
+    &-shareBtn {
+      margin: 5px 0px;
+      padding: 0px;
+      line-height: 0;
+    }
+
+    &-subCtn {
+      padding: 0px 15px;
+      margin-top: 6px;
+      background-color: $primary;
+    }
+
+    &-subpage {
+      width: 100%;
+      border: 0;
+      padding: 0rpx;
+      border-top: 1px solid $secondary;
+      background-color: $primary;
+      color: rgb(51, 51, 51);
+      font-size: 30rpx;
+      height: 82rpx;
+      display: flex;
+      align-items: center;
+      text-align: left;
+      span {
+        padding: 0px 15px;
+        flex: 1;
+      }
+      &::after {
+        border: 0;
+      }
+    }
+
+    &-gotoIcon {
+      width: 16rpx;
+      height: 29rpx;
+    }
+
+    &-subpageIcon {
+      width: 32rpx;
+      height: 32rpx;
+    }
+
+    &-qrBtn {
+      width: 420rpx;
+      font-size: 30rpx;
+      color: rgb(50, 140, 17);
+      background-color: rgb(143, 195, 31);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 62rpx;
+    }
+
+    &-qrIcon {
+      width: 36rpx;
+      height: 36rpx;
+      margin-right: 10px;
+    }
+  }
+
+  .Invitation2 {
+    &-listTitle {
+      text-align: center;
+    }
+
+    &-match {
+      background-color: $primary;
+      border-radius: 8rpx;
+      padding: 0px 6px;
+      margin: 15rpx;
+    }
+    
+    &-title {
+      font-size: 26rpx;
+      color: $text-secondary;
+    }
+
+    &-info {
+      display: flex;
+      align-items: center;
+    }
+
+    &-host {
+      width: 26rpx;
+      height: 26rpx;
+      padding: 0 2rpx;
+    }
+
+    &-teams {
+      flex: 1;
+    }
+
+    &-team {
+      display: flex;
+      align-items: center;
+      margin: 6rpx 0;
+    }
+
+    &-teamName {
+      flex: 1;
+      font-size: 30rpx;
+      color: rgb(77, 77, 77);
+    }
+
+    &-logo {
+      width: 44rpx;
+      height: 44rpx;
+    }
+  }
+
+  .za-btn {
+    width: 80%;
+    margin-top:200rpx;
+    height: 200rpx;
+    font-size: 60rpx;
+    line-height: 200rpx;
+    background-color: #ff6801;
+    color: #fff;
+  }
+</style>
+<template>
+  <block wx:if="{{getFlagSuc && !shamFlag}}">
+    <activityDialog />
+    <loginDialog :success="afterLogin" />
+    <userTab />
+    <view class="Invitation-infoCtn">
+      <div class="Invitation-info">
+        <div class="Invitation-item">
+          <span>{{income.coin1}}</span>
+          累计收入
+        </div>
+        <div class="Invitation-item">
+          <span>{{income.coin2}}</span>
+          今日收徒收入
+        </div>
+        <div class="Invitation-item">
+          <span>{{income.coin3}}</span>
+          今日提成收入
+        </div>
+      </div>
+    </view>
+    <button
+      class="Invitation-shareBtn"
+      open-type="share"
+    >
+      <image
+        class="Invitation-banner"
+        src="http://jingcaicdn.szxxapp.cc/lipinlogo/st_banner.png"
+        mode="widthFix"
+      />
+    </button>
+    <view class="Invitation-subCtn">
+      <form @submit="goToMyInvite" report-submit="true">
+        <button class="Invitation-subpage" formType="submit">
+          <image class="Invitation-subpageIcon" src="../img/icon-invite.png" />
+          <span>我的徒弟</span>
+          <image class="Invitation-gotoIcon" src="../img/skip-forward.png" />
+        </button>
+      </form>
+      <form @submit="goToRules" report-submit="true">
+        <button class="Invitation-subpage" formType="submit">
+          <image class="Invitation-subpageIcon" src="../img/icon-rules.png" />
+          <span>收徒规则</span>
+          <image class="Invitation-gotoIcon" src="../img/skip-forward.png" />
+        </button>
+      </form>
+    </view>
+    <form @submit="goToMyInviteQR" report-submit="true">
+      <button class="Invitation-qrBtn" formType="submit">
+        <image class="Invitation-qrIcon" src="../img/icon-qr-green.png" />
+        <span>专属收徒二维码</span>
+      </button>
+    </form>
+  </block>
+  <block wx:if="{{getFlagSuc && shamFlag}}">
+    <button
+      class="za-btn"
+      open-type="share"
+    >
+      点击分享收徒
+    </button>
+    <!-- <view class="Invitation2">
+      <view class="Invitation2-listTitle">
+        近期比赛
+      </view>
+      <view class="Invitation2-list">
+        <repeat for="{{list}}" item="item">
+          <view class="Invitation2-match">
+            <view class="Invitation2-title">
+              <view>
+                {{item.l_cn_abbr}}
+              </view>
+              <view>
+                {{item.formatTime}}
+              </view>
+            </view>
+            <view class="Invitation2-info">
+              <view class="Invitation2-teams">
+                <view class="Invitation2-team">
+                  <image
+                    class="Invitation2-logo"
+                    src="{{item.h_logo}}"
+                    lazy-load="true"
+                  />
+                  <image
+                    class="Invitation2-host"
+                    src="../img/host-icon.png"
+                    lazy-load="true"
+                  />
+                  <view class="Invitation2-teamName">
+                    {{item.h_cn_abbr}}
+                  </view>
+                </view>
+                <view class="Invitation2-team">
+                  <image
+                    class="Invitation2-logo"
+                    src="{{item.a_logo}}"
+                    lazy-load="true"
+                  />
+                  <view class="Invitation2-host" />
+                  <view class="Invitation2-teamName">
+                    {{item.a_cn_abbr}}
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </repeat>
+      </view>
+    </view> -->
+  </block>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import Session from '@/network/session'
+  import {
+    fetchInviteIncomeSuc,
+    fetchInviteIncomeErr,
+    fetchUserInfoSuc,
+    fetchUserInfoErr
+  } from '@/store/actions'
+  import UserTab from '@/components/userTab'
+  import LoginDialog from '@/components/loginDialog'
+  import ActivityDialog from '@/components/activityDialog'
+  import { fromwhere } from '@/config'
+
+  @connect({
+    income (state) {
+      return state.invitations.income
+    },
+    userInfo (state) {
+      return state.user.info
+    },
+    share (state) {
+      return state.home.share
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    hypFlag (state) {
+      return state.home.flag.hyp
+    },
+    getFlagSuc (state) {
+      return state.home.getFlagSuc
+    },
+    list (state) {
+      return state.matches.home
+    }
+  }, {
+    fetchInviteIncomeSuc,
+    fetchInviteIncomeErr,
+    fetchUserInfoSuc,
+    fetchUserInfoErr
+  })
+
+  export default class Invitation extends wepy.page {
+    config = {
+      navigationBarTitleText: '师徒',
+      enablePullDownRefresh: true
+    }
+
+    components = {
+      userTab: UserTab,
+      loginDialog: LoginDialog,
+      activityDialog: ActivityDialog
+    }
+
+    data = {
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      goToRules(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'rules'
+        })
+      },
+      goToMyInvite(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'myInvite'
+        })
+      },
+      goToMyInviteQR(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'myInviteQR'
+        })
+      }
+    }
+
+    events = {
+    }
+
+    postFormId(formId) {
+      if (formId) {
+        req.post('/api/Templatemsg/collectFormid', {
+          formIds: formId,
+          fromwhere
+        })
+      }
+    }
+
+    afterLogin = () => {
+      // 设置 activityDialog loginBtn = false
+      this.$com.activityDialog.loginBtn = false
+      this.$com.activityDialog.$apply()
+      this.getData()
+    }
+
+    getData() {
+      req.get('/api/Enlightening/countCoin').then(res => {
+        this.methods.fetchInviteIncomeSuc(res.data)
+      }).catch(res => {
+        this.methods.fetchInviteIncomeErr(res)
+      })
+    }
+
+    onShow() {
+      const session = Session.get()
+      if (session && session.sessionId) {
+        this.getData()
+        req.get('/api/Version/userInfo').then(res => {
+          this.methods.fetchUserInfoSuc(res.data)
+        }).catch(res => {
+          this.methods.fetchUserInfoErr(res)
+        })
+      }
+    }
+
+    onLoad() {
+      wepy.hideTabBarRedDot && wepy.hideTabBarRedDot({index: 1})
+    }
+
+    onShareAppMessage(options) {
+      if (options.from === 'button') {
+        return {
+          title: this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_shitu,
+          path: `/pages/index?userId=${this.userInfo.id}`,
+          imageUrl: this.shamFlag || this.hypFlag ? '' : this.share.sh_shituimg,
+          success: function(res) {
+            // 转发成功
+          },
+          fail: function(res) {
+            // 转发失败
+          }
+        }
+      } else {
+        return {
+          title: this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_others,
+          path: `/pages/index`
+        }
+      }
+    }
+
+    onPullDownRefresh() {
+      const that = this
+      wepy.showNavigationBarLoading() // 在标题栏中显示加载
+
+      // 模拟加载
+      setTimeout(function () {
+        that.onShow()
+        wepy.hideNavigationBarLoading() // 完成停止加载
+        wepy.stopPullDownRefresh() // 停止下拉刷新
+        // complete
+      }, 1500)
+    }
+  }
+</script>

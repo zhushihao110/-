@@ -1,0 +1,399 @@
+<template>
+  <view hidden="{{!match}}" class="HomeMatch" @tap="closeSelector">
+		<div class="HomeMatch-info" @tap="goToDetail">
+  		<div class="HomeMatch-team">
+  			<image
+  				class="HomeMatch-logo"
+  				src="{{match.h_logo}}"
+  				lazy-load="true"
+  			/>
+  			{{match.h_cn_abbr}}
+  		</div>
+  		<div class="HomeMatch-league">
+  			<div>
+  				{{match.l_cn_abbr}}
+  			</div>
+  			<div>
+  				{{match.formatTime}}
+  			</div>
+  		</div>
+  		<div class="HomeMatch-team">
+  			<image
+  				class="HomeMatch-logo"
+  				src="{{match.a_logo || '../img/00-zuqiuicon1.png'}}"
+  				lazy-load="true"
+  			/>
+  			{{match.a_cn_abbr}}
+  		</div>
+		</div>
+		<view class="HomeMatch-bets">
+      <view
+        class="HomeMatch-betOption"
+        :class="{is-selected: selected === 0}"
+        @tap="handleSwitch({{0}})"
+      >
+        主胜
+        {{match.had[0]}}
+      </view>
+      <view
+        class="HomeMatch-betOption"
+        :class="{is-selected: selected === 2}"
+        @tap="handleSwitch({{2}})"
+      >
+        平
+        {{match.had[2]}}
+      </view>
+      <view
+        class="HomeMatch-betOption"
+        :class="{is-selected: selected === 1}"
+        @tap="handleSwitch({{1}})"
+      >
+        客胜
+        {{match.had[1]}}
+      </view>
+		</view>
+    <view class="HomeMatch-betBar">
+      <view wx:if="{{earnings !== ''}}" class="HomeMatch-earnings">
+        <view>预测奖金</view>
+        {{earnings}}{{moneyType === 1 ? '金币' : '蓝钻'}}
+      </view>
+      <view class="HomeMatch-menuCtn" @tap.stop="expandGoldRangeMenu">
+        {{goldRange[selectedGold]}}
+        <image class="HomeMatch-moreIcon" src="../img/00-gengduofuhao.png" />
+        <view
+          class="HomeMatch-menu"
+          hidden="{{hideGoldRange}}"
+          @tap.stop="handlePickerChange"
+        >
+          <repeat for="{{goldRange}}" item="item" index="index" key="index">
+            <view
+              class="HomeMatch-menuItem"
+              :class="{is-selected: selectedGold === index}"
+              data-index="{{index}}"
+            >
+              {{item}}
+            </view>
+          </repeat>
+        </view>
+      </view>
+      <view wx:if="{{userInfo.type == 2}}" class="HomeMatch-menuCtn" @tap.stop="expandMoneyTypeMenu">
+        {{moneyType === 1 ? '金币' : '蓝钻'}}
+        <image class="HomeMatch-moreIcon" src="../img/00-gengduofuhao.png" />
+        <view
+          class="HomeMatch-menu"
+          hidden="{{hideMoneyType}}"
+        >
+          <view
+            class="HomeMatch-menuItem"
+            :class="{'is-selected': moneyType === 1}"
+            @tap.stop="handleSwitchType(1)"
+          >
+            金币
+          </view>
+          <view
+            class="HomeMatch-menuItem"
+            :class="{'is-selected': moneyType === 2}"
+            @tap.stop="handleSwitchType(2)"
+          >
+            蓝钻
+          </view>
+        </view>
+      </view>
+      <view wx:else class="HomeMatch-coinType">
+        金币
+      </view>
+      <form class="HomeMatch-betBtnCtn" @submit="handleBet" report-submit="true">
+        <button
+          class="HomeMatch-betBtn"
+          formType="submit"
+          disabled="{{selected === -1}}"
+        >
+          <block wx:if="{{selected === -1}}">
+            请选择预测结果
+          </block>
+          <block wx:else>
+            确定
+          </block>
+        </button>
+      </form>
+    </view>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.HomeMatch {
+  background-color: $primary;
+  border-top: 4rpx solid $secondary;
+  padding: 10rpx 0rpx;
+  &-info {
+  	display: flex;
+    padding: 0rpx 80rpx;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &-logo {
+  	width: 75rpx;
+  	height: 75rpx;
+    border-radius: 8rpx;
+  }
+
+  &-league {
+  	text-align: center;
+    font-size: 26rpx;
+    flex: 1;
+    max-width: 383rpx;
+    color: rgb(102, 102, 102);
+  	div {
+  		display: block;
+  	}
+  }
+
+  &-team {
+  	font-size: 22rpx;
+    color: rgb(77, 77, 77);
+  	display: flex;
+  	flex-direction: column;
+  	align-items: center;
+  }
+
+  &-bets {
+  	display: flex;
+    padding-top: 12rpx;
+    padding-bottom: 21rpx;
+  }
+
+  &-betOption {
+    background-color: $primary;
+    color: $red;
+    border: 4rpx solid $secondary;
+    font-size: 26rpx;
+    flex: 1;
+    height: 64rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:first-child {
+      border-radius: 8rpx 0rpx 0rpx 8rpx;
+    }
+    &:last-child {
+      border-radius: 0rpx 8rpx 8rpx 0rpx;
+    }
+  }
+
+  &-betOption.is-selected {
+  	background-color: $red;
+    color: $text-primary;
+    border: 4rpx solid $red;
+  }
+
+  &-betBar {
+    display: flex;
+    align-items: center;
+    padding-bottom: 5rpx;
+  }
+
+  &-earnings {
+    color: rgb(230, 0, 18);
+    font-size: 23rpx;
+    margin-right: 6px;
+    view {
+      display: block;
+    }
+  }
+
+  &-coinType {
+    color: rgb(77, 77, 77);
+    font-size: 26rpx;
+    height: 64rpx;
+    line-height: 64rpx;
+    margin-right: 6px;
+  }
+
+  &-menuCtn {
+    position: relative;
+    color: rgb(77, 77, 77);
+    font-size: 26rpx;
+    border: 4rpx solid $secondary;
+    border-radius:8rpx;
+    box-sizing: border-box;
+    height: 64rpx;
+    width: 160rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+  }
+
+  &-menu{
+    position: absolute;
+    z-index: 3;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $primary;
+    color: rgb(77, 77, 77);
+  }
+
+  &-menuItem {
+    height: 64rpx;
+    line-height: 64rpx;
+    width: 160rpx;
+    display: block;
+    border: 4rpx solid $secondary;
+    border-bottom: 0;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0 20rpx;
+  }
+
+  &-menuItem.is-selected {
+    background-color: $red;
+    color: $text-primary;
+  }
+
+  &-moreIcon {
+    width: 12rpx;
+    height: 21rpx;
+    transform: rotate(-90deg);
+    margin-left: 15px;
+  }
+
+  &-betBtn {
+    background-color: $red;
+    font-size: 30rpx;
+    color: $text-primary;
+    height: 64rpx;
+    line-height: 64rpx;
+    border-radius: 8rpx;
+  }
+
+  &-betBtnCtn {
+    flex: 1;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import {
+  updateBetSelected
+} from '@/store/actions'
+import { USER_TYPE, MONEY_TYPE } from '@/utils/const'
+
+@connect({
+  userInfo (state) {
+    return state.user.info
+  }
+}, {
+  updateBetSelected
+})
+
+export default class HomeMatch extends wepy.component {
+  props = {
+    match: {
+      type: Object,
+      default: {}
+    }
+  }
+
+  components = {
+  }
+
+  mixins = []
+
+  data = {
+    selected: -1,
+    gold: 100,
+    goldRange: [100, 200, 500],
+    selectedGold: 0,
+    hideGoldRange: true,
+    hideMoneyType: true,
+    moneyType: MONEY_TYPE.COIN
+  }
+
+  computed = {
+    earnings() {
+      if (this.selected !== -1 && this.match && this.match.had) {
+        return Math.floor(this.gold * this.match.had[this.selected])
+      } else {
+        return ''
+      }
+    }
+  }
+
+  watch = {
+    userInfo(newValue) {
+      if (newValue && newValue.id && newValue.type === USER_TYPE.BLUE_DIAMOND && this.moneyType !== MONEY_TYPE.BLUE_DIAMOND) {
+        this.moneyType = MONEY_TYPE.BLUE_DIAMOND
+        this.goldRange = [10, 50, 100]
+        this.gold = 10
+      }
+    }
+  }
+
+  methods = {
+    goToDetail() {
+      wepy.navigateTo({
+        url: `matchDetail?id=${this.match.id}`
+      })
+    },
+    handleSwitch(index) {
+      this.selected = index
+    },
+    handlePickerChange(e) {
+      this.selectedGold = e.target.dataset.index
+      this.gold = this.goldRange[this.selectedGold]
+      this.hideGoldRange = true
+    },
+    handleBet() {
+      this.methods.updateBetSelected({
+        selected: [{
+          matchId: this.match.id,
+          type: 'had',
+          option: this.selected,
+          odd: this.match.had[this.selected],
+          match: this.match
+        }],
+        betCoins: this.gold,
+        betType: 'normal',
+        betMoneyType: this.moneyType,
+        showBetConfirm: true
+      })
+    },
+    handleSwitchType(moneyType) {
+      this.moneyType = Number.parseInt(moneyType, 10)
+      if (this.moneyType === MONEY_TYPE.BLUE_DIAMOND) {
+        this.goldRange = [10, 50, 100]
+        this.gold = 10
+      } else if (this.moneyType === MONEY_TYPE.COIN) {
+        this.goldRange = [100, 200, 500]
+        this.gold = 100
+      }
+      this.selectedGold = 0
+      this.hideMoneyType = true
+    },
+    expandGoldRangeMenu() {
+      this.hideGoldRange = false
+    },
+    expandMoneyTypeMenu() {
+      this.hideMoneyType = false
+    },
+    closeSelector() {
+      this.hideGoldRange = true
+      this.hideMoneyType = true
+    }
+  }
+
+  onLoad() {
+    if (this.userInfo.id && this.userInfo.type === USER_TYPE.BLUE_DIAMOND) {
+      this.moneyType = MONEY_TYPE.BLUE_DIAMOND
+      this.goldRange = [10, 50, 100]
+      this.gold = 10
+    }
+  }
+}
+</script>

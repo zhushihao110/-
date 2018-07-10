@@ -1,0 +1,21 @@
+export const WX_HEADER_CODE = 'X-WX-Code'
+export const WX_HEADER_ENCRYPTED_DATA = 'X-WX-Encrypted-Data'
+export const WX_HEADER_IV = 'X-WX-IV'
+export const WX_HEADER_ID = 'X-WX-Id'
+export const WX_SESSION_MAGIC_ID = 'KvQDl_f26c-akoEaTJ31pxiAe_PiAxqW'
+
+export const ERR_INVALID_PARAMS = 'ERR_INVALID_PARAMS'
+export const ERR_WX_LOGIN_FAILED = 'ERR_WX_LOGIN_FAILED'
+export const ERR_WX_GET_USER_INFO = 'ERR_WX_GET_USER_INFO'
+export const ERR_WX_AUTH = 'ERR_WX_AUTH'
+export const ERR_LOGIN_TIMEOUT = 'ERR_LOGIN_TIMEOUT'
+export const ERR_LOGIN_FAILED = 'ERR_LOGIN_FAILED'
+export const ERR_LOGIN_SESSION_NOT_RECEIVED = 'ERR_LOGIN_MISSING_SESSION'
+
+export const ERR_INVALID_SESSION = 'ERR_INVALID_SESSION'
+export const ERR_CHECK_LOGIN_FAILED = 'ERR_CHECK_LOGIN_FAILED'
+
+export const ERR_NOT_LOGIN = 10001
+export const ERR_LOGIN_EXPIRED = 10002
+
+export const QR_CREATE_FAIL = 'QR_CREATE_FAIL'

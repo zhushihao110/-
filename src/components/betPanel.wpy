@@ -1,0 +1,607 @@
+<template>
+  <view class="BetPanel" @tap="closeSelector">
+    <view wx:if="{{expand}}" class="BetPanel-expandCtn">
+      <view class="BetPanel-expandTitle">
+        竞猜列表
+        <view class="BetPanel-clear" @tap="handleClearAll">
+          <image
+            class="BetPanel-clearAllIcon"
+            src="../img/clear-all.png"
+          />
+          清空竞猜
+        </view>
+      </view>
+      <view class="BetPanel-selecedList">
+        <repeat for="{{selected}}" index="index" item="item" index="index">
+          <view class="BetPanel-selectedItem">
+            <span wx:if="{{item.type === 'had' }}" class="BetPanel-selectedType">
+              [胜平负]
+            </span>
+            <span wx:elif="{{item.type === 'hhad' }}" class="BetPanel-selectedType">
+              [让球]
+            </span>
+            <span class="BetPanel-selectedTeamName">
+              {{item.match && item.match.h_cn_abbr}}
+            </span>
+            <span wx:if="{{item.type === 'hhad'}}" class="BetPanel-fixedOdds">
+              {{item.match && item.match.fixedodds > 0 ? '+' + item.match.fixedodds : item.match && item.match.fixedodds }}
+            </span>
+            VS
+            <span class="BetPanel-selectedTeamName">
+              {{item.match && item.match.a_cn_abbr}}
+            </span>
+            <span wx:if="{{ item.option === 0 }}" class="BetPanel-selectedOption">
+              主胜（{{item.odd}}）
+            </span>
+            <span wx:elif="{{ item.option === 2 }}" class="BetPanel-selectedOption">
+              平（{{item.odd}}）
+            </span>
+            <span wx:elif="{{ item.option === 1 }}" class="BetPanel-selectedOption">
+              客胜（{{item.odd}}）
+            </span>
+            <span class="BetPanel-selectedRemove"  @tap="handleClear({{item.matchId}})">
+              X
+            </span>
+          </view>
+        </repeat>
+      </view>
+      <view class="BetPanel-selectedBottom">
+        <image
+          class="BetPanel-starIcon"
+          src="../img/favourite.png"
+        />
+        总回报率（最大）={{selectdOdds}}
+      </view>
+    </view>
+    <view class="BetPanel-ctn">
+      <view class="BetPanel-row1">
+        <view class="BetPanel-row1Left">
+          <view wx:if="{{!single}}" class="BetPanel-expander" @tap="handleExpand">
+            <image
+              class="BetPanel-expandArrow"
+              :class="{is-expand: expand}"
+              src="../img/red-arrow.png"
+            />
+            {{selected.length > 1 ? selected.length + '串1' : '1场'}}
+          </view>
+          猜对可以赢<span>{{earnings}}{{moneyType === 1 ? '金币' : '蓝钻'}}</span>
+        </view>
+        <block wx:if="{{moneyType === 1}}">
+          <coin />
+        </block>
+        <block wx:else>
+          <blueDiamond />
+        </block>
+      </view>
+      
+      <view class="BetPanel-row2">
+        <view class="BetPanel-baseCtn">
+          <repeat for="{{baseArr[moneyType]}}">
+            <view
+              class="BetPanel-base"
+              :class="{ is-selected: baseIndex == index }"
+              @tap="handleSwitchBase({{item}}, {{index}})"
+            >
+              {{item}}
+            </view>
+          </repeat>
+        </view>
+        <view wx:if="{{userInfo.type == 2}}" class="BetPanel-menuCtn" @tap.stop="expandMoneyTypeMenu">
+          {{moneyType === 1 ? '金币' : '蓝钻'}}
+          <image class="BetPanel-moreIcon" src="../img/00-gengduofuhao.png" />
+          <view
+            class="BetPanel-menu"
+            hidden="{{hideMoneyType}}"
+          >
+            <view
+              class="BetPanel-menuItem"
+              :class="{'is-selected': moneyType === 1}"
+              @tap.stop="handleSwitchType(1)"
+            >
+              金币
+            </view>
+            <view
+              class="BetPanel-menuItem"
+              :class="{'is-selected': moneyType === 2}"
+              @tap.stop="handleSwitchType(2)"
+            >
+              蓝钻
+            </view>
+          </view>
+        </view>
+        <view wx:else class="BetPanel-coinType">
+          金币
+        </view>
+        <view class="BetPanel-timesCtn">
+          投
+          <view
+            class="BetPanel-baseBtn"
+            @tap="sub"
+          >
+            -
+          </view>
+          <input
+            class="BetPanel-input"
+            type="number"
+            value="{{times}}"
+            @input="handleInputTimes"
+          />
+          <view
+            class="BetPanel-baseBtn"
+            @tap="add"
+          >
+            +
+          </view>
+          倍
+        </view>
+      </view>
+      <view class="BetPanel-row3">
+        <view
+          class="BetPanel-allIn"
+          @tap="allin"
+        >
+          All in
+        </view>
+        <form class="BetPanel-betBtnCtn" @submit="bet" report-submit="true">
+          <button 
+            class="BetPanel-betBtn"
+            formType="submit"
+          >
+            确认使用{{base * times}}{{moneyType === 1 ? '金币' : '蓝钻'}}
+          </button>
+        </form>
+      </view>
+    </view>
+  </view>
+  <charge />
+  <betConfirmDialog
+    :shareId.sync="shareId"
+    :betId.sync="betId"
+  />
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.BetPanel {
+  background-color: #eeeeee;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+
+  &-expandCtn {
+    padding: 0 14px;
+    padding-top: 9px;
+    font-size: 22rpx;
+    color: $text-secondary;
+    border-bottom: 1px solid $red;
+  }
+
+  &-expandTitle {
+    position: relative;
+  }
+
+  &-clear {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  &-selectedItem {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 11px 0;
+    position: relative;
+  }
+
+  &-selectedRemove {
+    position: absolute;
+    right: 0;
+    top: 11px;
+  }
+
+  &-selectedType {
+    color: $red;
+  }
+
+  &-selectedTeamName {
+    font-size: 26rpx;
+    color: rgb(77, 77, 77);
+  }
+
+  &-fixedOdds {
+    color: $green;
+    font-size: 26rpx
+  }
+
+  &-selectdOdds {
+    color: rgb(128, 128, 128);
+  }
+
+  &-selectedBottom {
+    color: rgb(153, 153, 153);
+    padding: 5px 0;
+  }
+
+  &-ctn {
+    min-height: 272rpx;
+    padding: 24rpx 20rpx;
+    box-sizing: border-box;
+  }
+
+  &-row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  &-row1Left {
+    display: flex;
+    align-items: center;
+    font-size: 26rpx;
+    min-width: max-content;
+    color: rgb(131, 135, 148);
+    span {
+      color: $red;
+    }
+  }
+
+  &-expandArrow {
+    position: absolute;
+    top: -18rpx;
+    left: 27rpx;
+    width: 28rpx;
+    height: 12rpx;
+    transform: rotate(180deg);
+  }
+
+  &-expandArrow.is-expand {
+    transform: rotate(0);
+  }
+
+  &-expander {
+    background-color: $red;
+    color: $text-primary;
+    border-radius: 8rpx;
+    padding: 4px 0;
+    width: 82rpx;
+    text-align: center;
+    margin-right: 5px;
+    position: relative;
+  }
+
+  &-row2 {
+    display: flex;
+    justify-content:space-between;
+    padding: 18rpx 0rpx;
+  }
+
+  &-baseCtn {
+    display: flex;
+  }
+
+  &-base {
+    margin-right: 7px;
+    border: 2px solid #dbdce0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: rgb(131, 135, 148);
+    font-size: 26rpx;
+    height: 64rpx;
+    width: 84rpx;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+  }
+
+  &-base.is-selected {
+    background-color: rgb(218, 29, 30);
+    border: 2px solid rgb(218, 29, 30);
+    color: rgb(255, 255, 255);
+  }
+
+  &-input {
+    font-size: 26rpx;
+    text-align: center;
+    width: 64rpx;
+    height: 64rpx;
+    border: 2px solid rgb(218, 29, 30);
+    box-sizing: border-box;
+  }
+
+  &-baseBtn {
+    background-color: rgb(218, 29, 30);
+    box-sizing: border-box;
+    font-size: 40rpx;
+    text-align: center;
+    color: white;
+    height: 64rpx;
+    line-height: 64rpx;
+    width: 64rpx;
+    &:first-child {
+      margin-left: 6px;
+      border-radius: 4px 0px 0px 4px;
+    }
+    &:last-child {
+      margin-right: 6px;
+      border-radius: 0px 4px 4px 0px;
+    }
+  }
+
+  &-coinType {
+    color: rgb(77, 77, 77);
+    font-size: 26rpx;
+    height: 64rpx;
+    line-height: 64rpx;
+  }
+
+  &-menuCtn {
+    position: relative;
+    color: rgb(77, 77, 77);
+    font-size: 26rpx;
+    border: 4rpx solid $secondary;
+    border-radius:8rpx;
+    box-sizing: border-box;
+    height: 64rpx;
+    width: 120rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-menu{
+    position: absolute;
+    z-index: 3;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $primary;
+    color: rgb(77, 77, 77);
+  }
+
+  &-menuItem {
+    height: 64rpx;
+    line-height: 64rpx;
+    width: 120rpx;
+    display: block;
+    border: 4rpx solid $secondary;
+    border-bottom: 0;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0 20rpx;
+  }
+
+  &-menuItem.is-selected {
+    background-color: $red;
+    color: $text-primary;
+  }
+
+  &-moreIcon {
+    width: 12rpx;
+    height: 21rpx;
+    transform: rotate(-90deg);
+    margin-left: 5px;
+  }
+
+  &-timesCtn {
+    font-size: 30rpx;
+    color: rgb(77, 77, 77);
+    display: flex;
+    align-items: center;
+    flex:1;
+    justify-content:flex-end;
+  }
+
+  &-allIn {
+    background-color: rgb(243, 152, 0);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: $text-primary;
+    font-size: 30rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 78rpx;
+    width: 96rpx;
+  }
+
+  &-row3 {
+    display: flex;
+  }
+
+  &-betBtnCtn {
+    flex: 1;
+  }
+
+  &-betBtn {
+    background-color: rgb(218, 29, 30);
+    color: rgb(242, 242, 242);
+    font-size: 30rpx;
+    height: 78rpx;
+    margin-left: 12rpx;
+  }
+
+  &-starIcon {
+    height: 17rpx;
+    width: 17rpx;
+    mergin-right: 2px;
+  }
+
+  &-clearAllIcon {
+    width: 22rpx;
+    height: 25rpx;
+    margin-right: 3px;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import {
+  resetMatchesData,
+  updateMatchesData,
+  updateBetSelected
+} from '@/store/actions'
+import Coin from '@/components/coin'
+import BlueDiamond from '@/components/blueDiamond'
+import BetConfirmDialog from '@/components/betConfirmDialog'
+import { USER_TYPE, MONEY_TYPE } from '@/utils/const'
+
+@connect({
+  userInfo (state) {
+    return state.user.info
+  }
+}, {
+  resetMatchesData,
+  updateMatchesData,
+  updateBetSelected
+})
+
+export default class BetPanel extends wepy.component {
+  props = {
+    selected: {
+      type: Array,
+      default: []
+    },
+    betId: {
+      type: String,
+      default: null
+    },
+    shareId: {
+      type: String,
+      default: null
+    },
+    single: {
+      type: Boolean,
+      default: false
+    }
+  }
+
+  components = {
+    coin: Coin,
+    betConfirmDialog: BetConfirmDialog,
+    blueDiamond: BlueDiamond
+  }
+
+  mixins = []
+
+  data = {
+    base: 100,
+    baseIndex: 0,
+    baseArr: {
+      1: [100, 1000, 10000],
+      2: [10, 100, 1000]
+    },
+    times: 1,
+    expand: false,
+    hideMoneyType: true,
+    moneyType: MONEY_TYPE.COIN
+  }
+
+  computed = {
+    earnings() {
+      const odds = this.selected.reduce((acc, item) => {
+        return acc * item.odd
+      }, 1)
+      return Math.floor(this.base * this.times * odds)
+    },
+    selectdOdds() {
+      const tmp = []
+      this.selected.forEach(item => {
+        tmp.push(item.odd)
+      })
+      return tmp.join(' x ')
+    }
+  }
+
+  methods = {
+    handleExpand() {
+      this.expand = !this.expand
+    },
+    handleClearAll() {
+      this.clearAll()
+    },
+    handleClear(id) {
+      this.methods.updateMatchesData({
+        id: id,
+        data: {
+          FESelected: false
+        }
+      })
+
+      const selectedIndex = this.selected.findIndex(v => {
+        return v.matchId === id
+      })
+      const newSelected = [...this.$parent.selected]
+      newSelected.splice(selectedIndex, 1)
+      this.$parent.selected = newSelected
+      this.$parent.$apply()
+    },
+    handleSwitchBase(base, index) {
+      this.base = Number.parseInt(base, 10)
+      this.baseIndex = index
+    },
+    handleInputTimes(e) {
+      const newValue = Number.parseInt(e.detail.value, 10)
+      this.times = (isNaN(newValue) || !newValue) ? 1 : newValue
+    },
+    handleSwitchType(moneyType) {
+      this.moneyType = Number.parseInt(moneyType, 10)
+      this.baseIndex = 0
+      this.base = Number.parseInt(this.baseArr[moneyType][this.baseIndex], 10)
+      this.hideMoneyType = true
+    },
+    expandMoneyTypeMenu() {
+      this.hideMoneyType = false
+    },
+    closeSelector() {
+      this.hideMoneyType = true
+    },
+    sub() {
+      if (this.times > 1) {
+        this.times = this.times - 1
+      } else {
+        this.times = 1
+      }
+    },
+    add() {
+      this.times = this.times + 1
+    },
+    allin() {
+      const base = this.baseArr[this.moneyType][0]
+      if (this.moneyType === MONEY_TYPE.COIN && this.userInfo.coin > base) {
+        this.base = base
+        this.times = Math.floor(this.userInfo.coin / base)
+      } else if (this.moneyType === MONEY_TYPE.BLUE_DIAMOND && this.userInfo.bluediamonds > base) {
+        this.base = base
+        this.times = Math.floor(this.userInfo.bluediamonds / base)
+      }
+    },
+    bet() {
+      this.methods.updateBetSelected({
+        selected: this.selected,
+        betCoins: this.base * this.times,
+        betType: 'normal',
+        betMoneyType: this.moneyType,
+        showBetConfirm: true
+      })
+    }
+  }
+
+  clearAll() {
+    this.methods.resetMatchesData()
+    this.$parent.selected = []
+    this.$parent.$apply()
+  }
+
+  onLoad() {
+    if (this.userInfo.id && this.userInfo.type === USER_TYPE.BLUE_DIAMOND) {
+      this.moneyType = MONEY_TYPE.BLUE_DIAMOND
+    }
+    this.base = this.baseArr[this.moneyType][0]
+  }
+}
+</script>

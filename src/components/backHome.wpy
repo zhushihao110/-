@@ -1,0 +1,51 @@
+<template>
+  <image
+    wx:if="{{showBack}}"
+    class="BackHome"
+    src="../img/back-home.png"
+    @tap="handleTap"
+  />
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.BackHome {
+  width: 100rpx;
+  height: 100rpx;
+  position: fixed;
+  top: 50rpx;
+  right: 50rpx;
+  z-index: $z-top;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+
+export default class BackHome extends wepy.component {
+  props = {
+  }
+
+  data = {
+    showBack: false
+  }
+
+  computed = {
+  }
+
+  methods = {
+    handleTap() {
+      wepy.switchTab({
+        url: '/pages/index'
+      })
+    }
+  }
+
+  onLoad() {
+    const pages = getCurrentPages() // eslint-disable-line
+    if (pages.length <= 1) {
+      this.showBack = true
+    }
+  }
+}
+</script>

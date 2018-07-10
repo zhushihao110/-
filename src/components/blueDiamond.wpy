@@ -1,0 +1,135 @@
+<template>
+  <view
+    class="BlueDiamond"
+    :class="{is-hide: !show}"
+    @tap="handleRefresh"
+  >
+    <image class="BlueDiamond-goldIcon" src="../img/icon-bluediamond.png" />
+    <view class="BlueDiamond-num">
+      {{userInfo.bluediamonds}}
+    </view>
+    <view class="BlueDiamond-refreshCtn">
+      <image
+        class="BlueDiamond-refreshIcon"
+        :class="{is-loading: loading}"
+        src="../img/refresh-icon.png"
+      />
+    </view>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.BlueDiamond {
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  background-color: rgb(204, 204, 204);
+  height: 50rpx;
+  min-width: 210rpx;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  padding-left: 12rpx;
+
+  &-num {
+    display: inline-block;
+    padding: 0px 6px;
+    flex: 1;
+    color: rgb(242, 242, 242);
+  }
+
+  &-goldIcon {
+    height: 42rpx;
+    width: 42rpx;
+  }
+
+  &-refreshCtn {
+    width: 78rpx;
+    height: 50rpx;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(#fdb735, #fc9c2b);
+  }
+
+  @keyframes rotate_360 {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  &-refreshIcon {
+    width: 40rpx;
+    height: 40rpx;
+  }
+
+  &-refreshIcon.is-loading {
+    animation: rotate_360 1s infinite;
+  }
+}
+
+.BlueDiamond.is-hide {
+  display: none;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import req from '@/network'
+import { USER_TYPE } from '@/utils/const'
+import { throttle } from '@/utils/helper'
+import {
+  fetchCityMatchInfoSuc,
+  fetchCityMatchInfoErr
+} from '@/store/actions'
+
+@connect({
+  show(state) {
+    return state.user.info.id && state.user.info.type === USER_TYPE.BLUE_DIAMOND
+  },
+  userInfo(state) {
+    return state.user.info
+  }
+}, {
+  fetchCityMatchInfoSuc,
+  fetchCityMatchInfoErr
+})
+
+export default class BlueDiamond extends wepy.component {
+  props = {
+  }
+
+  components = {
+  }
+
+  data = {
+    loading: false
+  }
+
+  computed = {
+  }
+
+  methods = {
+    handleRefresh: throttle(function() {
+      if (this.userInfo.type = USER_TYPE.BLUE_DIAMOND) {
+        this.loading = true
+        req.get('/api/login/searchPlayer').then(res => {
+          this.methods.fetchCityMatchInfoSuc(res.data)
+        }).catch(err => {
+          this.methods.fetchCityMatchInfoErr(err)
+        }).then(() => {
+          const self = this
+          setTimeout(() => {
+            self.loading = false
+            self.$apply()
+          }, 500)
+        })
+      }
+    }, 500)
+  }
+
+  onLoad() {
+  }
+}
+</script>

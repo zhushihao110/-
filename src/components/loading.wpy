@@ -1,0 +1,79 @@
+<template>
+  <view class="Loading">
+    <view class="Loading-ctn">
+      <image
+        class="Loading-bg"
+        src="../img/loading-bg.png"
+      />
+      <image
+        class="Loading-icon"
+        src="../img/loading-icon.png"
+      />
+    </view>
+    <view class="Loading-msg">
+      加载中...
+    </view>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.Loading {
+  width: 100%;
+  padding: 15px 0;
+
+  &-ctn, &-bg, &-icon {
+    width: 143rpx;
+    height: 144rpx;
+  }
+
+  &-ctn {
+    margin: 0 auto;
+    position: relative;
+  }
+
+  &-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  @keyframes rotate_360 {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  &-icon {
+    animation: rotate_360 3s infinite;
+  }
+
+  &-msg {
+    color: rgb(224, 164, 79);
+    font-size: 30rpx;
+    margin-top: 36rpx;
+    width: 100%;
+    text-align: center;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+
+export default class Loading extends wepy.component {
+  props = {
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+  }
+
+  onLoad() {
+  }
+}
+</script>

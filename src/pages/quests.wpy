@@ -1,0 +1,442 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+ .Quests {
+  &-goldIcon {
+    height: 40rpx;
+    width: 40rpx;
+  }
+
+  &-dailyList {
+    display: flex;
+    padding: 22px 25px;
+  }
+
+  &-daily {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 26rpx;
+  }
+
+  &-date {
+    padding-bottom: 24rpx;
+    color: $text-secondary;
+  }
+
+  &-bonus {
+    padding-top: 28rpx;
+    color: $red;
+  }
+
+  &-daily.is-disabled {
+    .Quests-date {
+      color: rgb(153, 153, 153);
+    }
+    .Quests-bonus {
+      color: rgb(153, 153, 153);
+    }
+  }
+
+  &-dailyBtn {
+    background-color: $red;
+    color: $text-primary;
+  }
+
+  &-msg {
+    text-align: center;
+    padding-bottom: 20px;
+  }
+
+  &-signedMsg {
+    font-size: 26rpx;
+    color: $text-secondary;
+  }
+
+  &-list {
+    background-color: $primary;
+    padding: 0 15px;
+  }
+
+  &-item {
+    background-color: $primary;
+    font-size: 30rpx;
+    color: rgb(51, 51, 51);
+    height: 102rpx;
+    padding: 0rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 0;
+    border-bottom: 1px solid $secondary;
+    &::after {
+      border: 0;
+    }
+  }
+
+  &-btn {
+    background-color: $red;
+    color: white;
+    font-size: 24rpx;
+    border-radius: 4px;
+    margin: 0;
+    min-width: 120rpx;
+    height: 62rpx;
+    display: flex;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-getBtn {
+    background-color: $orange;
+  }
+
+  &-title {
+    display: flex;
+    align-items: center;
+  }
+
+  &-coin {
+    color: $red;
+    font-size: 24rpx;
+    padding-left: 10px;
+  }
+
+  &-goldIconSmall {
+    width: 30rpx;
+    height: 30rpx;
+    vertical-align: middle;
+  }
+
+  &-compeleted {
+    font-size: 24rpx;
+    color: $red;
+    width: 120rpx;
+    text-align: center;
+  }
+ }
+</style>
+<template>
+  <loginDialog />
+  <view class="Quests">
+    <userTab />
+    <block wx:if="{{loadingSign}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadSignFail}}">
+      <noData1 :msg.sync="loadSignFail" />
+    </block>
+    <block wx:else>
+      <view class="Quests-dailyList">
+        <repeat for="{{daily.list}}" key="item.index" item="item" index="index">
+          <div
+            class="Quests-daily"
+            :class="{ 'is-disabled': item.date > daily.current.date }"
+          >
+            <div class="Quests-date">
+              第{{item.date}}天
+            </div>
+            <image
+              class="Quests-goldIcon"
+              src="{{item.date > daily.current.date ? '../img/grey-coin.png' : '../img/00-jinbi-icon.png' }}"
+            />
+            <div class="Quests-bonus">
+              +{{item.coin}}
+            </div>
+          </div>
+        </repeat>
+      </view>
+      <view class="Quests-msg">
+        <button
+          wx:if="{{!daily.status}}"
+          class="Quests-dailyBtn"
+          @tap="handleClick"
+          size="mini"
+        >
+          签到
+        </button>
+        <div
+          class="Quests-signedMsg"
+          wx:if="{{daily.status}}"
+        >
+          今日已经签到，明日签到+
+          {{ daily.current.date >= 7 ? daily.list[6].coin : daily.list[daily.current.date].coin }}
+        </div>
+      </view>
+    </block>
+
+    <block wx:if="{{loadingList}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadListFail}}">
+      <noData2 :msg.sync="loadListFail" />
+    </block>
+    <block wx:else>
+      <view class="Quests-list">
+        <repeat for="{{list}}">
+          <block wx:if="{{item.status == 1 && item.id === 4}}">
+            <!-- 收徒 -->
+            <button
+              class="Quests-item"
+              open-type="share"
+            >
+              <view class="Quests-title">
+                {{item.title}}
+                <view class="Quests-coin">
+                  +{{item.coin}}金币
+                </view>
+              </view>
+              <view class="Quests-btn">
+                去完成
+              </view>
+            </button>
+          </block>
+
+          <block wx:elif="{{item.status == 1 && item.id !== 4}}">
+            <!-- 其他 -->
+            <button
+              class="Quests-item"
+              @tap="handleClickTask({{item.id}})"
+            >
+              <view class="Quests-title">
+                {{item.title}}
+                <view class="Quests-coin">
+                  +{{item.coin}}金币
+                </view>
+              </view>
+              <view class="Quests-btn">
+                去完成
+              </view>
+            </button>
+          </block>
+
+          <block wx:elif="{{item.status == 2}}">
+            <button
+              class="Quests-item"
+              @tap="handleGetReward({{item.id}})"
+            >
+              <view class="Quests-title">
+                {{item.title}}
+                <view class="Quests-coin">
+                  +{{item.coin}}金币
+                </view>
+              </view>
+              <view class="Quests-btn Quests-getBtn">
+                领取
+              </view>
+            </button>
+          </block>
+          <block wx:elif="{{item.status == 0}}">
+            <button class="Quests-item">
+              <view class="Quests-title">
+                {{item.title}}
+                <view class="Quests-coin">
+                  +{{item.coin}}金币
+                </view>
+              </view>
+              <view class="Quests-compeleted">
+                已完成
+              </view>
+            </button>
+          </block>
+        </repeat>
+      </view>
+    </block>
+  </view>
+  <officialGuideDialog />
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import UserTab from '@/components/userTab'
+  import { MSG } from '@/utils/const'
+  import {
+    fetchDailyQuestsSuc,
+    fetchDailyQuestsErr,
+    getDailyRewardSuc,
+    getDailyRewardErr,
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    fetchQuestsSuc,
+    fetchQuestsErr,
+    getRewardSuc,
+    getRewardErr,
+    clearRedPoint,
+    updateShowCharge,
+    updateShowOfficialGuide
+  } from '@/store/actions'
+  import LoginDialog from '@/components/loginDialog'
+  import OfficialGuideDialog from '@/components/officialGuideDialog'
+
+  @connect({
+    daily (state) {
+      return state.quests.daily
+    },
+    userInfo (state) {
+      return state.user.info
+    },
+    list (state) {
+      return state.quests.list
+    },
+    share (state) {
+      return state.home.share
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    hypFlag (state) {
+      return state.home.flag.hyp
+    }
+  }, {
+    fetchDailyQuestsSuc,
+    fetchDailyQuestsErr,
+    getDailyRewardSuc,
+    getDailyRewardErr,
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    fetchQuestsSuc,
+    fetchQuestsErr,
+    getRewardSuc,
+    getRewardErr,
+    clearRedPoint,
+    updateShowCharge,
+    updateShowOfficialGuide
+  })
+
+  export default class Quests extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的任务'
+    }
+
+    components = {
+      userTab: UserTab,
+      loginDialog: LoginDialog,
+      officialGuideDialog: OfficialGuideDialog,
+      loading: Loading,
+      noData1: NoData,
+      noData2: NoData
+    }
+
+    data = {
+      loadingSign: true,
+      loadSignFail: '',
+      loadingList: true,
+      loadListFail: ''
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      handleClick(index) {
+        req.post('/api/Sign/clickSign', { date: this.daily.current.date }).then(res => {
+          this.methods.getDailyRewardSuc(res)
+        }).then(res => {
+          return req.get('/api/Version/userInfo').then(res => {
+            this.methods.fetchUserInfoSuc(res.data)
+            return res.data
+          }).catch(res => {
+            this.methods.fetchUserInfoErr(res)
+          })
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.getDailyRewardErr(err)
+        })
+      },
+      handleClickTask(id) {
+        switch (id) {
+          case 1:
+            this.methods.updateShowCharge(true)
+            break
+          case 2:
+            wepy.navigateTo({ url: '/pages/matches' })
+            break
+          case 3:
+            this.methods.updateShowOfficialGuide(true)
+            break
+          case 4:
+            break
+          case 5:
+            wepy.navigateTo({ url: '/pages/betHistory?filter=3' })
+            break
+          default:
+            console.log(id)
+        }
+      },
+      handleGetReward(id) {
+        req.post('/api/Minetask/award', { taskid: id }).then(res => {
+          this.methods.getRewardSuc({
+            id,
+            coin: res.data.coin
+          })
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.getRewardErr(err)
+        })
+      }
+    }
+
+    events = {
+    }
+
+    onShow() {
+      req.get('/api/Version/userInfo').then(res => {
+        this.methods.fetchUserInfoSuc(res.data)
+      }).catch(res => {
+        this.methods.fetchUserInfoErr(res)
+      })
+
+      this.loadingSign = true
+      req.get('/api/Sign/signIn').then(res => {
+        this.methods.fetchDailyQuestsSuc(res)
+        this.loadSignFail = ''
+      }).catch(res => {
+        this.methods.fetchDailyQuestsErr(res)
+        this.loadSignFail = MSG.LOAD_FAIL
+      }).then(() => {
+        this.loadingSign = false
+        this.$apply()
+      })
+
+      this.loadingList = true
+      req.get('/api/Minetask/taskList').then(res => {
+        this.methods.fetchQuestsSuc(res.data)
+        this.loadListFail = ''
+      }).catch(res => {
+        this.methods.fetchQuestsErr(res)
+        this.loadListFail = MSG.LOAD_FAIL
+      }).then(() => {
+        this.loadingList = false
+        this.$apply()
+      })
+    }
+
+    onLoad() {
+      req.get('/Api/Givecoin/clickRed', {type: 2}).then(res => {
+        this.methods.clearRedPoint(2)
+      })
+    }
+
+    onShareAppMessage(options) {
+      if (options.from === 'button') {
+        return {
+          title: this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_shitu,
+          path: `/pages/index?userId=${this.userInfo.id}`,
+          imageUrl: this.shamFlag || this.hypFlag ? '' : this.share.sh_shituimg
+        }
+      } else {
+        return {
+          title: this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_others,
+          path: `/pages/index`
+        }
+      }
+    }
+  }
+</script>

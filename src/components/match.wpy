@@ -1,0 +1,325 @@
+<template>
+  <view class="Match" @tap="goToDetail">
+    <div class="Match-title">
+      <div>
+        {{match.l_cn_abbr}}
+      </div>
+      <div>
+        {{match.formatTime}}
+      </div>
+    </div>
+    <view class="Match-info">
+      <view class="Match-teams">
+        <div class="Match-team">
+          <image
+            class="Match-logo"
+            src="{{match.h_logo}}"
+            lazy-load="true"
+          />
+          <image
+            class="Match-host"
+            src="../img/host-icon.png"
+            lazy-load="true"
+          />
+          <div class="Match-teamName">
+            {{match.h_cn_abbr}}
+            <span wx:if="{{type === 'hhad'}}" class="Match-fixedOdds">
+              {{match.fixedodds > 0 ? '+' + match.fixedodds : match.fixedodds }}
+            </span>
+          </div>
+        </div>
+        <div class="Match-team">
+          <image
+            class="Match-logo"
+            src="{{match.a_logo}}"
+            lazy-load="true"
+          />
+          <view class="Match-host" />
+          <div class="Match-teamName">
+            {{match.a_cn_abbr}}
+          </div>
+        </div>
+      </view>
+
+      <image
+        class="Match-arrow"
+        src="../img/00-gengduofuhao.png"
+      />
+
+      <!-- 胜平负 -->
+      <view
+        wx:if="{{type === 'had'}}"
+        class="Match-bets"
+        :class="{is-selected: match.FESelected && match.FESelected.type === 'had'}"
+      >
+        <view
+          class="Match-betOption"
+          :class="{is-selected: match.FESelected && match.FESelected.option === 0}"
+          @tap.stop="handleSwitch({{0}})"
+        >
+          主胜
+          <span>{{match.had[0]}}</span>
+        </view>
+        <view
+          class="Match-betOption"
+          :class="{is-selected: match.FESelected && match.FESelected.option === 2}"
+          @tap.stop="handleSwitch({{2}})"
+        >
+          平
+          <span>{{match.had[2]}}</span>
+        </view>
+        <view
+          class="Match-betOption"
+          :class="{is-selected: match.FESelected && match.FESelected.option === 1}"
+          @tap.stop="handleSwitch({{1}})"
+        >
+          客胜
+          <span>{{match.had[1]}}</span>
+        </view>
+      </view>
+
+      <!-- 让球 -->
+      <view
+        wx:elif="{{type === 'hhad'}}"
+        class="Match-bets"
+        :class="{is-selected: match.FESelected && match.FESelected.type === 'hhad'}"
+      >
+        <view
+          class="Match-betOption"
+          :class="{is-selected: match.FESelected && match.FESelected.option === 0}"
+          @tap.stop="handleSwitch({{0}})"
+        >
+          主胜
+          <span>{{match.hhad[0]}}</span>
+        </view>
+        <view
+          class="Match-betOption"
+          :class="{is-selected: match.FESelected && match.FESelected.option === 2}"
+          @tap.stop="handleSwitch({{2}})"
+        >
+          平
+          <span>{{match.hhad[2]}}</span>
+        </view>
+        <view
+          class="Match-betOption"
+          :class="{is-selected: match.FESelected && match.FESelected.option === 1}"
+          @tap.stop="handleSwitch({{1}})"
+        >
+          客胜
+          <span>{{match.hhad[1]}}</span>
+        </view>
+      </view>
+    </view>
+    <div class="Match-betNum">
+      <image class="Match-betIcon" src="../img/00-jingcai01.png"/>
+      {{match.join_num}}人预测
+    </div>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.Match {
+  background-color: $primary;
+  border-radius: 8rpx;
+  padding: 0px 6px;
+  margin: 15rpx;
+
+  &-title {
+    font-size: 26rpx;
+    color: $text-secondary;
+  }
+
+  &-info {
+    display: flex;
+    align-items: center;
+  }
+
+  &-host {
+    width: 26rpx;
+    height: 26rpx;
+    padding: 0 2rpx;
+  }
+
+  &-teams {
+    flex: 1;
+  }
+
+  &-arrow {
+    width: 12rpx;
+    height: 21rpx;
+    padding-right: 5px;
+  }
+
+  &-team {
+    display: flex;
+    align-items: center;
+    margin: 6rpx 0;
+  }
+
+  &-teamName {
+    flex: 1;
+    font-size: 30rpx;
+    color: rgb(77, 77, 77);
+  }
+
+  &-logo {
+    width: 44rpx;
+    height: 44rpx;
+  }
+
+  &-bets {
+    width: 396rpx;
+    display: flex;
+    align-items: center;
+  }
+
+  &-betOption {
+    background-color: $primary;
+    border: 4rpx solid $secondary;
+    box-sizing: border-box;
+    font-size: 30rpx;
+    color: rbg(76, 76, 76);
+    flex: 1;
+    height: 106rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    span {
+      font-size: 24rpx;
+      color: $red;
+    }
+
+    &:first-child {
+      border-radius: 8rpx 0rpx 0rpx 8rpx;
+    }
+    &:last-child {
+      border-radius: 0rpx 8rpx 8rpx 0rpx;
+    }
+  }
+
+  &-bets.is-selected {
+    .Match-betOption.is-selected {
+      background-color: $red;
+      color: white;
+      span {
+        color: white;
+      }
+    }
+  }
+
+  &-fixedOdds {
+    color: $green;
+  }
+
+  &-betNum {
+    font-size: 26rpx;
+    color: rgb(153, 153, 153);
+  }
+
+  &-betIcon {
+    width: 28rpx;
+    height: 25rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import {
+  updateMatchesData
+} from '@/store/actions'
+
+@connect({
+}, {
+  updateMatchesData
+})
+
+export default class Match extends wepy.component {
+  props = {
+    match: {
+      type: Object,
+      default: {}
+    },
+    selected: {
+      type: Object,
+      default: [],
+      twoWay: true
+    },
+    type: {
+      type: String,
+      default: 'had'
+    }
+  }
+
+  methods = {
+    goToDetail() {
+      wepy.navigateTo({
+        url: `matchDetail?id=${this.match.id}`
+      })
+    },
+    handleSwitch(index) {
+      const FESelected = this.match.FESelected
+      let oddValue = 0
+      switch (this.type) {
+        case 'had':
+          oddValue = this.match.had[index]
+          break
+        case 'hhad':
+          oddValue = this.match.hhad[index]
+          break
+        default:
+      }
+
+      const bet = {
+        matchId: this.match.id,
+        type: this.type,
+        option: index,
+        odd: oddValue,
+        match: this.match
+      }
+
+      const newSelected = this.$parent.selected ? [...this.$parent.selected] : [...this.selected]
+      if (!FESelected) {
+        // push
+        newSelected.push(bet)
+        this.methods.updateMatchesData({
+          id: this.match.id,
+          data: { FESelected: {
+            option: bet.option,
+            type: bet.type
+          }}
+        })
+      } else {
+        const selectedIndex = this.selected.findIndex(v => {
+          return v.matchId === this.match.id
+        })
+
+        if (FESelected.type === bet.type && FESelected.option === bet.option) {
+          // remove
+          newSelected.splice(selectedIndex, 1)
+          this.methods.updateMatchesData({
+            id: this.match.id,
+            data: { FESelected: false }
+          })
+        } else {
+          // update
+          newSelected[selectedIndex] = bet
+          this.methods.updateMatchesData({
+            id: this.match.id,
+            data: { FESelected: {
+              option: bet.option,
+              type: bet.type
+            }}
+          })
+        }
+      }
+
+      this.$parent.selected = newSelected
+      this.$parent.$apply()
+    }
+  }
+}
+</script>

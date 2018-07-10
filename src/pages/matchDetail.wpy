@@ -1,0 +1,1154 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  page {
+    height: 100%;
+  }
+
+  .MatchDetail.is-chatTab {
+    height: 100%;
+  }
+
+  .MatchDetail {
+    display: flex;
+    flex-direction: column;
+
+    &-title {
+      flex: none;
+      padding: 0 10px;
+      height: 82rpx;
+      line-height: 82rpx;
+      font-size: 22rpx;
+      color: rgb(77, 77, 77);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &-miniLogo {
+      margin: 5px;
+      width: 48rpx;
+      height: 48rpx;
+      border-radius: 8rpx;
+    }
+
+    &-titleLeft, &-titleRight {
+      display: flex;
+      align-items: center;
+    }
+
+    &-info {
+      position: relative;
+      height: 384rpx;
+      flex: none;
+      box-sizing: border-box;
+      padding-top: 13px;
+      color: rgb(255, 255, 255);
+    }
+
+    &-bg {
+      width: 100%;
+      height: 384rpx;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    &-league {
+      font-size: 28rpx;
+      text-align: center;
+    }
+
+    &-vsCtn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 60rpx;
+    }
+
+    &-teams {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding-top: 60rpx;
+    }
+
+    &-team {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-teamName {
+      font-size: 22rpx;
+      text-align: center;
+    }
+
+    &-logo {
+      width: 100rpx;
+      height: 100rpx;
+      border-radius: 8rpx;
+      margin-bottom: 4px;
+    }
+
+    &-vs {
+      width: 49rpx;
+      height: 21rpx;
+    }
+
+    &-date {
+      font-size: 18rpx;
+    }
+
+    &-time {
+      font-size: 30rpx;
+      padding: 8px;
+    }
+
+    &-tabs {
+      display: flex;
+      font-size: 26rpx;
+      color: $text-secondary;
+      background-color: $primary;
+      margin-bottom: 3px;
+      margin-top: 3px;
+      height: 80rpx;
+      flex: none;
+    }
+
+    &-tab {
+      flex: 1;
+      margin: 0 60rpx;
+      height: 80rpx;
+      line-height: 80rpx;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    &-tab.is-selected {
+      border-bottom: 2rpx solid $red;
+      color: $red;
+    }
+
+    &-childCtn {
+    }
+
+    &-chatInputCtn {
+      position: fixed;
+      background-color: $primary;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      font-size: 24rpx;
+      height: 70rpx;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+
+    &-chatInput {
+      flex: 1;
+      margin-right: 10px;
+      border-bottom: 1px solid $green;
+    }
+
+    &-sendBtn {
+      background-color: $green;
+      color: white;
+      border-radius: 4px;
+    }
+
+    &-playTabs {
+      display: flex;
+      box-sizing: border-box;
+      padding: 9px;
+      background-color: $primary;
+    }
+
+    &-playTab {
+      flex: 1;
+      font-size: 26rpx;
+      color: $red;
+      border: 2rpx solid $red;
+      text-align: center;
+      padding: 5rpx 0;
+
+      &:first-child {
+        border-radius: 8rpx 0 0 8rpx;
+      }
+
+      &:last-child {
+        border-radius: 0 8rpx 8rpx 0;
+      }
+    }
+
+    &-playTab.is-selected {
+      background-color: $red;
+      color: $text-primary;
+    }
+
+    &-playCardTitle {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      font-size: 36rpx;
+      color: rgb(77, 77, 77);
+      span {
+        font-size: 26rpx;
+        color: rgb(102, 102, 102);
+      }
+    }
+
+    &-playCard {
+      padding: 13px;
+      padding-top: 8px;
+      margin: 5px;
+      border-radius: 8rpx;
+    }
+
+    &-playCardContent {
+      padding-top: 10px;
+    }
+
+    &-bets {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      border-radius: 8rpx;
+      overflow: hidden;
+    }
+
+    &-betOption {
+      background-color: $primary;
+      border: 4rpx solid $secondary;
+      box-sizing: border-box;
+      font-size: 30rpx;
+      color: rbg(76, 76, 76);
+      flex: 1;
+      height: 106rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      span {
+        font-size: 24rpx;
+        color: $red;
+      }
+    }
+
+    &-bets.is-selected {
+      .MatchDetail-betOption.is-selected {
+        background-color: $red;
+        color: white;
+        span {
+          color: white;
+        }
+      }
+    }
+
+    &-crsBetCtn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      border-radius: 8rpx;
+      overflow: hidden;
+      margin: 4px 0;
+      padding-left: 43rpx;
+      position: relative;
+    }
+
+    &-crsBetTitle {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      font-size: 30rpx;
+      width: 43rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    &-crsBetOptions {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    &-crsBetOption {
+      font-size: 24rpx;
+      color: (76, 76, 76);
+      flex: 0 1 14.28%;
+      span {
+        font-size: 20rpx;
+        color: rgb(128, 128, 128);
+      }
+    }
+
+    &-crsBetOptionL {
+      flex: 1;
+    }
+
+    &-ttgOption {
+      flex: 1 1 25%;
+      font-size: 30rpx;
+      color: (76, 76, 76);
+      span {
+        font-size: 26rpx;
+        color: rgb(128, 128, 128);
+      }
+    }
+
+    &-chatCtn {
+      height: 100%;
+      overflow-y: auto;
+      flex: 1 1 auto;
+    }
+
+    &-chatListCtn {
+      height: 100%;
+      padding-bottom: 70rpx;
+      box-sizing: border-box;
+    }
+
+    &-chatList {
+      height: 100%;
+      box-sizing: border-box;
+      padding: 0 20px;
+    }
+
+    &-chatItem {
+      margin: 10px 0px;
+    }
+
+    &-chatTime {
+      font-size: 18rpx;
+      color: rgb(238, 238, 238);
+      background-color: rgba(0, 0, 0, 0.3);
+      width: max-content;
+      margin: 0 auto;
+      margin-bottom: 5px;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    &-avatar {
+      height: 72rpx;
+      width: 72rpx;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 8rpx;
+    }
+
+    &-chatMsgCtn {
+      position: relative;
+      padding: 0 92rpx;
+      color: $text-secondary;
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    &-chatMsgCtn.is-self {
+      align-items: flex-end;
+
+      .MatchDetail-avatar {
+        right: 0;
+        top: 0;
+        left: auto;
+      }
+
+      .MatchDetail-chatMsg {
+        background-color: $green;
+        color: rgb(230, 230, 230);
+      }
+    }
+
+    &-chatUsername {
+      font-size: 22rpx;
+    }
+
+    &-chatMsg {
+      font-size: 24rpx;
+      background-color: $primary;
+      padding: 5px 10px;
+      border-radius: 8rpx;
+      width: max-content;
+      max-width: 90%;
+      box-sizing: border-box;
+    }
+
+    &-gameOver {
+      font-size: 36rpx;
+      padding: 30px;
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    &-tabTitle {
+      position: relative;
+      width:max-content;
+      margin:0 auto;
+    }
+
+    &-redPoint {
+      height: 8px;
+      width: 8px;
+      background-color: $red;
+      border-radius: 4px;
+      position: absolute;
+      right: -20rpx;
+      top: 20rpx;
+    }
+  }
+
+  .MatchDetail.is-expand {
+    padding-bottom: 272rpx;
+  }
+</style>
+<template>
+  <loginDialog />
+  <view
+    class="MatchDetail"
+    :class="{ is-expand: selected.length, is-chatTab: tab === 'chat' }"
+  >
+    <view class="MatchDetail-title">
+      <view class="MatchDetail-titleLeft">
+        <image
+          class="MatchDetail-miniLogo"
+          src="{{detail.h_logo}}"
+          lazy-load="true"
+        />
+        {{detail.h_cn_abbr}}
+      </view>
+      <view class="MatchDetail-titleRight">
+        {{detail.a_cn_abbr}}
+        <image
+          class="MatchDetail-miniLogo"
+          src="{{detail.a_logo}}"
+          lazy-load="true"
+        />
+      </view>
+    </view>
+    <view class="MatchDetail-info">
+      <image
+        class="MatchDetail-bg"
+        src="../img/match-bg.png"
+      />
+      <view class="MatchDetail-league">
+        {{detail.l_cn}}
+      </view>
+      <view class="MatchDetail-teams">
+        <div class="MatchDetail-team">
+          <image
+            class="MatchDetail-logo"
+            src="{{detail.h_logo}}"
+            lazy-load="true"
+          />
+          <div class="MatchDetail-teamName">
+            {{detail.h_cn_abbr}}
+          </div>
+        </div>
+        <div class="MatchDetail-vsCtn">
+          <image
+            class="MatchDetail-vs"
+            src="../img/vs.png"
+          />
+          <div class="MatchDetail-time">
+            <block wx:if="{{detail.isgameover}}">
+              {{detail.score}}
+            </block>
+            <block wx:else>
+              {{detail.formatTime}}
+            </block>
+          </div>
+          <div class="MatchDetail-date">
+            {{detail.formatDate}}
+          </div>
+        </div>
+        <div class="MatchDetail-team">
+          <image
+            class="MatchDetail-logo"
+            src="{{detail.a_logo}}"
+            lazy-load="true"
+          />
+          <div class="MatchDetail-teamName">
+            {{detail.a_cn_abbr}}
+          </div>
+        </div>
+      </view>
+    </view>
+    <view class="MatchDetail-tabs">
+      <view
+        class="MatchDetail-tab"
+        :class="{is-selected: tab === 'guess'}"
+        @tap="handleSwitchTab('guess')"
+      >
+        预测
+      </view>
+      <view
+        class="MatchDetail-tab"
+        :class="{is-selected: tab === 'chat'}"
+        @tap="handleSwitchTab('chat')"
+      >
+        <view class="MatchDetail-tabTitle">
+          聊天
+          <view
+            hidden="{{!showRedPoint}}"
+            class="MatchDetail-redPoint"
+          />
+        </view>
+      </view>
+    </view>
+
+    <block wx:if="{{loadingMatch}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadMatchFail}}">
+      <noData :msg.sync="loadMatchFail" />
+    </block>
+    <block wx:else>
+      <view
+        wx:if="{{tab === 'guess'}}"
+        class="MatchDetail-childCtn"
+      >
+        <div wx:if="{{!detail.isgameover}}" class="MatchDetail-playTabs" @tap="handleSwitchPlay">
+          <div
+            class="MatchDetail-playTab"
+            :class="{is-selected: playTab === '0'}"
+            data-tab="0"
+          >
+            全部
+          </div>
+          <div
+            class="MatchDetail-playTab"
+            :class="{is-selected: playTab === '1'}"
+            data-tab="1"
+          >
+            胜负
+          </div>
+          <div
+            class="MatchDetail-playTab"
+            :class="{is-selected: playTab === '2'}"
+            data-tab="2"
+          >
+            进球
+          </div>
+          <div
+            class="MatchDetail-playTab"
+            :class="{is-selected: playTab === '3'}"
+            data-tab="3"
+          >
+            比分
+          </div>
+        </div>
+        <div wx:if="{{!detail.isgameover}}" class="MatchDetail-playList">
+          <playExpander1 class="MatchDetail-playCard" hidden="{{ playTab !== '0' && playTab !== '1' }}">
+            <view class="MatchDetail-playCardTitle" slot="title">
+              全场胜平负
+              <span>
+                猜90分钟内（包括伤停补时）比赛结果
+              </span>
+            </view>
+            <view class="MatchDetail-playCardContent" slot="content">
+              <view
+                class="MatchDetail-bets"
+                :class="{is-selected: selected[0] && selected[0].type === 'had' }"
+              >
+                <view
+                  class="MatchDetail-betOption"
+                  :class="{is-selected: selected[0] && selected[0].option == 0}"
+                  @tap.stop="handleChooseBet"
+                  data-option="0"
+                  data-type="had"
+                  data-odd="{{detail.had && detail.had[0]}}"
+                >
+                  {{detail.h_cn_abbr}}
+                  <span>
+                    胜 {{detail.had && detail.had[0]}}
+                  </span>
+                </view>
+                <view
+                  class="MatchDetail-betOption"
+                  :class="{is-selected: selected[0] && selected[0].option == 2}"
+                  @tap.stop="handleChooseBet"
+                  data-option="2"
+                  data-type="had"
+                  data-odd="{{detail.had && detail.had[2]}}"
+                >
+                  平
+                  <span>
+                    {{detail.had && detail.had[2]}}
+                  </span>
+                </view>
+                <view
+                  class="MatchDetail-betOption"
+                  :class="{is-selected: selected[0] && selected[0].option == 1}"
+                  @tap.stop="handleChooseBet"
+                  data-option="1"
+                  data-type="had"
+                  data-odd="{{detail.had && detail.had[1]}}"
+                >
+                  {{detail.a_cn_abbr}}
+                  <span>
+                    胜 {{detail.had && detail.had[1]}}
+                  </span>
+                </view>
+              </view>
+            </view>
+          </playExpander1>
+          <playExpander2 class="MatchDetail-playCard" hidden="{{ playTab !== '0' && playTab !== '1' }}">
+            <view class="MatchDetail-playCardTitle" slot="title">
+              让球胜平负
+              <span>
+                猜90分钟内（包括伤停补时）让球胜平负的结果
+              </span>
+            </view>
+            <view class="MatchDetail-playCardContent" slot="content">
+              <view
+                class="MatchDetail-bets"
+                :class="{is-selected: selected[0] && selected[0].type === 'hhad' }"
+              >
+                <view
+                  class="MatchDetail-betOption"
+                  :class="{is-selected: selected[0] && selected[0].option == 0}"
+                  @tap.stop="handleChooseBet"
+                  data-option="0"
+                  data-type="hhad"
+                  data-odd="{{detail.hhad && detail.hhad[0]}}"
+                >
+                  {{detail.h_cn_abbr}}
+                  {{(detail.fixedodds > 0 ? '+' : '') + detail.fixedodds}}
+                  <span>
+                    胜 {{detail.hhad && detail.hhad[0]}}
+                  </span>
+                </view>
+                <view
+                  class="MatchDetail-betOption"
+                  :class="{is-selected: selected[0] && selected[0].option == 2}"
+                  @tap.stop="handleChooseBet"
+                  data-option="2"
+                  data-type="hhad"
+                  data-odd="{{detail.hhad && detail.hhad[2]}}"
+                >
+                  平
+                  <span>
+                    {{detail.hhad && detail.hhad[2]}}
+                  </span>
+                </view>
+                <view
+                  class="MatchDetail-betOption"
+                  :class="{is-selected: selected[0] && selected[0].option == 1}"
+                  @tap.stop="handleChooseBet"
+                  data-option="1"
+                  data-type="hhad"
+                  data-odd="{{detail.hhad && detail.hhad[1]}}"
+                >
+                  {{detail.a_cn_abbr}}
+                  <span>
+                    胜 {{detail.hhad && detail.hhad[1]}}
+                  </span>
+                </view>
+              </view>
+            </view>
+          </playExpander2>
+          <playExpander3 class="MatchDetail-playCard" hidden="{{ playTab !== '0' && playTab !== '2' }}">
+            <view class="MatchDetail-playCardTitle" slot="title">
+              总进球
+              <span>
+                猜90分钟内（包括伤停补时）两队的总进球个数
+              </span>
+            </view>
+            <view class="MatchDetail-playCardContent" slot="content">
+              <view
+                class="MatchDetail-bets"
+                :class="{is-selected: selected[0] && selected[0].type === 'ttg' }"
+              >
+                <repeat for="{{detail.ttg}}">
+                  <view
+                    class="MatchDetail-betOption MatchDetail-ttgOption"
+                    :class="{is-selected: selected[0] && selected[0].option === item.option}"
+                    @tap.stop="handleChooseBet"
+                    data-option="{{item.option}}"
+                    data-type="ttg"
+                    data-odd="{{item.odd}}"
+                  >
+                    {{betOption['ttg'][item.option]}}
+                    <span>
+                      {{item.odd}}
+                    </span>
+                  </view>
+                </repeat>
+              </view>
+            </view>
+          </playExpander3>
+          <playExpander4 class="MatchDetail-playCard" hidden="{{ playTab !== '0' && playTab !== '3' }}">
+            <view class="MatchDetail-playCardTitle" slot="title">
+              全场比分
+              <span>
+                猜90分钟内（包括伤停补时）的比分结果
+              </span>
+            </view>
+            <view class="MatchDetail-playCardContent" slot="content">
+              <view
+                class="MatchDetail-bets"
+                :class="{is-selected: selected[0] && selected[0].type === 'crs' }"
+              >
+                <view class="MatchDetail-crsBetCtn">
+                  <view
+                    class="MatchDetail-crsBetTitle"
+                    style="background-color: #ed5a5c"
+                  >
+                    胜
+                  </view>
+                  <view class="MatchDetail-crsBetOptions">
+                    <repeat for="{{detail.crsH}}">
+                      <view
+                        class="MatchDetail-betOption MatchDetail-crsBetOption"
+                        :class="{MatchDetail-crsBetOptionL: index + 1 === detail.crsH.length, is-selected: selected[0] && selected[0].option === item.option}"
+                        @tap.stop="handleChooseBet"
+                        data-option="{{item.option}}"
+                        data-type="crs"
+                        data-odd="{{item.odd}}"
+                      >
+                        {{betOption['crs'][item.option]}}
+                        <span>
+                          {{item.odd}}
+                        </span>
+                      </view>
+                    </repeat>
+                  </view>
+                </view>
+
+                <view class="MatchDetail-crsBetCtn">
+                  <view
+                    class="MatchDetail-crsBetTitle"
+                    style="background-color: #80c269"
+                  >
+                    平
+                  </view>
+                  <view class="MatchDetail-crsBetOptions">
+                    <repeat for="{{detail.crsD}}">
+                      <view
+                        class="MatchDetail-betOption MatchDetail-crsBetOption MatchDetail-crsBetOptionL"
+                        :class="{is-selected: selected[0] && selected[0].option === item.option}"
+                        @tap.stop="handleChooseBet"
+                        data-option="{{item.option}}"
+                        data-type="crs"
+                        data-odd="{{item.odd}}"
+                      >
+                        {{betOption['crs'][item.option]}}
+                        <span>
+                          {{item.odd}}
+                        </span>
+                      </view>
+                    </repeat>
+                  </view>
+                </view>
+
+                <view class="MatchDetail-crsBetCtn">
+                  <view
+                    class="MatchDetail-crsBetTitle"
+                    style="background-color: #3ea8d7"
+                  >
+                    负
+                  </view>
+                  <view class="MatchDetail-crsBetOptions">
+                    <repeat for="{{detail.crsA}}">
+                      <view
+                        class="MatchDetail-betOption MatchDetail-crsBetOption"
+                        :class="{MatchDetail-crsBetOptionL: index + 1 === detail.crsA.length, is-selected: selected[0] && selected[0].option === item.option}"
+                        @tap.stop="handleChooseBet"
+                        data-option="{{item.option}}"
+                        data-type="crs"
+                        data-odd="{{item.odd}}"
+                      >
+                        {{betOption['crs'][item.option]}}
+                        <span>
+                          {{item.odd}}
+                        </span>
+                      </view>
+                    </repeat>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </playExpander4>
+        </div>
+
+        <view wx:else class="MatchDetail-playList">
+          <view class="MatchDetail-gameOver">
+            比赛已结束
+          </view>
+        </view>
+      </view>
+
+      <view
+        wx:elif="{{tab === 'chat'}}"
+        class="MatchDetail-childCtn MatchDetail-chatCtn"
+      >
+        <view class="MatchDetail-chatListCtn">
+          <loading hidden="{{!loadingChat}}" />
+          <scroll-view
+            class="MatchDetail-chatList"
+            scroll-y
+            scroll-into-view="{{scrollIntoView}}"
+            @scrolltoupper="handleScroll"
+          >
+            <repeat for="{{chatList}}" item="item">
+              <view
+                class="MatchDetail-chatItem"
+                id="{{ 'chat_' + item.id}}"
+              >
+                <view class="MatchDetail-chatTime">
+                  {{item.formatTime}}
+                </view>
+                <view
+                  class="MatchDetail-chatMsgCtn"
+                  :class="{is-self: userInfo.id === item.uid }"
+                >
+                  <image
+                    class="MatchDetail-avatar"
+                    src="{{item.avatarUrl}}"
+                  />
+                  <view class="MatchDetail-chatUsername">
+                    {{item.nickName}}
+                  </view>
+                  <view class="MatchDetail-chatMsg">
+                    {{item.msg}}
+                  </view>
+                </view>
+              </view>
+            </repeat>
+          </scroll-view>
+        </view>
+
+        <view class="MatchDetail-chatInputCtn">
+          <input
+            class="MatchDetail-chatInput"
+            @input="handleInput"
+            value="{{msg}}"
+          />
+          <button
+            class="MatchDetail-sendBtn"
+            @tap="handleSendMsg"
+            size="mini"
+            disabled="{{!msg}}"
+          >
+            发送
+          </button>
+        </view>
+      </view>
+    </block>
+    <backHome />
+  </view>
+  <betpanel
+    wx:if="{{selected.length}}"
+    :single="single"
+    :selected.sync="selected"
+    :shareId.sync="shareId"
+    :betId.sync="betId"
+  />
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import {
+    fetchMatchDetailSuc,
+    fetchMatchDetailErr,
+    resetMatchDetail,
+    fetchChatListSuc,
+    fetchChatListErr,
+    fetchChatListMoreSuc,
+    fetchChatListMoreErr,
+    resetChatList,
+    sendMsgSuc,
+    postShareSuc,
+    postShareErr
+  } from '@/store/actions'
+  import PlayExpander from '@/components/playExpander'
+  import BetPanel from '@/components/betPanel'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import { BET_OPTION, PLAY_TYPE, HAD, HHAD, MSG } from '@/utils/const'
+  import LoginDialog from '@/components/loginDialog'
+  import BackHome from '@/components/backHome'
+
+  @connect({
+    detail(state) {
+      return state.match.detail
+    },
+    chatList(state) {
+      return state.match.chat
+    },
+    hasMoreChat(state) {
+      return state.match.hasMoreChat
+    },
+    userInfo (state) {
+      return state.user.info
+    },
+    share (state) {
+      return state.home.share
+    },
+    resentBet (state) {
+      return state.bets.resentBet
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    hypFlag (state) {
+      return state.home.flag.hyp
+    },
+    shareBets (state) {
+      return state.bets.shareBets
+    }
+  }, {
+    fetchMatchDetailSuc,
+    fetchMatchDetailErr,
+    resetMatchDetail,
+    fetchChatListSuc,
+    fetchChatListErr,
+    fetchChatListMoreSuc,
+    fetchChatListMoreErr,
+    resetChatList,
+    sendMsgSuc,
+    postShareSuc,
+    postShareErr
+  })
+
+  export default class MatchDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '比赛详情'
+    }
+
+    components = {
+      playExpander1: PlayExpander,
+      playExpander2: PlayExpander,
+      playExpander3: PlayExpander,
+      playExpander4: PlayExpander,
+      betpanel: BetPanel,
+      loginDialog: LoginDialog,
+      backHome: BackHome,
+      loading: Loading,
+      noData: NoData
+    }
+
+    data = {
+      tab: 'guess',
+      playTab: '0',
+      selected: [],
+      single: true,
+      page: 1,
+      msg: '',
+      betOption: BET_OPTION,
+      scrollIntoView: '',
+      betId: null,
+      shareId: null,
+      loadingMatch: true,
+      loadMatchFail: '',
+      showRedPoint: false
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      handleSwitchTab(tab) {
+        this.tab = tab
+        if (this.tab === 'chat') {
+          this.showRedPoint = false
+        }
+        this.selected = []
+      },
+      handleSwitchPlay(e) {
+        this.playTab = e.target.dataset.tab
+      },
+      handleChooseBet(e) {
+        const bet = {
+          matchId: this.detail.id,
+          type: e.currentTarget.dataset.type,
+          option: e.currentTarget.dataset.option,
+          odd: e.currentTarget.dataset.odd,
+          match: this.detail
+        }
+        this.selected = [bet]
+      },
+      handleSendMsg() {
+        req.post('/api/chat/send', {
+          matchid: this.detail.id,
+          msg: this.msg
+        }).then(res => {
+          this.msg = ''
+          this.methods.sendMsgSuc(res.data)
+          if (res.data && res.data[0]) {
+            this.scrollIntoView = `chat_${res.data[0].id}`
+          }
+          this.$apply()
+        })
+        .catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+        })
+      },
+      handleInput(e) {
+        this.msg = e.detail.value
+      },
+      handleScroll() {
+        if (this.hasMoreChat && !this.loadingChat) {
+          this.loadingChat = true
+          req.get('/api/chat/getmsgs', {
+            matchid: this.detail.id,
+            page: this.page,
+            limit: 20
+          }).then(res => {
+            this.methods.fetchChatListMoreSuc(res.data)
+            this.page = this.page + 1
+          }).catch(res => {
+            this.methods.fetchChatListMoreErr(res)
+          }).then(() => {
+            this.loadingChat = false
+            this.$apply()
+          })
+        }
+      }
+    }
+
+    events = {
+    }
+
+    onLoad(options) {
+      if (options.id) {
+        this.loadingMatch = true
+        req.get('/api/Match/getMatchInfo', { id: options.id }).then(res => {
+          this.methods.fetchMatchDetailSuc(res.data)
+          this.loadMatchFail = ''
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.fetchMatchDetailErr(err)
+          this.loadMatchFail = MSG.LOAD_FAIL
+        }).then(() => {
+          this.loadingMatch = false
+          this.$apply()
+
+          if (!this.detail.isgameover && options && options.betId && options.shareId) {
+            this.shareId = options.shareId
+            this.betId = options.betId
+            return req.post('/api/Jcrecode/invitation', {
+              no: this.betId,
+              shareId: this.shareId
+            }, {
+              'content-type': 'application/x-www-form-urlencoded'
+            }).then(res => {
+              this.methods.postShareSuc(res.data)
+            }).catch(res => {
+              this.methods.postShareErr(res)
+            }).then(res => {
+              this.selected = this.shareBets.reduce((acc, share) => {
+                const currentMatch = this.detail
+                let option = null
+                let odd = null
+                switch (share['type']) {
+                  case 'had':
+                    option = HAD[share['option']]
+                    odd = currentMatch && currentMatch.had && currentMatch.had[option]
+                    break
+                  case 'hhad':
+                    option = HHAD[share['option']]
+                    odd = currentMatch && currentMatch.hhad && currentMatch.hhad[option]
+                    break
+                  case 'ttg':
+                    option = share['option']
+                    if (currentMatch && currentMatch.ttg) {
+                      const selectedOption = currentMatch.ttg.find(ele => (
+                        ele.option === option
+                      ))
+                      odd = selectedOption && selectedOption.odd
+                    }
+                    break
+                  case 'crs':
+                    option = share['option']
+                    if (currentMatch && currentMatch.crs) {
+                      const selectedOption = currentMatch.crs.find(ele => (
+                        ele.option === option
+                      ))
+                      odd = selectedOption && selectedOption.odd
+                    }
+                    break
+                  default:
+                }
+                if (option !== null && odd !== null && currentMatch) {
+                  acc.push({
+                    matchId: share['id'],
+                    type: share['type'],
+                    option,
+                    odd,
+                    match: currentMatch
+                  })
+                }
+                return acc
+              }, [])
+              this.$apply()
+            })
+          }
+        })
+
+        this.loadingChat = true
+        req.get('/api/chat/getmsgs', {
+          matchid: options.id,
+          page: this.page,
+          limit: 20
+        }).then(res => {
+          this.methods.fetchChatListSuc(res.data)
+          this.page = this.page + 1
+          if (res.data && res.data.list && res.data.list[0]) {
+            this.showRedPoint = true
+            this.scrollIntoView = `chat_${res.data.list[0].id}`
+            this.$apply()
+          }
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.fetchChatListErr(err)
+        }).then(() => {
+          this.loadingChat = false
+          this.$apply()
+        })
+      }
+    }
+
+    onUnload() {
+      this.methods.resetMatchDetail()
+      this.methods.resetChatList()
+    }
+
+    onShareAppMessage(options) {
+      let title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_others
+      let path = '/pages/matches'
+      let imageUrl = ''
+      if (options.from === 'button') {
+        const types = this.resentBet.types
+        if (types) {
+          title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_helpodds
+          path = `/pages/betDetail?id=${this.resentBet.projectid}&userId=${this.userInfo.id}`
+          imageUrl = this.shamFlag || this.hypFlag ? '' : this.share.sh_jcresults_img
+        }
+      }
+
+      console.log(path)
+      return {
+        title,
+        path,
+        imageUrl
+      }
+    }
+  }
+</script>

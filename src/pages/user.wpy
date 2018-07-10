@@ -1,0 +1,475 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .User {
+    &-info {
+      display: flex;
+      align-items: center;
+      background-color: $primary;
+      height: 60rpx;
+      padding: 6px 10px;
+      position: relative;
+    }
+
+    &-login {
+      background-color: $green;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 24rpx;
+      color: white;
+      position: absolute;
+      right: 14px;
+      line-height: normal;
+    }
+
+    &-subCtn {
+      padding: 0px 15px;
+      background-color: $primary;
+    }
+
+    &-subpage {
+      width: 100%;
+      border: 0;
+      border-bottom: 2rpx solid $secondary;
+      background-color: $primary;
+      color: rgb(51, 51, 51);
+      font-size: 30rpx;
+      height: 82rpx;
+      display: flex;
+      padding: 0rpx;
+      align-items: center;
+      text-align: left;
+      span {
+        padding: 0px 15px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      &::after {
+        border: 0;
+      }
+    }
+
+    &-gotoIcon {
+      width: 16rpx;
+      height: 29rpx;
+    }
+
+    &-subpageIcon {
+      width: 32rpx;
+      height: 32rpx;
+    }
+
+    &-redPoint {
+      height: 8px;
+      width: 8px;
+      background-color: $red;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    &-middleCtn {
+      display: flex;
+      align-items: center;
+      padding: 5px 12px;
+    }
+
+    &-middleItemCtn {
+      flex: 1;
+      margin: 0 4px;
+    }
+
+    &-middleItemIcon {
+      width: 44rpx;
+      height: 44rpx;
+      margin-right: 8px;
+    }
+
+    &-middleItem {
+      background-color: $orange;
+      font-size: 36rpx;
+      color: white;
+      padding-top: 48rpx;
+      padding-bottom: 48rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: normal;
+    }
+
+    &-middleItemText {
+      position: relative;
+    }
+
+    &-middleRedPoint {
+      position: absolute;
+      top: 0;
+      right: -10px;
+    }
+
+    &-bounsGold {
+      color: $red;
+      font-size:24rpx;
+      padding-left:10px;
+      display: inline-block;
+    }
+  }
+
+  .za-avatar {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 100rpx;
+    margin: auto;
+    padding-top: 20%;
+  }
+  .za-name {
+    text-align: center;
+    width: 100%;
+  }
+</style>
+<template>
+  <block wx:if="{{getFlagSuc && !shamFlag}}">
+    <loginDialog />
+    <view class="User">
+      <view
+        class="User-info"
+        wx:if="{{!userInfo.id}}"
+      >
+        <button
+          class="User-login"
+          open-type="getUserInfo"
+          @getuserinfo="handleLogin"
+        >
+          登录
+        </button>
+      </view>
+      <userTab wx:else :disableAvatarLink="disableAvatarLink" />
+
+      <view class="User-middleCtn">
+        <form class="User-middleItemCtn" @submit="goToQuests" report-submit="true">
+          <button class="User-middleItem" formType="submit">
+            <image class="User-middleItemIcon" src="../img/icon-quest-white.png" />
+            <view class="User-middleItemText">
+              我的任务
+              <view wx:if="{{questRedPoint}}" class="User-redPoint User-middleRedPoint"></view>
+            </view>
+          </button>
+        </form>
+        <form class="User-middleItemCtn" @submit="goToBetHistory" report-submit="true">
+          <button class="User-middleItem" formType="submit">
+            <image class="User-middleItemIcon" src="../img/icon-history-white.png" />
+            <view class="User-middleItemText">
+              预测记录
+            </view>
+          </button>
+        </form>
+      </view>
+
+      <view class="User-subCtn">
+        <form @submit="goToRank" report-submit="true">
+          <button class="User-subpage" formType="submit">
+            <image class="User-subpageIcon" src="../img/icon-rank.png" />
+            <span>金币排行榜</span>
+            <image class="User-gotoIcon" src="../img/skip-forward.png" />
+          </button>
+        </form>
+        <form @submit="openWechatGroup" report-submit="true">
+          <button class="User-subpage" formType="submit">
+            <image class="User-subpageIcon" src="../img/icon-group.png" />
+            <span>加群领福利</span>
+            <image class="User-gotoIcon" src="../img/skip-forward.png" />
+          </button>
+        </form>
+        <form @submit="goToGift" report-submit="true">
+          <button class="User-subpage" formType="submit">
+            <image class="User-subpageIcon" src="../img/icon-gift.png" />
+            <span>赠送金币</span>
+            <image class="User-gotoIcon" src="../img/skip-forward.png" />
+          </button>
+        </form>
+        <form @submit="goToTransaction" report-submit="true">
+          <button class="User-subpage" formType="submit">
+            <image class="User-subpageIcon" src="../img/icon-coin.png" />
+            <span>金币明细
+              <view wx:if="{{transactionRedPoint}}" class="User-redPoint"></view>
+            </span>
+            
+            <image class="User-gotoIcon" src="../img/skip-forward.png" />
+          </button>
+        </form>
+        <form @submit="goToMyOrder" report-submit="true">
+          <button class="User-subpage" formType="submit">
+            <image class="User-subpageIcon" src="../img/icon-orders.png" />
+            <span>我的礼品</span>
+            <image class="User-gotoIcon" src="../img/skip-forward.png" />
+          </button>
+        </form>
+        <button class="User-subpage" open-type="contact" session-from="{kefu:[{{customServiceId}}]}">
+          <image class="User-subpageIcon" src="../img/icon-contact.png" />
+          <span>联系客服</span>
+          <image class="User-gotoIcon" src="../img/skip-forward.png" />
+        </button>
+        <navigator
+          wx:if="{{menuShowMore}}"
+          class="User-subpage"
+          target="miniProgram"
+          app-id="wxbe40f0285b55d0ec"
+          @tap="getBonus"
+        >
+          <image class="User-subpageIcon" src="../img/icon-more.png" />
+          <span>
+            更多好玩
+            <view wx:if="{{moreBonus.status === 1}}" class="User-bounsGold">
+              +{{moreBonus.coin}}金币
+            </view>
+          </span>
+          <image class="User-gotoIcon" src="../img/skip-forward.png" />
+        </navigator>
+      </view>
+    </view>
+    <wechatGroupDialog />
+  </block>
+  <block wx:if="{{getFlagSuc && shamFlag}}">
+    <view class="za-avatar">
+      <open-data type="userAvatarUrl"></open-data>
+    </view>
+    <view class="za-name">
+      <open-data type="userNickName"></open-data>
+    </view>
+  </block>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import UserTab from '@/components/userTab'
+  import req from '@/network'
+  import Session from '@/network/session'
+  import { login } from '@/network/login'
+  import {
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    fetchRedPointSuc,
+    updateUserInfo,
+    fetchDailyQuestsSuc,
+    postInviteSuc,
+    postInviteErr,
+    clearShareUserId,
+    updateShowWeChatGroup,
+    markCityMatchUserSuc,
+    markCityMatchUserErr,
+    fetchCityMatchInfoSuc,
+    fetchCityMatchInfoErr,
+    fetchExtraQuestsSuc
+  } from '@/store/actions'
+  import { fromwhere, customServiceId, menuShowMore } from '@/config'
+  import LoginDialog from '@/components/loginDialog'
+  import WechatGroupDialog from '@/components/wechatGroupDialog'
+  import { USER_TYPE } from '@/utils/const'
+  import { compareVersion } from '@/utils/helper'
+
+  @connect({
+    userInfo (state) {
+      return state.user.info
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    getFlagSuc (state) {
+      return state.home.getFlagSuc
+    },
+    transactionRedPoint (state) {
+      return state.user.transactionRedPoint
+    },
+    questRedPoint (state) {
+      return state.user.questRedPoint
+    },
+    shareUserId (state) {
+      return state.user.shareUserId
+    },
+    cityMatchToken (state) {
+      return state.user.cityMatchToken
+    },
+    moreBonus (state) {
+      return state.quests.moreBonus
+    }
+  }, {
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    fetchRedPointSuc,
+    updateUserInfo,
+    fetchDailyQuestsSuc,
+    postInviteSuc,
+    postInviteErr,
+    clearShareUserId,
+    updateShowWeChatGroup,
+    markCityMatchUserSuc,
+    markCityMatchUserErr,
+    fetchCityMatchInfoSuc,
+    fetchCityMatchInfoErr,
+    fetchExtraQuestsSuc
+  })
+
+  export default class User extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的信息'
+    }
+
+    components = {
+      loginDialog: LoginDialog,
+      userTab: UserTab,
+      wechatGroupDialog: WechatGroupDialog
+    }
+
+    data = {
+      disableAvatarLink: true,
+      customServiceId: customServiceId,
+      menuShowMore: menuShowMore,
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      goToTransaction(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'transaction'
+        })
+      },
+      goToQuests(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'quests'
+        })
+      },
+      goToMyOrder(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'myOrder'
+        })
+      },
+      goToBetHistory(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'betHistory'
+        })
+      },
+      goToGift(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'gift'
+        })
+      },
+      goToRank(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'rank'
+        })
+      },
+      handleLogin(e) {
+        if (e.detail.userInfo) {
+          login(e.detail).then(res => {
+            this.methods.updateUserInfo(Object.assign({}, e.detail.userInfo, res))
+          }).then(res => {
+            req.get('/api/Sign/signIn').then(res => {
+              this.methods.fetchDailyQuestsSuc(res)
+            })
+
+            if (this.shareUserId) {
+              req.post('/api/Enlightening/shoutu', { mid: this.shareUserId }).then(res => {
+                this.methods.postInviteSuc(res.data)
+                this.methods.clearShareUserId()
+              }).catch(res => {
+                this.methods.postInviteErr(res)
+              })
+            }
+
+            this.getRedPoint()
+            this.checkBonus()
+
+            if (this.userInfo.type !== USER_TYPE.BLUE_DIAMOND && this.cityMatchToken) {
+              req.post('/api/login/markCitymatch', { token: this.cityMatchToken }).then(res => {
+                this.methods.markCityMatchUserSuc(res.data)
+              }).catch(err => {
+                this.methods.markCityMatchUserErr(err)
+              })
+            } else if (this.userInfo.type === USER_TYPE.BLUE_DIAMOND) {
+              req.get('/api/login/searchPlayer').then(res => {
+                this.methods.fetchCityMatchInfoSuc(res.data)
+              }).catch(err => {
+                this.methods.fetchCityMatchInfoErr(err)
+              })
+            }
+          }).catch(err => {
+            wepy.showToast({ title: err.msg, icon: 'none' })
+          })
+        }
+      },
+      openWechatGroup(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        this.methods.updateShowWeChatGroup(true)
+      },
+      getBonus() {
+        const info = wepy.getSystemInfoSync()
+        if (compareVersion('2.0.7', info.SDKVersion) === 1) {
+          wepy.navigateToMiniProgram({
+            appId: 'wxbe40f0285b55d0ec'
+          })
+        }
+        if (this.moreBonus.status === 1) {
+          req.get('/api/Minetask/clickmorefun')
+        }
+      }
+    }
+
+    postFormId(formId) {
+      if (formId) {
+        req.post('/api/Templatemsg/collectFormid', {
+          formIds: formId,
+          fromwhere
+        })
+      }
+    }
+
+    events = {
+    }
+
+    getRedPoint() {
+      req.get('/api/Givecoin/redPoint').then(res => {
+        this.methods.fetchRedPointSuc(res.data)
+      })
+    }
+
+    checkBonus() {
+      req.get('/api/Minetask/morefun').then(res => {
+        this.methods.fetchExtraQuestsSuc(res.data)
+      })
+    }
+
+    onShow() {
+      const session = Session.get()
+      if (session && session.sessionId) {
+        req.get('/api/Version/userInfo').then(res => {
+          this.methods.fetchUserInfoSuc(res.data)
+        }).catch(res => {
+          this.methods.fetchUserInfoErr(res)
+        })
+
+        this.getRedPoint()
+        this.checkBonus()
+      }
+    }
+
+    onLoad() {
+    }
+  }
+</script>

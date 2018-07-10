@@ -1,0 +1,391 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+@import '../base/cssBase/table.scss';
+  .MyOrder {
+    &-list {
+      background-color: $primary;
+      box-sizing: border-box;
+      padding: 0 10px;
+    }
+
+    &-listHeader {
+      font-size: 26rpx;
+      color: $text-secondary;
+      background-color: $secondary;
+      padding: 5px 10px;
+      box-sizing: border-box;
+    }
+
+    &-item {
+      font-size: 24rpx;
+      color: rgb(51, 51, 51);
+      border-bottom: 1px solid $secondary;
+      padding: 10px 0;
+      box-sizing: border-box;
+    }
+
+    &-checkHeader {
+      flex: 0 0 100rpx;
+    }
+
+    &-check {
+      color: $red;
+      flex: 0 0 100rpx;
+    }
+
+    &-check.is-disabled {
+      color: rgb(218, 29, 30);
+    }
+
+    &-detailCtn {
+      background-color: $primary;
+      width: 520rpx;
+      min-height: 515rpx;
+      height: max-content;
+      box-sizing: border-box;
+      border-radius: 8rpx;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 88rpx 36rpx 36rpx 36rpx;
+      position: relative;
+    }
+
+    &-detailTitle {
+      font-size: 48rpx;
+      color: rgb(51, 51, 51);
+    }
+
+    &-detailRow {
+      width: 100%;
+      font-size: 30rpx;
+      display: flex;
+      align-items: center;
+      padding: 20rpx 0;
+    }
+
+    &-detailKey {
+      color: $text-secondary;
+      width: 120rpx;
+      text-align: center;
+    }
+
+    &-detailValue {
+      flex: 1;
+      color: $orange;
+      margin-left: 10px;
+    }
+
+    &-detailConfirm {
+      width: 100%;
+      font-size: 36rpx;
+      background-color: $orange;
+      color: white;
+      border-radius: 8rpx;
+    }
+
+    &-detailImg {
+      width: 224rpx;
+      height: 127rpx;
+      position: absolute;
+      top: -57rpx;
+    }
+
+    &-copyBtn {
+      color: $green;
+      border-radius: 8rpx;
+      font-size: 30rpx;
+      height: 58rpx;
+      box-sizing: border-box;
+      line-height: 58rpx;
+      width: 100rpx;
+      text-align: center;
+      margin-left: 5px;
+      border: 2rpx solid $green;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="MyOrder">
+    <userTab />
+
+    <view class="table MyOrder-listHeader">
+      <view class="tr">
+        <view class="th">
+          名称
+        </view>
+        <view class="th">
+          状态
+        </view>
+        <view class="th">
+          时间
+        </view>
+        <view class="th MyOrder-checkHeader">
+          详情
+        </view>
+      </view>
+    </view>
+    <view class="table MyOrder-list">
+      <repeat for="{{orders.list}}">
+        <view class="tr MyOrder-item">
+          <view class="td MyOrder-name">
+            {{item.goods_name}}
+          </view>
+          <view class="td MyOrder-status">
+            {{item.order_status}}
+          </view>
+          <view class="td MyOrder-time">
+            {{item.formatOrderTime}}
+          </view>
+          <view
+            class="td MyOrder-check"
+            @tap="handleCheck({{item.type}}, {{item.id}}, {{item.good_id}})"
+          >
+            查看
+          </view>
+        </view>
+      </repeat>
+    </view>
+
+    <loading hidden="{{!loadingList}}" />
+  </view>
+
+  <alert1 :show.sync="showECardDialog" :onClose="closeECardDialog">
+    <view class="MyOrder-detailCtn" slot="content">
+      <image
+        class="MyOrder-detailImg"
+        src="../img/jd-dialog-icon.png"
+      />
+      <view class="MyOrder-detailTitle">
+        京东卡兑换
+      </view>
+      <view class="MyOrder-detailRow">
+        <view class="MyOrder-detailKey">
+          面值
+        </view>
+        <view class="MyOrder-detailValue">
+          {{detail.fee}}元
+        </view>
+      </view>
+      <view class="MyOrder-detailRow">
+        <view class="MyOrder-detailKey">
+          密码
+        </view>
+        <view class="MyOrder-detailValue">
+          {{detail.secret}}
+        </view>
+        <view
+          class="MyOrder-copyBtn"
+          @tap.stop="handleCopy({{detail.secret}})"
+        >
+          复制
+        </view>
+      </view>
+      <view class="MyOrder-detailRow">
+        <view class="MyOrder-detailKey">
+          使用金币
+        </view>
+        <view class="MyOrder-detailValue">
+          {{detail.coin}}金币
+        </view>
+      </view>
+      <button
+        class="MyOrder-detailConfirm"
+      >
+        确定
+      </button>
+    </view>
+  </alert1>
+
+  <alert2 :show.sync="showPhoneDialog" :onClose="closePhoneDialog">
+    <view class="MyOrder-detailCtn" slot="content">
+      <image
+        class="MyOrder-detailImg"
+        src="../img/phone-dialog-icon.png"
+      />
+      <view class="MyOrder-detailTitle">
+        话费兑换
+      </view>
+      <view class="MyOrder-detailRow">
+        <view class="MyOrder-detailKey">
+          手机号
+        </view>
+        <view class="MyOrder-detailValue">
+          {{detail.phone_no}}
+        </view>
+      </view>
+      <view class="MyOrder-detailRow">
+        <view class="MyOrder-detailKey">
+          面值
+        </view>
+        <view class="MyOrder-detailValue">
+          {{detail.fee}}元
+        </view>
+      </view>
+      <view class="MyOrder-detailRow">
+        <view class="MyOrder-detailKey">
+          使用金币
+        </view>
+        <view class="MyOrder-detailValue">
+          {{detail.coin}}金币
+        </view>
+      </view>
+      <button
+        class="MyOrder-detailConfirm"
+      >
+        确定
+      </button>
+    </view>
+  </alert2>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import Loading from '@/components/loading'
+  import UserTab from '@/components/userTab'
+  import Alert from '@/components/alert'
+  import {
+    fetchOrderListSuc,
+    fetchOrderListErr,
+    fetchOrderDetailSuc,
+    fetchOrderDetailErr,
+    initOrderDetail,
+    initOrderList,
+    fetchOrderListMoreSuc,
+    fetchOrderListMoreErr
+  } from '@/store/actions'
+  import LoginDialog from '@/components/loginDialog'
+
+  @connect({
+    orders (state) {
+      return state.orders
+    },
+    detail (state) {
+      return state.orderDetail.detail
+    }
+  }, {
+    fetchOrderListSuc,
+    fetchOrderListErr,
+    fetchOrderDetailSuc,
+    fetchOrderDetailErr,
+    initOrderDetail,
+    initOrderList,
+    fetchOrderListMoreSuc,
+    fetchOrderListMoreErr
+  })
+
+  export default class MyOrder extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的礼品'
+    }
+
+    components = {
+      alert1: Alert,
+      alert2: Alert,
+      loginDialog: LoginDialog,
+      loading: Loading,
+      userTab: UserTab
+    }
+
+    mixins = []
+
+    data = {
+      page: 1,
+      showECardDialog: false,
+      showPhoneDialog: false,
+      loadingList: true
+    }
+
+    computed = {
+    }
+
+    methods = {
+      handleCheck(type, id, goodsId) {
+        switch (type) {
+          case '0':
+            this.showECardDialog = true
+            this.getDetail(id)
+            break
+          case '1':
+            this.showPhoneDialog = true
+            this.getDetail(id)
+            break
+          case '2':
+            wepy.navigateTo({
+              url: `orderDetail?id=${goodsId}&orderId=${id}`
+            })
+            break
+          default:
+        }
+      },
+      handleCopy(value) {
+        wepy.setClipboardData({data: value}).then(res => {
+          wepy.showToast({ title: '复制成功', icon: 'none' })
+        })
+      }
+    }
+
+    events = {
+    }
+
+    getDetail(id) {
+      req.get('/api/Orders/seekGifts', { orderId: id }).then(res => {
+        this.methods.fetchOrderDetailSuc(res.data)
+        this.$apply()
+      }).catch(err => {
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.fetchOrderDetailErr(err)
+      })
+    }
+
+    closeECardDialog = () => {
+      this.showECardDialog = false
+      this.methods.initOrderDetail()
+      this.$apply()
+    }
+
+    closePhoneDialog = () => {
+      this.showPhoneDialog = false
+      this.methods.initOrderDetail()
+      this.$apply()
+    }
+
+    onLoad() {
+      this.loadingList = true
+      req.get('/api/Orders/orderList', { page: this.page, limit: 20 }).then(res => {
+        this.methods.fetchOrderListSuc(res.data)
+      }).then(res => {
+        this.page = this.page + 1
+      }).catch(res => {
+        this.methods.fetchOrderListErr(res)
+      }).then(() => {
+        this.loadingList = false
+        this.$apply()
+      })
+    }
+
+    onUnload() {
+      this.methods.initOrderList()
+      this.methods.initOrderDetail()
+    }
+
+    onReachBottom() {
+      if (this.orders.hasMore && !this.loadingList) {
+        this.loadingList = true
+        req.get('/api/Orders/orderList', { page: this.page, limit: 20 }).then(res => {
+          this.methods.fetchOrderListMoreSuc(res.data)
+        }).then(res => {
+          this.page = this.page + 1
+        }).catch(res => {
+          this.methods.fetchOrderListMoreErr(res)
+        }).then(() => {
+          this.loadingList = false
+          this.$apply()
+        })
+      }
+    }
+  }
+</script>

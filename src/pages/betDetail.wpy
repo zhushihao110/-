@@ -1,0 +1,1194 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+@import '../base/cssBase/table.scss';
+  .BetDetail {
+    padding-bottom: 192rpx;
+
+    &-bannerCtn{
+      width: 100%;
+    }
+
+    &-banner{
+      width: 100%;
+      position: relative;
+    }
+
+    &-bannerImg {
+      display: block;
+      width: 100%;
+      height: 200rpx;
+    }
+
+    &-bannerTitle {
+      width: 100%;
+      position: absolute;
+      top: 55rpx;
+      text-align: center;
+      font-size: 48rpx;
+      color: rgb(191, 191, 191);
+    }
+
+    &-bonusCtn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      min-width: 60%;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      min-height: 80rpx;
+    }
+
+    &-bonus {
+      font-size: 40rpx;
+      display: flex;
+      align-items: center;
+      height: 90rpx;
+      color: white;
+      span {
+        color: yellow;
+        font-size: 40rpx;
+        padding: 0 5px;
+      }
+    }
+
+    &-bounsExchange {
+      min-height: 32rpx;
+      min-width: 32rpx;
+      font-size: 22rpx;
+      color: white;
+      span {
+        color: white;
+        font-size: 22rpx;
+        padding: 0 5px;
+      }
+    }
+
+    &-success{
+      color: rgb(248, 243, 72);
+      .BetDetail-bannerTitle {
+        color: rgb(248, 243, 72);
+        top: 25rpx;
+      }
+    }
+    &-title{
+      background-color: $primary;
+      position: relative;
+      font-size: 30rpx;
+      height: 60rpx;
+      padding-left: 70rpx;
+      padding-right: 10px;
+      line-height: 60rpx;
+      color: rgb(153,153,153);
+      border-bottom: 1rpx solid rgb(153, 153, 153);
+      span{
+        color: $green;
+      }
+      .footabllImg{
+        position: absolute;
+        top: 10rpx;
+        left: 20rpx;
+        width: 40rpx;
+        height:40rpx;
+        image{
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    &-title-time{
+      height: 100rpx;
+      line-height: 50rpx;
+      color: rgb(102, 102, 102);
+      view{
+        font-size: 26rpx;
+        color: rgb(153, 153, 153);
+      }
+    }
+    &-one{
+      display: block;
+    }
+
+    &-fixedOdds {
+      color: $green;
+      padding-right: 10px;
+    }
+
+    &-value {
+      overflow-wrap: break-word;
+    }
+
+    &-extraOdds {
+      display: inline-block;
+      color: $red;
+    }
+
+    &-subTitle {
+      min-width: 150rpx;
+    }
+
+    &-content{
+      background-color: $primary;
+      font-size: 26rpx;
+      color: rgb(153, 153, 153);
+      padding-top: 15rpx;
+      padding-bottom: 10px;
+      .BetDetail-row{
+        margin: 10rpx 0;
+        display: flex;
+        flex-direction: row;
+        .BetDetail-subTitle{
+          margin-left: 30rpx;
+          text-align: center;
+        }
+        .BetDetail-value{
+          color: rgb(77,77,77);
+        }
+        .result{
+          color: rgb(218, 29, 30);
+        }
+      }
+      .box{
+        background-color: white;
+        width: 664rpx;
+        margin: 0 auto;
+        border: 1rpx solid rgb(236, 102, 31);
+        border-radius: 4px;
+        margin-top: 10rpx;
+        margin-bottom: 15rpx;
+        .top{
+          height: 68rpx;
+          line-height: 68rpx;
+          font-size: 30rpx;
+          background-color: rgb(236, 102, 31);
+          color: rgb(255, 255, 255);
+          border-top-left-radius: 4px;
+          border-top-right-radius: 4px;
+        }
+        .item{
+          padding: 15rpx 0;
+          border-bottom: 1rpx solid rgb(153, 153, 153);
+          .first{
+            color: rgb(77,77,77);
+            padding: 0 10px;
+          }
+          .second{
+            color: rgb(218,29,30);
+            flex-wrap: wrap;
+          }
+        }
+        div:last-child{
+          border-bottom: none;
+        }
+      }
+    }
+
+    &-footer{
+      width: 100%;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      background-color: $secondary;
+      text-align: center;
+    }
+
+    &-tips {
+      font-size: 25rpx;
+      color: #757885;
+    }
+
+    &-shareBtn {
+      background-color: $orange;
+      font-size: 36rpx;
+      color: rgb(242, 242, 242);
+      flex: 1;
+      height: 110rpx;
+      line-height: 110rpx;
+      border-radius: 0;
+    }
+
+    &-footerBtnCtn {
+      display: flex;
+      width: 100%;
+    }
+
+    &-supportAvatar {
+      width: 60rpx;
+      height: 60rpx;
+      border-radius: 4px;
+    }
+
+    &-supportTitle {
+      font-size: 28rpx;
+      color: #ff1743;
+      padding-top: 15px;
+      padding-bottom: 12px;
+      text-align: center;
+    }
+
+    &-supportTitle.is-other {
+      padding-top: 7px;
+      padding-bottom: 9px;
+    }
+
+    &-supportBtn {
+      font-size: 36rpx;
+      color: white;
+      background: linear-gradient(#f3c200, #f39800);
+      height: 81rpx;
+      line-height: 81rpx;
+      text-align: center;
+      margin: 0 9px;
+      margin-top: 7px;
+    }
+
+    &-supportIcon {
+      width: 38rpx;
+      height: 36rpx;
+    }
+
+    &-supportListCtn {
+      padding: 0 14px;
+      background-color: $primary;
+    }
+
+    &-supportList {
+      font-size: 24rpx;
+    }
+
+    &-supportHeader {
+      padding-top: 6px;
+      padding-bottom: 4px;
+    }
+
+    &-supportItem {
+      border-top: 1px solid #bfbfbf;
+      padding: 4px 0;
+      word-break: break-all;
+    }
+
+    &-supportTips {
+      font-size: 20rpx;
+      color: #3410d2;
+      padding: 5px 0;
+    }
+
+    &-supportTips.is-other {
+      padding: 12px 0;
+    }
+  }
+
+  .SupportSucDialog {
+    border-radius: 4px;
+    position: relative;
+
+    &-closeCtn {
+      position: absolute;
+      top: -24rpx;
+      right: -24rpx;
+      z-index: $z-top;
+    }
+
+    &-close {
+      width: 53rpx;
+      height: 53rpx;
+    }
+
+    &-msgCtn {
+      position: relative;
+      width: 654rpx;
+      height: 455rpx;
+    }
+
+    &-bg {
+      height: 455rpx;
+      width: 654rpx;
+      border-radius: 4px;
+    }
+
+    &-odds {
+      width: 127rpx;
+      height: 39rpx;
+      position: absolute;
+      top: 68rpx;
+      left: 310rpx;
+    }
+
+    &-oddsText {
+      position: absolute;
+      color: #f3b400;
+      font-size: 53rpx;
+      top: 48rpx;
+      left: 310rpx;
+    }
+
+    &-btnCtn {
+      width: 100%;
+      top: 340rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+    }
+
+    &-btn {
+      background: linear-gradient(#f3c200, #f39800);
+      font-size: 36rpx;
+      width: 318rpx;
+      height: 81rpx;
+      line-height: 81rpx;
+      color: white;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="BetDetail">
+    <block wx:if="{{loading}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadFail}}">
+      <noData :msg.sync="loadFail" />
+    </block>
+    <block wx:else>
+      <view class="BetDetail-bannerCtn">
+        <view wx:if='{{detail.status == 1}}' class="BetDetail-banner">
+          <image class="BetDetail-bannerImg" src="../img/bet-detail-wait.png"/>
+        </view>
+        <view wx:elif='{{detail.status == 2}}' class="BetDetail-banner">
+          <image class="BetDetail-bannerImg" src="../img/bet-detail-fail.png"/>
+        </view>
+        <view wx:elif='{{detail.status == 3}}' class="BetDetail-banner BetDetail-success">
+          <image class="BetDetail-bannerImg" src="../img/bet-detail-suc.png"/>
+          <block wx:if="{{detail.paytype == 1}}">
+            <view class="BetDetail-bonusCtn">
+              <view class="BetDetail-bonus">
+                赢得<span>{{detail.bonus}}</span>金币
+              </view>
+              <view class="BetDetail-bounsExchange">
+              </view>
+            </view>
+          </block>
+          <block wx:elif="{{detail.paytype == 2}}">
+            <view class="BetDetail-bonusCtn">
+              <view class="BetDetail-bonus">
+                赢得<span>{{detail.bonus_diamonds}}</span>蓝钻
+              </view>
+              <view wx:if="{{detail.bonusDiamondsExtra}}" class="BetDetail-bounsExchange">
+                其余<span>{{detail.bonusDiamondsExtra}}</span>蓝钻已转化为<span>{{detail.bonus}}</span>金币存入金币账户
+              </view>
+              <view wx:else class="BetDetail-bounsExchange">
+              </view>
+            </view>
+          </block>
+        </view>
+        <view wx:elif='{{detail.status == 4}}' class="BetDetail-banner">
+          <image class="BetDetail-bannerImg" src="../img/bet-detail-wait.png"/>
+        </view>
+      </view>
+
+      <!-- 普通串投 -->
+      <view wx:if="{{detail.way === 'string'}}" class="BetDetail-title">
+        <view class='footabllImg'><image src='../img/football.png'/></view>
+        串关方式:
+        <span>
+          {{detail.teams && detail.teams.length}}串1
+        </span>
+      </view>
+
+      <!-- 世界杯冠&冠亚军 -->
+      <div wx:elif="{{detail.types === 'jcgj' || detail.types === 'jcgy'}}" class="BetDetail-title BetDetail-one">
+        <view class='footabllImg'><image src='../img/football.png'/></view>
+        {{detail.types === 'jcgj' ? '猜冠军' : '猜冠亚军'}}
+      </div>
+
+      <!-- 单投 -->
+      <view wx:elif="{{detail.way === 'single'}}" class="BetDetail-title  BetDetail-title-time">
+        <view class='footabllImg'><image src='../img/football.png'/></view>
+        {{detail.teams && detail.teams[0] && detail.teams[0].h_cn_abbr}}
+        VS
+        {{detail.teams && detail.teams[0] && detail.teams[0].a_cn_abbr}}
+        <view>{{detail.teams && detail.teams[0] && detail.teams[0].formatBTime}}</view>
+      </view>
+
+      <view class="BetDetail-content">
+        <block wx:if="{{detail.way === 'single' || detail.types === 'jcgj' || detail.types === 'jcgy'}}">
+          <view class="BetDetail-row">
+            <view class="BetDetail-subTitle">
+              竞猜内容：
+            </view>
+            <view class="BetDetail-value">
+              {{betContent[detail.types]}}
+            </view>
+          </view>
+          <view class="BetDetail-row">
+            <view class="BetDetail-subTitle">
+              投注内容：
+            </view>
+            <view wx:if="{{detail.types === 'jcgj'}}" class="BetDetail-value result">
+              <repeat for="{{detail.teams}}">
+                {{item}}
+              </repeat>
+            </view>
+
+            <view wx:elif="{{detail.types === 'jcgy'}}" class="BetDetail-value result">
+              <repeat for="{{detail.teams}}">
+                {{item.lteam === '其它' ? '其它' : item.lteam + 'VS' + item.rteam}}
+              </repeat>
+            </view>
+            <view wx:else class="BetDetail-value result">
+              {{betOption[detail.types] && betOption[detail.types][detail.codes]}}
+              {{detail.types === 'hhad' ? detail.fixedodds[0] : ''}}
+            </view>
+          </view>
+          <view class="BetDetail-row">
+            <view class="BetDetail-subTitle">
+              开奖结果：
+            </view>
+
+            <view wx:if="{{detail.types === 'jcgj'}}" class="BetDetail-value">
+              {{detail.pool_rs[0] || '-'}}
+            </view>
+
+            <view wx:elif="{{detail.types === 'jcgy'}}" class="BetDetail-value">
+              <block wx:if="{{detail.pool_rs[0]}}">
+                {{detail.pool_rs[0].lteam}}
+                VS
+                {{detail.pool_rs[0].rteam}}
+              </block>
+              <block wx:else>
+                -
+              </block>
+            </view>
+            <view wx:else class="BetDetail-value">
+              {{detail.pool_rs[0] || '-'}}
+            </view>
+          </view>
+        </block>
+        <block wx:else>
+          <view class="BetDetail-row">
+            <view class="BetDetail-subTitle">
+              竞猜内容：
+            </view>
+            <view class="BetDetail-value">
+              普通串关
+            </view>
+          </view>
+          <view class="BetDetail-row">
+            <view class="BetDetail-subTitle">
+              投注内容：
+            </view>
+            <view class="BetDetail-value">
+            </view>
+          </view>
+          <view class="table box">
+            <div class="tr top">
+              <div class="th">
+                主队VS客队
+              </div>
+              <div class="th">
+                投注内容
+              </div>
+              <div class="th">
+                开奖结果
+              </div>
+            </div>
+            <repeat for="{{detail.teams}}">
+              <div class="tr item">
+                <div class="td first">
+                  {{item.h_cn_abbr}}
+                  VS
+                  {{item.a_cn_abbr}}
+                </div>
+                <div class="td second">
+                  {{betContent[detail.typesArr[index]]}}
+                  <span class="BetDetail-fixedOdds">
+                    {{detail.typesArr[index] === 'hhad' ? ((detail.fixedodds[index] > 0 ? '+' : '') + detail.fixedodds[index]) : ''}}
+                  </span>
+                  {{betOption[detail.typesArr[index]][detail.codesArr[index]]}}
+                  （{{detail.oddsArr[index]}}）
+                </div>
+                <div class="td">
+                  {{detail.pool_rs[index] || '-' }}
+                </div>
+              </div>
+            </repeat>
+          </view>
+        </block>
+
+        <view class="BetDetail-row">
+          <view class="BetDetail-subTitle">
+            <block wx:if="{{detail.paytype == 1}}">
+              投注金币：
+            </block>
+            <block wx:elif="{{detail.paytype == 2}}">
+              投注蓝钻：
+            </block>
+            <block wx:else>
+              投注数额：
+            </block>
+          </view>
+          <view class="BetDetail-value">
+            <block wx:if="{{detail.paytype == 1}}">
+              {{detail.coins}}
+            </block>
+            <block wx:elif="{{detail.paytype == 2}}">
+              {{detail.diamonds}}
+            </block>
+          </view>
+        </view>
+        <view wx:if="{{detail.way !== 'string'}}" class="BetDetail-row">
+          <view class="BetDetail-subTitle">
+            投注赔率：
+          </view>
+          <view class="BetDetail-value">
+            {{detail.odds}}
+            <view
+              wx:if="{{detail.extraOdds > 0}}"
+              class="BetDetail-extraOdds"
+            >
+              +{{detail.extraOdds}}
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{detail.status === '1'}}" class="BetDetail-row">
+          <view class="BetDetail-subTitle">
+            预计奖金：
+          </view>
+          <view class="BetDetail-value">
+            {{earnings}}
+          </view>
+        </view>
+        <view class="BetDetail-row">
+          <view class="BetDetail-subTitle">
+            投注时间：
+          </view>
+          <view class="BetDetail-value">
+            {{detail.formatCreateTime}}
+          </view>
+        </view>
+        <view class="BetDetail-row">
+          <view class="BetDetail-subTitle">
+            方案编号：
+          </view>
+          <view class="BetDetail-value">
+            {{detail.no}}
+          </view>
+        </view>
+      </view>
+
+      <view
+        wx:if="{{detail.types !== 'jcgj' && detail.types !== 'jcgy'}}"
+        class="BetDetail-support"
+      >
+        <block wx:if="{{detail.uid !== userInfo.id}}">
+          <block wx:if="{{supportOdds}}">
+            <button
+              class="BetDetail-supportBtn"
+              @tap="goToMatches"
+            >
+              已助力{{supportOdds}}赔率，我也去投注
+            </button>
+          </block>
+          <block wx:elif="{{betStatus !== '0'}}">
+            <button
+              class="BetDetail-supportBtn"
+              @tap="goToMatches"
+            >
+              助力已结束，我也去投注
+            </button>
+          </block>
+          <block wx:elif="{{detail.extraOdds >= helpOddsTotal}}">
+            <button
+              class="BetDetail-supportBtn"
+              @tap="goToMatches"
+            >
+              助力已满，我也去投注
+            </button>
+          </block>
+          <block wx:else>
+            <button
+              class="BetDetail-supportBtn"
+              loading="{{supportLoading}}"
+              open-type="getUserInfo"
+              @getuserinfo="handleLogin"
+              @tap="handleSupport"
+            >
+              <image
+                class="BetDetail-supportIcon"
+                src="../img/support-icon.png"
+              />
+              为他助力
+            </button>
+          </block>
+        </block>
+        <view
+          class="BetDetail-supportTitle"
+          :class="{is-other: detail.uid !== userInfo.id}"
+        >
+          已有{{detail.helpodds_list.length}}人为我助力，成功提高{{detail.extraOdds}}赔率!
+        </view>
+        <view 
+          wx:if="{{detail.helpodds_list.length}}"
+          class="BetDetail-supportListCtn"
+        >
+          <view class="table BetDetail-supportList">
+            <view class="tr BetDetail-supportHeader">
+              <view class="th">
+                头像
+              </view>
+              <view class="th">
+                昵称
+              </view>
+              <view class="th">
+                助力赔率
+              </view>
+            </view>
+            <repeat for="{{detail.helpodds_list}}">
+              <view class="tr BetDetail-supportItem">
+                <view class="td">
+                  <image
+                    class="BetDetail-supportAvatar"
+                    src="{{item.help_avatarUrl}}"
+                  />
+                </view>
+                <view class="td">
+                  {{item.help_nickName}}
+                </view>
+                <view class="td">
+                  {{item.extraOdds}}
+                </view>
+              </view>
+            </repeat>
+          </view>
+          
+        </view>
+      </view>
+
+      <view class="BetDetail-footer">
+        <view
+          wx:if="{{detail.types !== 'jcgj' && detail.types !== 'jcgy' && betStatus <= 1}}"
+          class="BetDetail-supportTips"
+        >
+          每邀请一位好友助力可提高0.01-0.05赔率，最高可提高{{helpOddsTotal}}，截止到开赛前
+        </view>
+        <block wx:if="{{detail.uid === userInfo.id}}">
+          <view
+            class="BetDetail-tips"
+            wx:if="{{betStatus === '3'}}"
+          >
+            首次分享到群可获得{{shWinnigReward}}金币奖励
+          </view>
+          <view
+            class="BetDetail-footerBtnCtn"
+            wx:if="{{betStatus !== '4'}}"
+          >
+            <button
+              wx:if="{{betStatus === '3'}}"
+              class="BetDetail-shareBtn"
+              open-type="share"
+            >
+              分享到群
+            </button>
+
+            <button
+              wx:elif="{{betStatus === '1' || betStatus === '0'}}"
+              class="BetDetail-shareBtn"
+              open-type="share"
+            >
+              邀请好友
+            </button>
+
+            <button
+              wx:elif="{{betStatus === '2'}}"
+              class="BetDetail-shareBtn"
+              @tap="goToQuest"
+            >
+              免费领金币
+            </button>
+
+            <button
+              wx:if="{{detail.types !== 'jcgy' && detail.types !== 'jcgj'}}"
+              class="BetDetail-shareBtn"
+              @tap="openShareImg"
+            >
+              分享到朋友圈
+            </button>
+          </view>
+        </block>
+      </view>
+    </block>
+    <backHome />
+  </view>
+  <shareBetImgDialog :show.sync="showShareImg" />
+  <alert :show.sync="showSupportSuc" :onClose="closeSupportSuc">
+    <view class="SupportSucDialog" slot="content">
+      <view class="SupportSucDialog-closeCtn">
+        <image
+          class="SupportSucDialog-close"
+          src="../img/close-gold.png"
+        />
+      </view>
+      <view class="SupportSucDialog-msgCtn">
+        <image
+          class="SupportSucDialog-bg"
+          src="../img/support-suc.png"
+        />
+        <block wx:if="{{supportOdds}}">
+          <image
+            class="SupportSucDialog-odds"
+            src="../img/gold-{{supportOdds}}.png"
+            @error="handleImgNotExist"
+            @load="handleImgLoad"
+          />
+          <view
+            wx:if="{{specialOdds}}"
+            class="SupportSucDialog-oddsText"
+          >
+            {{supportOdds}}
+          </view>
+        </block>
+        <view class="SupportSucDialog-btnCtn">
+          <button
+            class="SupportSucDialog-btn"
+            @tap="goToMatches"
+          >
+            去投注
+          </button>
+        </view>
+      </view>
+    </view>
+  </alert>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import {
+    fetchBetDetailSuc,
+    fetchBetDetailErr,
+    initBetDetail,
+    updateBetShareImgInfo,
+    updateUserInfo,
+    fetchDailyQuestsSuc,
+    postInviteSuc,
+    postInviteErr,
+    clearShareUserId,
+    fetchRedPointSuc,
+    markCityMatchUserSuc,
+    markCityMatchUserErr,
+    fetchCityMatchInfoSuc,
+    fetchCityMatchInfoErr,
+    fetchExtraQuestsSuc
+  } from '@/store/actions'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import BackHome from '@/components/backHome'
+  import Alert from '@/components/alert'
+  import { BET_CONTENT, BET_OPTION, MSG, USER_TYPE } from '@/utils/const'
+  import LoginDialog from '@/components/loginDialog'
+  import ShareBetImgDialog from '@/components/shareBetImgDialog'
+  import { throttle } from '@/utils/helper'
+  import Session from '@/network/session'
+  import { login } from '@/network/login'
+
+  @connect({
+    detail (state) {
+      return state.betDetail.detail
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    hypFlag (state) {
+      return state.home.flag.hyp
+    },
+    share (state) {
+      return state.home.share
+    },
+    shWinnigReward (state) {
+      return state.home.shWinnigReward
+    },
+    userInfo (state) {
+      return state.user.info
+    },
+    helpOddsTotal (state) {
+      return state.home.helpOddsTotal
+    },
+    shareUserId (state) {
+      return state.user.shareUserId
+    },
+    cityMatchToken (state) {
+      return state.user.cityMatchToken
+    }
+  }, {
+    fetchBetDetailSuc,
+    fetchBetDetailErr,
+    initBetDetail,
+    updateBetShareImgInfo,
+    updateUserInfo,
+    fetchDailyQuestsSuc,
+    postInviteSuc,
+    postInviteErr,
+    clearShareUserId,
+    fetchRedPointSuc,
+    markCityMatchUserSuc,
+    markCityMatchUserErr,
+    fetchCityMatchInfoSuc,
+    fetchCityMatchInfoErr,
+    fetchExtraQuestsSuc
+  })
+
+  export default class BetDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '预测详情'
+    }
+
+    components = {
+      loginDialog: LoginDialog,
+      loading: Loading,
+      noData: NoData,
+      backHome: BackHome,
+      shareBetImgDialog: ShareBetImgDialog,
+      alert: Alert
+    }
+
+    data = {
+      betContent: BET_CONTENT,
+      betOption: BET_OPTION,
+      loading: true,
+      loadFail: '',
+      showShareImg: false,
+      showSupportSuc: false,
+      supportOdds: '',
+      specialOdds: false,
+      supportLoading: false,
+      betStatus: ''
+    }
+
+    computed = {
+      earnings() {
+        let tmp = ''
+        if (this.detail) {
+          let base = 0
+          switch (this.detail.paytype) {
+            case '1':
+              base = this.detail.coins
+              break
+            case '2':
+              base = this.detail.diamonds
+              break
+            default:
+              break
+          }
+          let odds = 0
+          switch (this.detail.way) {
+            case 'single':
+              odds = this.detail.odds
+              if (this.detail.types !== 'jcgj' && this.detail.types !== 'jcgy') {
+                odds = (odds * 100 + this.detail.extraOdds * 100) / 100
+              }
+              tmp = Math.floor(base * odds)
+              break
+            case 'string':
+              odds = this.detail.oddsArr.reduce((acc, item) => {
+                return acc * item
+              }, 1)
+              if (this.detail.types !== 'jcgj' && this.detail.types !== 'jcgy') {
+                odds = (odds * 100 + this.detail.extraOdds * 100) / 100
+              }
+              tmp = Math.floor(base * odds)
+              break
+            case 'many':
+              let max = 0
+              let min = Infinity
+              const oddsArr = this.detail.odds.split('/')
+              const coin = base / oddsArr.length
+              oddsArr.forEach(item => {
+                const earn = Math.floor(coin * item)
+                if (earn < min) {
+                  min = earn
+                }
+                if (earn > max) {
+                  max = earn
+                }
+              })
+              if (min === max) {
+                return min
+              }
+
+              if (!max || min === Infinity) {
+                tmp = ''
+              } else {
+                tmp = `${min} - ${max}`
+              }
+              break
+            default:
+          }
+        }
+        return tmp
+      }
+    }
+
+    methods = {
+      backIndex() {
+        wepy.switchTab({
+          url: '/pages/index'
+        })
+      },
+      goToQuest() {
+        wepy.navigateTo({
+          url: 'quests'
+        })
+      },
+      goToMatches() {
+        wepy.navigateTo({
+          url: 'matches'
+        })
+      },
+      handleImgNotExist() {
+        this.specialOdds = true
+      },
+      handleImgLoad() {
+        this.specialOdds = false
+      },
+      async openShareImg() {
+        if (this.detail.types !== 'jcgy' && this.detail.types !== 'jcgj') {
+          let minStart = 0
+          let hasResult = this.detail.status > 1
+          const selected = this.detail.teams.map((item, index) => {
+            if (!minStart || item.b_time < minStart) {
+              minStart = item.b_time
+            }
+            let tmp = {
+              match: {...item}
+            }
+            tmp.match.fixedodds = this.detail.fixedodds[index]
+            tmp.type = this.detail.typesArr[index]
+            tmp.odd = this.detail.oddsArr[index]
+            tmp.option = this.detail.codesArr[index]
+            tmp.result = this.detail.pool_rs[index]
+            hasResult = hasResult || !!tmp.result
+            return tmp
+          })
+
+          const now = Math.floor(Date.now() / 1000)
+          let betStatus = this.detail.status
+          let leftHour
+          let leftMinue
+          if (!hasResult && now < minStart) {
+            betStatus = '0'
+            const timeLeft = minStart - now
+            leftHour = Number.parseInt(timeLeft / (60 * 60))
+            leftMinue = Number.parseInt((timeLeft - leftHour * 60 * 60) / 60)
+            if (leftMinue < 10) {
+              leftMinue = `0${leftMinue}`
+            }
+          }
+          await this.methods.updateBetShareImgInfo({
+            selected: selected,
+            betCoins: this.detail.paytype === '1' ? this.detail.coins : this.detail.diamonds,
+            betStatus,
+            betBonus: this.detail.paytype === '1' ? this.detail.bonus : this.detail.bonus_diamonds,
+            betMoneyType: this.detail.paytype,
+            projectid: this.detail.id,
+            support: betStatus === '0' ? {
+              extraOdds: this.detail.extraOdds,
+              personNum: this.detail.helpodds_list.length,
+              timeLeft: `${leftHour}:${leftMinue}`
+            } : {},
+          })
+          this.showShareImg = true
+          this.$apply()
+        }
+      },
+      handleSupport: throttle(function() {
+        const session = Session.get()
+        if (session && session.sessionId) {
+          if (this.supportLoading) return
+          this.handleSupport()
+        }
+      }, 500),
+      handleLogin: throttle(function(e) {
+        const session = Session.get()
+        if (!(session && session.sessionId) && e.detail.userInfo) {
+          if (this.supportLoading) return
+          this.supportLoading = true
+          login(e.detail).then(res => {
+            this.methods.updateUserInfo(Object.assign({}, e.detail.userInfo, res))
+          }).then(res => {
+            this.handleSupport()
+            req.get('/api/Sign/signIn').then(res => {
+              this.methods.fetchDailyQuestsSuc(res)
+            })
+
+            req.get('/api/Givecoin/redPoint').then(res => {
+              this.methods.fetchRedPointSuc(res.data)
+            })
+
+            req.get('/api/Minetask/morefun').then(res => {
+              this.methods.fetchExtraQuestsSuc(res.data)
+            })
+
+            if (this.shareUserId) {
+              req.post('/api/Enlightening/shoutu', { mid: this.shareUserId }).then(res => {
+                this.methods.postInviteSuc(res.data)
+                this.methods.clearShareUserId()
+              }).catch(res => {
+                this.methods.postInviteErr(res)
+              })
+            }
+
+            if (this.userInfo.type !== USER_TYPE.BLUE_DIAMOND && this.cityMatchToken) {
+              req.post('/api/login/markCitymatch', { token: this.cityMatchToken }).then(res => {
+                this.methods.markCityMatchUserSuc(res.data)
+              }).catch(err => {
+                this.methods.markCityMatchUserErr(err)
+              })
+            } else if (this.userInfo.type === USER_TYPE.BLUE_DIAMOND) {
+              req.get('/api/login/searchPlayer').then(res => {
+                this.methods.fetchCityMatchInfoSuc(res.data)
+              }).catch(err => {
+                this.methods.fetchCityMatchInfoErr(err)
+              })
+            }
+          }).catch(err => {
+            wepy.showToast({ title: err.msg, icon: 'none' })
+            this.supportLoading = false
+            this.$apply()
+          })
+        }
+      }, 500)
+    }
+
+    closeSupportSuc = () => {
+      this.showSupportSuc = false
+      this.$apply()
+    }
+
+    handleSupport() {
+      this.supportLoading = true
+      req.post('/api/Jcdetail/helpOdds', {
+        projectid: this.detail.id
+      }).then(res => {
+        this.getDetail()
+        this.supportOdds = Number.parseFloat(res.data.odds).toFixed(2)
+        this.showSupportSuc = true
+        this.supportLoading = false
+        this.$apply()
+      }).catch(err => {
+        this.getDetail()
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.supportLoading = false
+        this.$apply()
+      })
+    }
+
+    events = {
+    }
+
+    getDetail() {
+      req.get('/api/JcDetail/projectInfo', { id: this.detail.id }).then(res => {
+        this.methods.fetchBetDetailSuc(res.data)
+      }).catch(err => {
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.fetchBetDetailErr(err)
+      })
+    }
+
+    onLoad(options) {
+      let id = options.id
+      // 解析B类二维码参数
+      // query.scene = userId-qrmark-label1-label2-label3
+      if (options.scene) {
+        const decodeQuery = decodeURIComponent(options.scene)
+        const decodeQueryArr = decodeQuery.split('-')
+        id = decodeQueryArr[3]
+      }
+
+      if (id) {
+        this.loading = true
+        req.get('/api/JcDetail/projectInfo', { id }).then(res => {
+          this.methods.fetchBetDetailSuc(res.data)
+          this.loadFail = ''
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.methods.fetchBetDetailErr(err)
+          this.loadFail = MSG.LOAD_FAIL
+        }).then(() => {
+          this.loading = false
+          this.betStatus = this.detail.status
+          if (this.detail.types !== 'jcgj' && this.detail.types !== 'jcgy' && this.betStatus === '1') {
+            let minStart = 0
+            this.detail.teams.forEach(item => {
+              if (!minStart || item.b_time < minStart) {
+                minStart = item.b_time
+              }
+            })
+            const now = Math.floor(Date.now() / 1000)
+            if (now < minStart) {
+              this.betStatus = '0'
+            }
+          }
+
+          const list = this.detail.helpodds_list
+          Array.isArray(list) && list.find(ele => {
+            if (ele.help_uid === this.userInfo.id) {
+              this.supportOdds = ele.extraOdds
+            }
+            return ele.help_uid === this.userInfo.id
+          })
+          this.$apply()
+        })
+      }
+    }
+
+    onUnload() {
+      this.supportOdds = ''
+      this.specialOdds = false
+      this.methods.initBetDetail()
+    }
+
+    onShareAppMessage(options) {
+      let title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_others
+      let path = '/pages/index'
+      switch (this.betStatus) {
+        case '0':
+          title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_helpodds
+          path = `/pages/betDetail?id=${this.detail.id}&userId=${this.userInfo.id}`
+          break
+        case '1':
+          title = this.shamFlag || this.hypFlag ? '世界杯资讯' : `[${this.userInfo.nickName || ''}@我]${this.share.sh_jcresults}`
+          if (this.detail.way === 'string') {
+            // 串投
+            path = `/pages/matches?betId=${this.detail.no}&shareId=${this.userInfo.id}`
+          } else if (this.detail.types === 'jcgj' || this.detail.types === 'jcgy') {
+            // 竞猜冠亚军
+            path = `/pages/champion?betId=${this.detail.no}&shareId=${this.userInfo.id}`
+          } else if (this.detail.way === 'single') {
+            // 单投
+            path = `/pages/matchDetail?id=${this.detail.matchids}&betId=${this.detail.no}&shareId=${this.userInfo.id}`
+          }
+          break
+        case '3':
+          req.post('/api/Jcrecode/shareGetCoin', { no: this.detail.no }).catch(err => {
+            console.log(err.msg)
+          })
+          const bonus = this.detail.paytype == 1 ? `${this.detail.bonus}金币` : `${this.detail.bonus_diamonds}蓝钻` // eslint-disable-line
+          title = this.shamFlag || this.hypFlag ? '世界杯资讯' : `${this.share.sh_winning.replace('{{coin}}', bonus)}`
+          path = `/pages/betDetail?id=${this.detail.id}`
+          break
+        default:
+      }
+
+      console.log(path)
+      return {
+        title,
+        path
+      }
+    }
+  }
+</script>

@@ -1,0 +1,442 @@
+<template>
+  <view class="ChampionBetPanel" @tap="closeSelector">
+    <view class="ChampionBetPanel-row1">
+      <div class="ChampionBetPanel-earnings">
+        预测奖金：{{earnings}}{{moneyType === 1 ? '金币' : '蓝钻'}}
+      </div>
+      <block wx:if="{{moneyType === 1}}">
+        <coin />
+      </block>
+      <block wx:else>
+        <blueDiamond />
+      </block>
+    </view>
+    <view class="ChampionBetPanel-tips">
+      页面中的赔率仅供参考，实际赔率以最终赔率为准
+    </view>
+    
+    <view class="ChampionBetPanel-row2">
+      <view class="ChampionBetPanel-baseCtn">
+        <repeat for="{{baseArr[moneyType]}}">
+          <view
+            class="ChampionBetPanel-base"
+            :class="{ is-selected: baseIndex == index }"
+            @tap="handleSwitchBase({{item}}, {{index}})"
+          >
+            {{item}}
+          </view>
+        </repeat>
+      </view>
+      <view wx:if="{{userInfo.type == 2}}" class="ChampionBetPanel-menuCtn" @tap.stop="expandMoneyTypeMenu">
+        {{moneyType === 1 ? '金币' : '蓝钻'}}
+        <image class="ChampionBetPanel-moreIcon" src="../img/00-gengduofuhao.png" />
+        <view
+          class="ChampionBetPanel-menu"
+          hidden="{{hideMoneyType}}"
+        >
+          <view
+            class="ChampionBetPanel-menuItem"
+            :class="{'is-selected': moneyType === 1}"
+            @tap.stop="handleSwitchType(1)"
+          >
+            金币
+          </view>
+          <view
+            class="ChampionBetPanel-menuItem"
+            :class="{'is-selected': moneyType === 2}"
+            @tap.stop="handleSwitchType(2)"
+          >
+            蓝钻
+          </view>
+        </view>
+      </view>
+      <view wx:else class="ChampionBetPanel-coinType">
+        金币
+      </view>
+      <view class="ChampionBetPanel-timesCtn">
+        投
+        <view
+          class="ChampionBetPanel-baseBtn"
+          @tap="sub"
+        >
+          -
+        </view>
+        <input
+          class="ChampionBetPanel-input"
+          type="number"
+          value="{{times}}"
+          @input="handleInputTimes"
+        />
+        <view
+          class="ChampionBetPanel-baseBtn"
+          @tap="add"
+        >
+          +
+        </view>
+        倍
+      </view>
+    </view>
+    <view class="ChampionBetPanel-row3">
+      <view
+        class="ChampionBetPanel-allIn"
+        @tap="allin"
+      >
+        All in
+      </view>
+      <form class="ChampionBetPanel-betBtnCtn" @submit="bet" report-submit="true">
+        <button 
+          class="ChampionBetPanel-betBtn"
+          formType="submit"
+          loading="{{betLoading}}"
+        >
+          确认使用{{base * times * selected.length}}{{moneyType === 1 ? '金币' : '蓝钻'}}
+        </button>
+      </form>
+    </view>
+  </view>
+  <charge />
+  <betConfirmDialog
+    :shareId.sync="shareId"
+    :betId.sync="betId"
+    :type.sync="type"
+  />
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.ChampionBetPanel {
+  padding: 24rpx 20rpx;
+  background-color: #eeeeee;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  min-height: 304rpx;
+  box-sizing: border-box;
+
+  &-row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 26rpx;
+    color: rgb(131, 135, 148);
+    span {
+      color: $red;
+    }
+  }
+
+  &-earnings {
+    display: block;
+    color: rgb(230, 0, 18);
+    font-size: 30rpx;
+  }
+
+  &-tips {
+    display: block;
+    font-size: 24rpx;
+    color: rgb(166, 154, 154);
+    margin-top: 5px;
+  }
+
+  &-row2 {
+    display: flex;
+    justify-content:space-between;
+    padding-bottom: 18rpx;
+    padding-top: 10rpx;
+  }
+
+  &-menuCtn {
+    position: relative;
+    color: rgb(77, 77, 77);
+    font-size: 26rpx;
+    border: 4rpx solid $secondary;
+    border-radius:8rpx;
+    box-sizing: border-box;
+    height: 64rpx;
+    width: 120rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-menu{
+    position: absolute;
+    z-index: 3;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $primary;
+    color: rgb(77, 77, 77);
+  }
+
+  &-menuItem {
+    height: 64rpx;
+    line-height: 64rpx;
+    width: 120rpx;
+    display: block;
+    border: 4rpx solid $secondary;
+    border-bottom: 0;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0 20rpx;
+  }
+
+  &-menuItem.is-selected {
+    background-color: $red;
+    color: $text-primary;
+  }
+
+  &-coinType {
+    color: rgb(77, 77, 77);
+    font-size: 26rpx;
+    height: 64rpx;
+    line-height: 64rpx;
+  }
+
+  &-moreIcon {
+    width: 12rpx;
+    height: 21rpx;
+    transform: rotate(-90deg);
+    margin-left: 5px;
+  }
+  &-baseCtn {
+    display: flex;
+  }
+
+  &-base {
+    margin-right: 7px;
+    border: 2px solid #dbdce0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: rgb(131, 135, 148);
+    font-size: 26rpx;
+    height: 64rpx;
+    width: 84rpx;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+  }
+
+  &-base.is-selected {
+    background-color: rgb(218, 29, 30);
+    border: 2px solid rgb(218, 29, 30);
+    color: rgb(255, 255, 255);
+  }
+
+  &-input {
+    font-size: 26rpx;
+    text-align: center;
+    width: 64rpx;
+    height: 64rpx;
+    border: 2px solid rgb(218, 29, 30);
+    box-sizing: border-box;
+  }
+
+  &-baseBtn {
+    background-color: rgb(218, 29, 30);
+    box-sizing: border-box;
+    font-size: 40rpx;
+    text-align: center;
+    color: white;
+    height: 64rpx;
+    line-height: 64rpx;
+    width: 64rpx;
+    &:first-child {
+      margin-left: 6px;
+      border-radius: 4px 0px 0px 4px;
+    }
+    &:last-child {
+      margin-right: 6px;
+      border-radius: 0px 4px 4px 0px;
+    }
+  }
+
+  &-timesCtn {
+    font-size: 30rpx;
+    color: rgb(77, 77, 77);
+    display: flex;
+    align-items: center;
+    flex:1;
+    justify-content:flex-end;
+  }
+
+  &-allIn {
+    background-color: rgb(243, 152, 0);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: $text-primary;
+    font-size: 30rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 78rpx;
+    width: 96rpx;
+  }
+
+  &-row3 {
+    display: flex;
+  }
+
+  &-betBtnCtn {
+    flex: 1;
+  }
+
+  &-betBtn {
+    background-color: rgb(218, 29, 30);
+    color: rgb(242, 242, 242);
+    font-size: 30rpx;
+    height: 78rpx;
+    margin-left: 12rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import {
+  updateBetSelected
+} from '@/store/actions'
+import Coin from '@/components/coin'
+import BlueDiamond from '@/components/blueDiamond'
+import BetConfirmDialog from '@/components/betConfirmDialog'
+import { USER_TYPE, MONEY_TYPE } from '@/utils/const'
+
+@connect({
+  userInfo (state) {
+    return state.user.info
+  }
+}, {
+  updateBetSelected
+})
+
+export default class ChampionBetPanel extends wepy.component {
+  props = {
+    selected: {
+      type: Array,
+      default: [],
+      twoWay: true
+    },
+    userInfo: {
+      type: Object,
+      default: {}
+    },
+    type: {
+      type: String,
+      default: ''
+    },
+    betId: {
+      type: String,
+      default: null
+    },
+    shareId: {
+      type: String,
+      default: null
+    }
+  }
+
+  components = {
+    coin: Coin,
+    blueDiamond: BlueDiamond,
+    betConfirmDialog: BetConfirmDialog
+  }
+
+  mixins = []
+
+  data = {
+    base: 100,
+    baseIndex: 0,
+    baseArr: {
+      1: [100, 1000, 10000],
+      2: [10, 100, 1000]
+    },
+    times: 1,
+    betLoading: false,
+    moneyType: MONEY_TYPE.COIN,
+    hideMoneyType: true
+  }
+
+  computed = {
+    earnings() {
+      const coin = this.base * this.times
+      let max = 0
+      let min = Infinity
+      this.selected.forEach(item => {
+        const earn = Math.floor(coin * item.odds)
+        if (earn < min) {
+          min = earn
+        }
+        if (earn > max) {
+          max = earn
+        }
+      })
+      if (min === max) {
+        return min
+      }
+      return `${min} - ${max}`
+    }
+  }
+
+  methods = {
+    handleSwitchBase(base, index) {
+      this.base = Number.parseInt(base, 10)
+      this.baseIndex = index
+    },
+    handleInputTimes(e) {
+      const newValue = Number.parseInt(e.detail.value, 10)
+      this.times = (isNaN(newValue) || !newValue) ? 1 : newValue
+    },
+    handleSwitchType(moneyType) {
+      this.moneyType = Number.parseInt(moneyType, 10)
+      this.baseIndex = 0
+      this.base = Number.parseInt(this.baseArr[moneyType][this.baseIndex], 10)
+      this.hideMoneyType = true
+    },
+    expandMoneyTypeMenu() {
+      this.hideMoneyType = false
+    },
+    closeSelector() {
+      this.hideMoneyType = true
+    },
+    sub() {
+      if (this.times > 1) {
+        this.times = this.times - 1
+      } else {
+        this.times = 1
+      }
+    },
+    add() {
+      this.times = this.times + 1
+    },
+    allin() {
+      if (this.selected.length) {
+        const base = this.baseArr[this.moneyType][0]
+        if (this.moneyType === MONEY_TYPE.COIN && this.userInfo.coin > this.selected.length * base) {
+          this.base = base
+          this.times = Math.floor(this.userInfo.coin / base / this.selected.length)
+        } else if (this.moneyType === MONEY_TYPE.BLUE_DIAMOND && this.userInfo.bluediamonds > this.selected.length * base) {
+          this.base = base
+          this.times = Math.floor(this.userInfo.bluediamonds / base / this.selected.length)
+        }
+      }
+    },
+    bet() {
+      this.methods.updateBetSelected({
+        selected: this.selected,
+        betCoins: this.base * this.times * this.selected.length,
+        betType: this.type,
+        betMoneyType: this.moneyType,
+        showBetConfirm: true
+      })
+    }
+  }
+
+  onLoad() {
+    if (this.userInfo.id && this.userInfo.type === USER_TYPE.BLUE_DIAMOND) {
+      this.moneyType = MONEY_TYPE.BLUE_DIAMOND
+    }
+    this.base = this.baseArr[this.moneyType][0]
+  }
+}
+</script>

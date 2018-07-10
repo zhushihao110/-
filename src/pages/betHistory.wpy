@@ -1,0 +1,358 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .BetHistory {
+    background-color: #dbdce0;
+    height: 100%;
+
+    &-filter {
+      display: flex;
+      font-size: 26rpx;
+      background-color: $primary;
+    }
+
+    &-tab {
+      flex: 1;
+      color: $text-secondary;
+      height: 80rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &-tab.is-selected {
+      color: $red;
+      border-bottom: 2rpx solid $red;
+    }
+
+    &-list {
+      margin-top: 12rpx;
+    }
+
+    &-item {
+      margin: 15rpx 15rpx;
+      border-radius: 8rpx;
+      background-color: $primary;
+      padding: 12rpx;
+      font-size: 26rpx;
+      color: rgb(153, 153, 153);
+    }
+
+    &-itemTitle {
+      display: flex;
+      font-size: 30rpx;
+      border-bottom: 2rpx solid $secondary;
+      padding: 6rpx;
+    }
+
+    &-itemContent {
+      position: relative;
+    }
+
+    &-team {
+      flex: 1;
+      color: rgb(77, 77, 77);
+      span {
+        color: $green;
+        margin-right: 10px;
+      }
+    }
+
+    &-status {
+      color: rgb(153, 153, 153);
+    }
+
+    &-status.is-reward {
+      color: $red;
+    }
+
+    &-type, &-time, &-coin {
+      display: block;
+      padding: 6rpx;
+    }
+
+     &-type {
+      padding-top: 12rpx;
+    }
+
+    &-nav {
+      font-size: 30rpx;
+      text-align: center;
+    }
+
+    &-tag {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 210rpx;
+    }
+
+    &-shareBtn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background-color: $orange;
+      font-size: 30rpx;
+      color: white;
+      width: 210rpx;
+      height: 56rpx;
+      line-height: 56rpx;
+      text-align: center;
+      border-radius: 4px;
+    }
+
+    &-blueTag {
+      position: absolute;
+      top: 6rpx;
+      right: -12rpx;
+      width: 88rpx;
+      height: 48rpx;    
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="BetHistory">
+    <view class="BetHistory-filter" @tap="switchFilter">
+      <view
+        class="BetHistory-tab"
+        :class="{is-selected: filter === '0'}"
+        data-value="0"
+      >
+        全部
+      </view>
+      <view
+        class="BetHistory-tab"
+        :class="{is-selected: filter === '1'}"
+        data-value="1"
+      >
+        待开奖
+      </view>
+      <view
+        class="BetHistory-tab"
+        :class="{is-selected: filter === '3'}"
+        data-value="3"
+      >
+        猜中
+      </view>
+    </view>
+    
+    <block wx:if="{{firstPageLoading}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadFail}}">
+      <noData :msg.sync="loadFail" />
+    </block>
+    <view wx:elif="{{history.list.length > 0}}" class="BetHistory-list">
+      <repeat for="{{history.list}}" key="index" item="item" index="index">
+        <view class="BetHistory-item" @tap="goToDetail({{item.id}})">
+          <view class="BetHistory-itemTitle">
+            <!-- 普通串投 -->
+            <view wx:if="{{item.way === 'string'}}" class="BetHistory-team">
+              <span>
+                {{item.matches && item.matches.length}}串1
+              </span>
+              {{item.matches && item.matches[0] && item.matches[0].h_cn}} VS {{item.matches && item.matches[0] && item.matches[0].a_cn}}
+              ...
+            </view>
+
+            <!-- 世界杯冠&冠亚军 -->
+            <view wx:elif="{{item.types === 'jcgj' || item.types === 'jcgy'}}" class="BetHistory-team">
+              {{item.types === 'jcgj' ? '猜冠军' : '猜冠亚军'}}
+            </view>
+
+            <!-- 单投 -->
+            <view wx:elif="{{item.way === 'single'}}" class="BetHistory-team">
+              {{item.matches && item.matches[0] && item.matches[0].h_cn}} VS {{item.matches && item.matches[0] && item.matches[0].a_cn}}
+            </view>
+            <view
+              class="BetHistory-status"
+              :class="{is-reward: item.status === '中奖'}"
+            >
+              {{item.status}}
+              <block wx:if="{{item.status === '中奖'}}">
+                {{item.paytype == 1 ? item.bonus : item.bonus_diamonds}}
+              </block>
+            </view>
+          </view>
+
+          <view class="BetHistory-itemContent">
+            <!-- 普通串投 -->
+            <view wx:if="{{item.way === 'string'}}" class="BetHistory-type">
+              预测内容：{{betContent['string']}}
+            </view>
+
+            <!-- 世界杯冠&冠亚军 -->
+            <view wx:elif="{{item.types === 'jcgj' || item.types === 'jcgy'}}" class="BetHistory-type">
+              预测内容：{{betContent[item.types]}}
+            </view>
+
+            <!-- 单投 -->
+            <view wx:elif="{{item.way === 'single'}}" class="BetHistory-type">
+              预测内容：{{betContent[item.types]}}({{betOption[item.types] && betOption[item.types][item.matches[0] && item.matches[0].code]}})
+            </view>
+            <view class="BetHistory-time">
+              投注时间：{{item.formatTime}}
+            </view>
+            <view class="BetHistory-coin">
+              <block wx:if="{{item.paytype == 1}}">
+                投注金币：{{item.coin}}
+              </block>
+              <block wx:elif="{{item.paytype == 2}}">
+                投注蓝钻：{{item.diamond}}
+              </block>
+            </view>
+
+            <view class="BetHistory-tag">
+              <image
+                wx:if="{{item.paytype == 2}}"
+                class="BetHistory-blueTag"
+                src="../img/bluediamond-tag.png"
+              /> 
+
+              <view
+                wx:if="{{item.status === '中奖'}}"
+                class="BetHistory-shareBtn">
+                分享领金币
+              </view>
+            </view>
+          </view>
+        </view>
+      </repeat>
+    </view>
+    <block wx:else>
+      <noData :msg.sync="loadFail" />
+      <navigator
+        class="BetHistory-nav"
+        url="matches"
+        open-type="navigate"
+      >
+        <block wx:if="{{filter == 3}}">
+          您还未中奖，快去投注吧>>
+        </block>
+        <block wx:else>
+          您还未下注，快去投注吧>>
+        </block>          
+      </navigator>
+    </block>
+    <loading hidden="{{!loadingList}}" />
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import {
+    fetchBetHistorySuc,
+    fetchBetHistoryErr,
+    initBetHistory,
+    fetchBetHistoryMoreSuc,
+    fetchBetHistoryMoreErr
+  } from '@/store/actions'
+  import { BET_CONTENT, BET_OPTION, MSG } from '@/utils/const'
+  import LoginDialog from '@/components/loginDialog'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+
+  @connect({
+    history (state) {
+      return state.bets.history
+    }
+  }, {
+    fetchBetHistorySuc,
+    fetchBetHistoryErr,
+    initBetHistory,
+    fetchBetHistoryMoreSuc,
+    fetchBetHistoryMoreErr
+  })
+
+  export default class BetHistory extends wepy.page {
+    config = {
+      navigationBarTitleText: '预测记录'
+    }
+
+    components = {
+      loginDialog: LoginDialog,
+      loading: Loading,
+      noData: NoData
+    }
+
+    data = {
+      page: 1,
+      filter: '0',
+      betContent: BET_CONTENT,
+      betOption: BET_OPTION,
+      loadingList: false,
+      firstPageLoading: true,
+      loadFail: ''
+    }
+
+    computed = {
+    }
+
+    methods = {
+      switchFilter(e) {
+        this.filter = e.target.dataset.value
+        this.page = 1
+        this.firstPageLoading = true
+        req.get('/api/Jcdetail/record', { status: this.filter, page: this.page, limit: 20 }).then(res => {
+          this.methods.fetchBetHistorySuc(res.data)
+        }).catch(res => {
+          this.methods.fetchBetHistoryErr(res)
+        }).then(res => {
+          this.page = this.page + 1
+          this.firstPageLoading = false
+          this.$apply()
+        })
+      },
+      goToDetail(id) {
+        wepy.navigateTo({
+          url: `betDetail?id=${id}`
+        })
+      }
+    }
+
+    events = {
+    }
+
+    onLoad(option) {
+      if (option.filter) {
+        this.filter = option.filter
+      }
+
+      this.firstPageLoading = true
+      req.get('/api/Jcdetail/record', { status: this.filter, page: this.page, limit: 20 }).then(res => {
+        this.methods.fetchBetHistorySuc(res.data)
+        this.loadFail = ''
+      }).catch(res => {
+        this.methods.fetchBetHistoryErr(res)
+        this.loadFail = MSG.LOAD_FAIL
+      }).then(res => {
+        this.page = this.page + 1
+        this.firstPageLoading = false
+        this.$apply()
+      })
+    }
+
+    onUnload() {
+      this.methods.initBetHistory()
+    }
+
+    onReachBottom() {
+      if (this.history.hasMore && !this.loadingList && !this.firstPageLoading) {
+        this.loadingList = true
+        req.get('/api/Jcdetail/record', { status: this.filter, page: this.page, limit: 20 }).then(res => {
+          this.methods.fetchBetHistoryMoreSuc(res.data)
+          this.loadFail = ''
+        }).catch(res => {
+          this.methods.fetchBetHistoryMoreErr(res)
+        }).then(res => {
+          this.page = this.page + 1
+          this.loadingList = false
+          this.$apply()
+        })
+      }
+    }
+  }
+</script>

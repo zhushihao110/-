@@ -1,0 +1,371 @@
+<template>
+  <alert1 wx:if="{{showCharge}}" :show.sync="showCharge" :onClose="closeCharge">
+    <view class="Charge" slot="content">
+      <view class="Charge-header">
+        <span>购买金币</span>
+        <image class="Charge-headerBG" src="../img/charge-title.png" />
+        <image
+          class="Charge-closeBtn"
+          src="../img/close.png"
+          @tap.stop="close"
+        />
+      </view>
+      <view class="Charge-listCtn">
+        <view class="Charge-firstTipCtn">
+          <image
+            wx:if="{{charge.first}}"
+            class="Charge-firstTip" src="../img/first-charge.png"
+          />
+        </view>
+        <view class="Charge-tools">
+          <view class="Charge-info">
+            我的金币：<span>{{userInfo.coin}}</span>
+          </view>
+        </view>
+        <view class="Charge-scrollCtn">
+          <scroll-view class="Charge-list" scroll-y>
+            <repeat for="{{charge.list}}" key="index" index="index" item="item">
+              <div class="Charge-item">
+                <div class="Charge-itemIconCtn">
+                  <image
+                    class="Charge-itemIcon{{index > 4 ? 5 : index + 1}}"
+                    src="../img/coin{{index > 4 ? 5 : index + 1}}.png"
+                  />
+                </div>
+                <span>{{item.coin}}金币</span>
+                <button
+                  class="Charge-getBtn"
+                  size="mini"
+                  @tap.stop="openDialog({{item}})"
+                >
+                  {{item.fee}}元
+                </button>
+              </div>
+            </repeat>
+          </scroll-view>
+        </view>
+      </view>
+    </view>
+  </alert1>
+  <alert2 wx:if="{{showDialog}}" class="Charge-dialog" :show.sync="showDialog" :onClose="closeDialog">
+    <view class="Charge-dialogContent" slot="content">
+      <view class="Charge-header">
+        <span>购买金币</span>
+        <image class="Charge-headerBG" src="../img/charge-title.png" />
+        <image
+          class="Charge-closeBtn"
+          src="../img/close.png"
+          @tap.stop="closeDialog"
+        />
+      </view>
+      <view class="Charge-dialogCtn">
+        <div class="Charge-coin">
+          <image
+            class="Charge-itemIcon1 Charge-coinIcon"
+            src="../img/coin1.png"
+          />
+          {{selected.coin}} 金币
+        </div>
+        <button 
+          class="Charge-btn"
+          @tap.stop="handleCharge"
+        >立即支付  {{selected.fee}}元</button>
+      </view>
+    </view>
+  </alert2>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.Charge {
+  padding-top: 30rpx;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+
+  &-header {
+    position: relative;
+    width: 699rpx;
+    height: 144rpx;
+    min-height: 144rpx;
+    font-size: 48rpx;
+    color: rgb(248, 243, 72);
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 24rpx;
+    span {
+      z-index: $z-first;
+      position: absolute;
+      margin-left: auto;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+    }
+  }
+
+  &-headerBG {
+    position: absolute;
+    width: 699rpx;
+    height: 144rpx;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &-closeBtn {
+    position: absolute;
+    width: 52rpx;
+    height: 52rpx;
+    right: 70rpx;
+    top: 35rpx;
+  }
+
+  &-listCtn {
+    border-radius: 8rpx;
+    background-color: $primary;
+    margin-top: -25rpx;
+    padding: 0rpx 30rpx;
+    padding-top: 25rpx;
+    padding-bottom: 30rpx;
+    box-sizing: border-box;
+    flex: 1;
+    width: 640rpx;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-firstTipCtn {
+    text-align: center;
+    padding-top:20rpx;
+  }
+
+  &-firstTip {
+    width: 333rpx;
+    height: 41rpx;
+  }
+
+  &-info {
+    font-size: 30rpx;
+    color: rgb(153, 153, 153);
+    span {
+      color: $red;
+      font-size: 30rpx;
+    }
+  }
+
+  &-scrollCtn {
+    height: 100%;
+    overflow-y: auto;
+    flex:1 1 auto;
+  }
+
+  &-list {
+    height: 100%;
+  }
+
+  &-item {
+    display: flex;
+    align-items: center;
+    height: 132rpx;
+    box-sizing: border-box;
+    border-bottom: 2rpx solid $secondary;
+    font-size: 26rpx;
+    color: rgb(51, 51, 51);
+    span {
+      flex: 1;
+    }
+  }
+
+  &-dialog {
+    z-index: $z-top + 1;
+  }
+
+  &-itemIconCtn {
+    width: 108rpx;
+    height: 95rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-getBtn {
+    background-color: rgb(243, 152, 0);
+    color: rgb(238, 238, 238);
+    font-size: 30rpx;
+    width: 150rpx;
+    padding: 0rpx;
+    text-align: center;
+  }
+
+  &-dialogContent {
+    display:flex;
+    align-items:center;
+    flex-direction:column;
+  }
+
+  &-dialogCtn {
+    padding-top: 30rpx;
+    border-radius: 8rpx;
+    background-color: $primary;
+    margin-top: -25rpx;
+    padding: 0rpx 30rpx;
+    padding-bottom: 30rpx;
+    box-sizing: border-box;
+    width: 640rpx;
+  }
+
+  &-btn {
+    background-color: rgb(243, 152, 0);
+    color: rgb(238, 238, 238);
+  }
+
+  &-coin {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30rpx;
+    color: $red;
+    padding: 30rpx;
+    box-sizing: border-box;
+  }
+
+  &-coinIcon {
+    margin-right: 30rpx;
+  }
+
+  &-itemIcon1 {
+    width: 45rpx;
+    height: 45rpx;
+  }
+
+  &-itemIcon2 {
+    width: 57rpx;
+    height: 48rpx;
+  }
+
+  &-itemIcon3 {
+    width: 82rpx;
+    height: 58rpx;
+  }
+
+  &-itemIcon4 {
+    width: 104rpx;
+    height: 93rpx;
+  }
+
+  &-itemIcon5 {
+    width: 106rpx;
+    height: 89rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import req from '@/network'
+import {
+  fetchChargeListSuc,
+  fetchChargeListErr,
+  postChargeSuc,
+  postChargeErr,
+  fetchUserInfoSuc,
+  fetchUserInfoErr,
+  updateShowCharge
+} from '@/store/actions'
+import { fromwhere } from '@/config'
+import Alert from './alert'
+
+@connect({
+  charge (state) {
+    return state.charge
+  },
+  chargeFlag (state) {
+    return state.home.flag.charge
+  },
+  showCharge (state) {
+    return state.charge.showCharge && state.home.flag.charge
+  },
+  userInfo (state) {
+    return state.user.info
+  }
+}, {
+  fetchChargeListSuc,
+  fetchChargeListErr,
+  postChargeSuc,
+  postChargeErr,
+  fetchUserInfoSuc,
+  fetchUserInfoErr,
+  updateShowCharge
+})
+
+export default class Charge extends wepy.component {
+  components = {
+    alert1: Alert,
+    alert2: Alert
+  }
+
+  props = {
+  }
+
+  data = {
+    showDialog: false,
+    selected: null
+  }
+
+  computed = {
+  }
+
+  closeDialog = () => {
+    this.showDialog = false
+    this.selected = null
+    this.$apply()
+  }
+
+  methods = {
+    openDialog(selected) {
+      this.selected = selected
+      this.showDialog = true
+    },
+    close() {
+      this.methods.updateShowCharge(false)
+    },
+    handleCharge() {
+      req.post('/api/Payment/payfee', { fee: this.selected.fee, fromwhere }).then(res => {
+        this.methods.postChargeSuc(res.data)
+        return res.data
+      }).then(res => {
+        return wepy.requestPayment({
+          timeStamp: res.timeStamp,
+          nonceStr: res.nonceStr,
+          package: res.package,
+          signType: 'MD5',
+          paySign: res.paySign
+        })
+      }).then(res => {
+        this.showDialog = false
+        this.methods.updateShowCharge(false)
+        req.get('/api/Version/userInfo').then(res => {
+          this.methods.fetchUserInfoSuc(res.data)
+          return res.data
+        }).catch(res => {
+          this.methods.fetchUserInfoErr(res)
+        })
+        return wepy.showToast({
+          title: `充值成功`,
+          duration: 3000
+        })
+      }).catch(res => {
+        this.methods.postChargeErr(res)
+      })
+    }
+  }
+
+  closeCharge = () => {
+    this.methods.updateShowCharge(false)
+  }
+}
+</script>

@@ -1,0 +1,244 @@
+<style lang="scss">
+  page{
+    background-color: #dbdce0;
+  }
+</style>
+
+<script>
+import wepy from 'wepy'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
+import 'wepy-async-function'
+import Promise from 'promise-polyfill' // eslint-disable-line
+import aldstat from '@/utils/ald-stat' // eslint-disable-line
+import { setStore } from 'wepy-redux'
+import req from '@/network'
+import * as interceptor from '@/network/interceptor'
+import Session from '@/network/session'
+import { baseUrl, version, fromwhere } from '@/config'
+import { USER_TYPE } from '@/utils/const'
+import configStore from './store'
+
+const store = configStore()
+setStore(store)
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/matches',
+      'pages/invitation',
+      'pages/quests',
+      'pages/user',
+      'pages/transaction',
+      'pages/rules',
+      'pages/betHistory',
+      'pages/myInvite',
+      'pages/news',
+      'pages/champion',
+      'pages/matchDetail',
+      'pages/mall',
+      'pages/goodsDetail',
+      'pages/myOrder',
+      'pages/gift',
+      'pages/betDetail',
+      'pages/orderDetail',
+      'pages/historyMatches',
+      'pages/myInviteQR',
+      'pages/rank'
+    ],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: 'black',
+      backgroundColor: '#dbdce0',
+      backgroundColorTop: '#dbdce0',
+      backgroundColorBottom: '#dbdce0'
+    },
+    tabBar: {
+      color: '#666',
+      selectedColor: '#e60012',
+      backgroundColor: '#f7f7f8',
+      borderStyle: 'white',
+      list: [{
+        pagePath: 'pages/index',
+        text: '大厅',
+        iconPath: 'img/00-jingcai01.png',
+        selectedIconPath: 'img/00-jingcai02.png'
+      }, {
+        pagePath: 'pages/invitation',
+        text: '师徒',
+        iconPath: 'img/00-shitu01.png',
+        selectedIconPath: 'img/00-shitu02.png'
+      },
+      {
+        pagePath: 'pages/mall',
+        text: '礼品商城',
+        iconPath: 'img/00-shangcheng01.png',
+        selectedIconPath: 'img/00-shangcheng02.png'
+      },
+      {
+        pagePath: 'pages/user',
+        text: '我的',
+        iconPath: 'img/00-wode01.png',
+        selectedIconPath: 'img/00-wode02.png'
+      }]
+    }
+  }
+
+  globalData = {
+    scene: ''
+  }
+
+  constructor () {
+    super()
+    this.use('requestfix')
+    this.use('promisify')
+    moment.locale('zh-cn')
+  }
+
+  onLaunch(options) {
+    wepy.getSystemInfo().then(res => {
+      console.log(res)
+    })
+    console.log('version, fromwhere', version, fromwhere)
+    req.baseUrl(baseUrl).interceptor(interceptor.request, interceptor.response)
+    this.globalData.scene = options.scene
+
+    let query = Object.assign({}, options.query)
+    // 解析B类二维码参数
+    // query.scene = userId-qrmark-label1-label2-label3
+    if (options.query.scene) {
+      const decodeQuery = decodeURIComponent(options.query.scene)
+      const decodeQueryArr = decodeQuery.split('-')
+      query = Object.assign({}, query, {
+        qrmark: decodeQueryArr[1],
+        label1: decodeQueryArr[2],
+        label2: decodeQueryArr[3],
+        label3: decodeQueryArr[4]
+      })
+    }
+
+    req.get('/api/Version/version', {
+      version: version,
+      scene: options.scene,
+      label1: query.label1,
+      label2: query.label2,
+      label3: query.label3
+    }).then(res => {
+      store.dispatch({type: 'FETCH_VERSIOH_FLAG_SUC', payload: res.data})
+    })
+
+    if (wx.getUpdateManager) { // eslint-disable-line
+      const updateManager = wx.getUpdateManager() // eslint-disable-line
+
+      updateManager.onCheckForUpdate(function (res) {
+         // 请求完新版本信息的回调
+        console.log('是否有版本更新', res.hasUpdate)
+      })
+
+      updateManager.onUpdateReady(function () {
+        wepy.showModal({
+          title: '更新提示',
+          content: '新版本已经准备好，是否重启应用？'
+        }).then((res) => {
+          if (res.confirm) {
+             // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+            updateManager.applyUpdate()
+          }
+        })
+      })
+
+      updateManager.onUpdateFailed(function () {
+         // 新的版本下载失败
+        wepy.showToast({ title: '新的版本下载失败', icon: 'none' })
+      })
+    } else {
+      // 若不支持自动更新，暂时不提示
+      // wepy.showModal({
+      //   title: '提示',
+      //   content: '当前微信版本过低，无法使用小程序更新功能，请升级到最新微信版本后重试。'
+      // })
+    }
+
+    if (query.qrmark) {
+      store.dispatch({type: 'SAVE_QRMARK', payload: query.qrmark})
+    }
+
+    if (query.token) {
+      store.dispatch({type: 'SAVE_CITY_MATCH_TOKEN', payload: query.token})
+    }
+
+    if (!wx.getStorageSync('haveShowActivity')) {
+      store.dispatch({type: 'UPDATE_SHOW_ACTIVITY', payload: true})
+
+      if (wepy.showTabBarRedDot) {
+        wepy.showTabBarRedDot({
+          index: 1
+        })
+      }
+    }
+
+    const showHomeDialogTimeStamp = wx.getStorageSync('showHomeDialogTimeStamp') // eslint-disable-line
+    if (!showHomeDialogTimeStamp || !moment(showHomeDialogTimeStamp).isSame(moment(), 'day')) {
+      store.dispatch({type: 'UPDATE_SHOW_HOME_DIALOG', payload: true})
+    }
+
+
+    if (options.path !== 'pages/index') {
+      req.get('/api/notice/list', { type: 1 }).then(res => {
+        store.dispatch({type: 'FETCH_NOTICE_SUC', payload: res.data})
+      }).catch(err => {
+        store.dispatch({type: 'FETCH_NOTICE_SUC', payload: err})
+      })
+    }
+
+    const session = Session.get()
+    if (session && session.sessionId) {
+      req.get('/api/Version/userInfo').then(res => {
+        store.dispatch({type: 'FETCH_USER_INFO_SUC', payload: res.data})
+        return res.data
+      }).then(userInfo => {
+        if (userInfo.type !== USER_TYPE.BLUE_DIAMOND && query.token) {
+          req.post('/api/login/markCitymatch', { token: query.token }).then(res => {
+            store.dispatch({type: 'MARK_CITY_MATCH_USER_SUC', payload: res.data})
+          })
+        } else if (userInfo.type === USER_TYPE.BLUE_DIAMOND) {
+          req.get('/api/login/searchPlayer').then(res => {
+            store.dispatch({type: 'FETCH_CITY_MATCH_INFO_SUC', payload: res.data})
+          })
+        }
+      })
+      
+      req.get('/api/Sign/signIn').then(res => {
+        store.dispatch({type: 'FETCH_DAILY_QUESTS_SUC', payload: res})
+      })
+
+      if (options.path !== 'pages/index') {
+        req.get('/api/Givecoin/redPoint').then(res => {
+          store.dispatch({type: 'FETCH_RED_POINT_SUC', payload: res.data})
+        })
+      }
+    }
+  }
+
+  onShow(options) {
+    if (options.query.token) {
+      const session = Session.get()
+      const state = store.getState()
+      if (session && session.sessionId) {
+        if (state.user.info.type !== USER_TYPE.BLUE_DIAMOND) {
+          req.post('/api/login/markCitymatch', { token: options.query.token }).then(res => {
+            store.dispatch({type: 'MARK_CITY_MATCH_USER_SUC', payload: res.data})
+          })
+        }
+      } else {
+        if (!state.user.cityMatchToken) {
+          store.dispatch({type: 'SAVE_CITY_MATCH_TOKEN', payload: options.query.token})
+        }
+      }
+    }
+  }
+}
+</script>

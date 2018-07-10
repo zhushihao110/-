@@ -1,0 +1,203 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .HistoryMatches {
+    &-title {
+      font-size: 36rpx;
+      color: rgb(77, 77, 77);
+      height: 78rpx;
+      line-height: 78rpx;
+      padding: 0 15px;
+    }
+
+    &-list {
+      background-color: $primary;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    &-match {
+      padding-top: 8px;
+      padding-left: 15px;
+      padding-bottom: 24px;
+      font-size: 30rpx;
+      color: rgb(77, 77, 77);
+      flex: 1 0 50%;
+      max-width: 50%;
+      box-sizing: border-box;
+    }
+
+    &-match.is-left {
+      border-right: 1px solid $secondary;
+    }
+
+    &-matchTitle {
+      font-size: 26rpx;
+      padding-bottom: 8px;
+    }
+
+    &-info {
+      display: flex;
+      align-items: center;
+    }
+
+    &-teams {
+      flex: 1;
+    }
+
+    &-arrow {
+      width: 12rpx;
+      height: 21rpx;
+      padding: 0 15px;
+    }
+
+    &-team {
+      display: flex;
+      align-items: center;
+    }
+
+    &-logo {
+      width: 44rpx;
+      height: 44rpx;
+      margin-right: 8px;
+    }
+
+    &-teamName {
+      flex: 1;
+    }
+  }
+</style>
+<template>
+  <view class="HistoryMatches">
+    <view class="HistoryMatches-title">
+      比赛比分
+    </view>
+    <block wx:if="{{loadingMatch}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadMatchFail}}">
+      <noData :msg.sync="loadMatchFail" />
+    </block>
+    <block wx:else>
+      <view class="HistoryMatches-list">
+        <repeat for="{{historyList}}">
+          <view
+            class="HistoryMatches-match"
+            :class="{is-left: !(index % 2)}"
+            @tap="goToDetail({{item.id}})"
+          >
+            <view class="HistoryMatches-matchTitle">
+              {{item.l_cn_abbr}}
+              {{item.formatTime}}
+            </view>
+            <view class="HistoryMatches-info">
+              <view class="HistoryMatches-teams">
+                <view class="HistoryMatches-team">
+                  <image
+                    class="HistoryMatches-logo"
+                    src="{{item.h_logo}}"
+                    lazy-load="true"
+                  />
+                  <view class="HistoryMatches-teamName">
+                    {{item.h_cn_abbr}}
+                  </view>
+                  {{item.hScore}}
+                </view>
+                <view class="HistoryMatches-team">
+                  <image
+                    class="HistoryMatches-logo"
+                    src="{{item.a_logo}}"
+                    lazy-load="true"
+                  />
+                  <view class="HistoryMatches-teamName">
+                    {{item.a_cn_abbr}}
+                  </view>
+                  {{item.aScore}}
+                </view>
+              </view>
+              <image
+                class="HistoryMatches-arrow"
+                src="../img/00-gengduofuhao.png"
+              />
+            </view>
+          </view>
+        </repeat>
+      </view>
+    </block>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import { MSG } from '@/utils/const'
+  import {
+    fetchHistoryMatchesSuc,
+    fetchHistoryMatchesErr,
+    initHistoryMatches
+  } from '@/store/actions'
+
+  @connect({
+    historyList (state) {
+      return state.matches.historyList
+    }
+  }, {
+    fetchHistoryMatchesSuc,
+    fetchHistoryMatchesErr,
+    initHistoryMatches
+  })
+
+  export default class HistoryMatches extends wepy.page {
+    config = {
+      navigationBarTitleText: '比分赛果'
+    }
+
+    components = {
+      loading: Loading,
+      noData: NoData
+    }
+
+    data = {
+      loadingMatch: true,
+      loadMatchFail: '',
+    }
+
+    computed = {
+    }
+
+    methods = {
+      goToDetail(id) {
+        wepy.navigateTo({
+          url: `matchDetail?id=${id}`
+        })
+      }
+    }
+
+    events = {
+    }
+
+    onShow() {
+      this.loadingMatch = true
+      req.get('/api/Match/getMatchesScore').then(res => {
+        this.methods.fetchHistoryMatchesSuc(res.data)
+        this.loadMatchFail = ''
+      }).catch(err => {
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.fetchHistoryMatchesErr(err)
+        this.loadMatchFail = MSG.LOAD_FAIL
+      }).then(() => {
+        this.loadingMatch = false
+        this.$apply()
+      })
+    }
+
+    onLoad() {
+    }
+
+    onUnload() {
+      this.methods.initHistoryMatches()
+    }
+  }
+</script>

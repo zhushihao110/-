@@ -1,0 +1,381 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .Matches {
+    &-betTypeCtn {
+      display: flex;
+      box-sizing: border-box;
+      padding: 9px;
+      background-color: $primary;
+    }
+
+    &-betType {
+      flex: 1;
+      border-radius: 8rpx;
+      font-size: 26rpx;
+      color: $red;
+      border: 2rpx solid $red;
+      text-align: center;
+      padding: 5px 0;
+
+      &:first-child {
+        border-radius: 8rpx 0 0 8rpx;
+      }
+
+      &:last-child {
+        border-radius: 0 8rpx 8rpx 0;
+      }
+    }
+
+    &-betType.is-selected {
+      background-color: $red;
+      color: $text-primary;
+    }
+
+    &-toolBar {
+      margin-top: 3px;
+      padding: 8px;
+      background-color: $primary;
+      position: relative;
+      font-size: 26rpx;
+      color: $text-secondary;
+    }
+
+    &-filter {
+    }
+
+    &-filterItem {
+      width: max-content;
+      display: inline;
+      text-align: center;
+      padding: 0 8px;
+      box-sizing: border-box;
+      border-left: 1px solid $text-secondary;
+      &:first-child {
+        padding-left: 0;
+        border-left: 0;
+      }
+    }
+
+    &-filterItem.is-selected {
+      color: $red;
+    }
+
+    &-history {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+
+    &-tips {
+      width: 100%;
+      text-align: center;
+      font-size: 26rpx;
+      color: $red;
+      height: 38rpx;
+      line-height: 38rpx;
+    }
+  }
+
+  .Matches.is-expand {
+    padding-bottom: 272rpx;
+  }
+</style>
+<template>
+  <loginDialog />
+  <view
+    class="Matches"
+    :class="{ is-expand: selected.length }"
+  >
+    <block wx:if="{{loadingMatch}}">
+      <loading />
+    </block>
+    <block wx:elif="{{loadMatchFail}}">
+      <noData :msg.sync="loadMatchFail" />
+    </block>
+    <block wx:else>
+      <div class="Matches-betTypeCtn" @tap="switchType">
+        <div
+          class="Matches-betType"
+          :class="{is-selected: type === 'had'}"
+          data-type="had"
+        >
+          胜平负
+        </div>
+        <div
+          class="Matches-betType"
+          :class="{is-selected: type === 'hhad'}"
+          data-type="hhad"
+        >
+          让球
+        </div>
+      </div>
+      <view class="Matches-tips">
+        点击比赛可以投注更多玩法哦
+      </view>
+      <view class="Matches-toolBar">
+        <view class="Matches-filter" @tap="handleSwitchFilter">
+          <view
+            class="Matches-filterItem"
+            :class="{is-selected: filter === 'time'}"
+            data-filter="time"
+          >
+            按时间
+          </view>
+          <view
+            class="Matches-filterItem"
+            :class="{is-selected: filter === 'league'}"
+            data-filter="league"
+          >
+            按联赛
+          </view>
+        </view>
+        <view class="Matches-history" @tap="goToHistory">
+          比分赛果
+        </view>
+      </view>
+      <repeat for="{{list}}" key="index" item="item" index="index">
+        <match
+          :match.sync="item"
+          :selected.sync="selected"
+          :type.sync="type"
+        />
+      </repeat>
+    </block>
+    <backHome />
+  </view>
+  <betpanel
+    wx:if="{{selected.length}}"
+    :selected.sync="selected"
+    :shareId.sync="shareId"
+    :betId.sync="betId"
+  />
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import {
+    fetchMatchesSuc,
+    fetchMatchesErr,
+    postShareSuc,
+    postShareErr,
+    filterMatches,
+    updateMatchesData,
+    initMatches
+  } from '@/store/actions'
+  import Match from '@/components/match'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import { HAD, HHAD, PLAY_TYPE, MSG } from '@/utils/const'
+  import BetPanel from '@/components/betPanel'
+  import LoginDialog from '@/components/loginDialog'
+  import BackHome from '@/components/backHome'
+
+  @connect({
+    list (state) {
+      return state.matches.list
+    },
+    userInfo (state) {
+      return state.user.info
+    },
+    share (state) {
+      return state.home.share
+    },
+    shareBets (state) {
+      return state.bets.shareBets
+    },
+    resentBet (state) {
+      return state.bets.resentBet
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    hypFlag (state) {
+      return state.home.flag.hyp
+    }
+  }, {
+    fetchMatchesSuc,
+    fetchMatchesErr,
+    postShareSuc,
+    postShareErr,
+    filterMatches,
+    updateMatchesData,
+    initMatches
+  })
+
+  export default class Matches extends wepy.page {
+    config = {
+      navigationBarTitleText: '金币足球',
+      enablePullDownRefresh: true
+    }
+
+    components = {
+      match: Match,
+      betpanel: BetPanel,
+      loginDialog: LoginDialog,
+      backHome: BackHome,
+      loading: Loading,
+      noData: NoData
+    }
+
+    data = {
+      selected: [],
+      betId: null,
+      shareId: null,
+      type: 'had',
+      filter: 'time',
+      loadingMatch: true,
+      loadMatchFail: ''
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      switchType(e) {
+        this.type = e.target.dataset.type
+      },
+      handleSwitchFilter(e) {
+        const filter = e.target.dataset.filter
+        if (filter !== this.filter) {
+          this.methods.filterMatches(filter)
+          this.filter = filter
+        }
+      },
+      goToHistory() {
+        wepy.navigateTo({
+          url: 'historyMatches'
+        })
+      }
+    }
+
+    events = {
+    }
+
+    onLoad(options) {
+      this.loadingMatch = true
+      req.get('/api/Match/getList').then(res => {
+        this.methods.fetchMatchesSuc(res.data)
+        this.loadMatchFail = ''
+      }).catch(res => {
+        this.methods.fetchMatchesErr(res)
+        this.loadMatchFail = MSG.LOAD_FAIL
+      }).then(() => {
+        this.selected = []
+        this.loadingMatch = false
+        this.$apply()
+
+        if (options && options.betId && options.shareId) {
+          this.shareId = options.shareId
+          this.betId = options.betId
+          return req.post('/api/Jcrecode/invitation', {
+            no: this.betId,
+            shareId: this.shareId
+          }, {
+            'content-type': 'application/x-www-form-urlencoded'
+          }).then(res => {
+            this.methods.postShareSuc(res.data)
+          }).catch(res => {
+            this.methods.postShareErr(res)
+          }).then(res => {
+            this.selected = this.shareBets.reduce((acc, share) => {
+              const currentMatch = this.list.find(item => {
+                return item.id === share['id']
+              })
+
+              let option = null
+              let odd = null
+              switch (share['type']) {
+                case 'had':
+                  option = HAD[share['option']]
+                  odd = currentMatch && currentMatch.had && currentMatch.had[option]
+                  break
+                case 'hhad':
+                  option = HHAD[share['option']]
+                  odd = currentMatch && currentMatch.hhad && currentMatch.hhad[option]
+                  break
+                default:
+              }
+              if (option !== null && odd !== null && currentMatch) {
+                this.methods.updateMatchesData({
+                  id: share['id'],
+                  data: { FESelected: {
+                    option: option,
+                    type: share['type']
+                  }}
+                })
+
+                acc.push({
+                  matchId: share['id'],
+                  type: share['type'],
+                  option,
+                  odd,
+                  match: currentMatch
+                })
+              }
+              return acc
+            }, [])
+
+            if (this.selected.length === 1 && this.selected[0] && this.selected[0].type && this.selected[0].type === 'hhad') {
+              this.type = 'hhad'
+            }
+            this.$apply()
+          })
+        }
+      })
+    }
+
+    onUnload() {
+      this.methods.initMatches()
+    }
+
+    onShareAppMessage(options) {
+      let title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_others
+      let path = '/pages/matches'
+      let imageUrl = ''
+      if (options.from === 'button') {
+        const types = this.resentBet.types
+        if (types) {
+          title = this.shamFlag || this.hypFlag ? '世界杯资讯' : `[${this.userInfo.nickName || ''}@我]${this.share.sh_jcresults}`
+          const typesArr = types.split(',')
+          if (types === PLAY_TYPE.JCGJ || types === PLAY_TYPE.JCGY) {
+            // 竞猜冠军
+            path = `/pages/champion?betId=${this.resentBet.no}&shareId=${this.userInfo.id}&userId=${this.userInfo.id}`
+          } else if (typesArr.length > 1) {
+            // 串投
+            title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_helpodds
+              path = `/pages/betDetail?id=${this.resentBet.projectid}&userId=${this.userInfo.id}`
+          } else {
+            // 单投
+            title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_helpodds
+              path = `/pages/betDetail?id=${this.resentBet.projectid}&userId=${this.userInfo.id}`
+          }
+          imageUrl = this.shamFlag || this.hypFlag ? '' : this.share.sh_jcresults_img
+        }
+      }
+
+      console.log(path)
+      return {
+        title,
+        path,
+        imageUrl
+      }
+    }
+
+    onPullDownRefresh(options) {
+      const that = this
+      wepy.showNavigationBarLoading() // 在标题栏中显示加载
+
+      // 模拟加载
+      setTimeout(function () {
+        that.onLoad(options)
+        wepy.hideNavigationBarLoading() // 完成停止加载
+        wepy.stopPullDownRefresh() // 停止下拉刷新
+        // complete
+      }, 1500)
+    }
+  }
+</script>

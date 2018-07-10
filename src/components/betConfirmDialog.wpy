@@ -1,0 +1,589 @@
+<template>
+  <alert :show.sync="showBetConfirm" :onClose="onClose" >
+    <view
+      class="BetConfirmDialog"
+      slot="content"
+    >
+      <view class="BetConfirmDialog-header">
+        确认投注     
+      </view>
+      <!-- 竞猜冠军 -->
+      <block wx:if="{{betType === 'jcgj'}}">
+        <view class="BetConfirmDialog-tableCtn">
+          <view class="table BetConfirmDialog-table">
+            <view class="tr BetConfirmDialog-th">
+              <view class="th">
+                球队
+              </view>
+              <view class="th">
+                投注内容
+              </view>
+            </view>
+            <repeat for="{{selected}}">
+              <view class="tr BetConfirmDialog-tr">
+                <view class="td">
+                  {{item.match.team}}
+                </view>
+                <view class="td BetConfirmDialog-betContent">
+                  冠军
+                  {{item.odds}}
+                </view>
+              </view>
+            </repeat>
+          </view>
+        </view>
+        <view class="BetConfirmDialog-coins">
+          {{betCoins}}{{betMoneyType === 1 ? '金币' : '蓝钻'}}
+          <view class="BetConfirmDialog-earnings">
+            猜对可以赢<span>{{earnings}}{{betMoneyType === 1 ? '金币' : '蓝钻'}}</span>
+          </view>
+        </view>
+      </block>
+      <!-- 竞猜冠亚军 -->
+      <block wx:elif="{{betType === 'jcgy'}}">
+        <view class="BetConfirmDialog-tableCtn">
+          <view class="table BetConfirmDialog-table">
+            <view class="tr BetConfirmDialog-th">
+              <view class="th">
+                球队
+              </view>
+              <view class="th">
+                投注内容
+              </view>
+            </view>
+            <repeat for="{{selected}}">
+              <view class="tr BetConfirmDialog-tr">
+                <view class="td">
+                  {{item.match.lteam === '其它' ? '其它' : item.match.lteam + 'VS' + item.match.rteam}}
+                </view>
+                <view class="td BetConfirmDialog-betContent">
+                  冠亚军
+                  {{item.odds}}
+                </view>
+              </view>
+            </repeat>
+          </view>
+        </view>
+        <view class="BetConfirmDialog-coins">
+          {{betCoins}}{{betMoneyType === 1 ? '金币' : '蓝钻'}}
+          <view class="BetConfirmDialog-earnings">
+            猜对可以赢<span>{{earnings}}{{betMoneyType === 1 ? '金币' : '蓝钻'}}</span>
+          </view>
+        </view>
+      </block>
+      <!-- 普通竞猜 -->
+      <block wx:else>
+        <view class="BetConfirmDialog-tableCtn">
+          <view class="table BetConfirmDialog-table">
+            <view class="tr BetConfirmDialog-th">
+              <view class="th">
+                主队vs客队
+              </view>
+              <view class="th">
+                投注内容
+              </view>
+            </view>
+            <repeat for="{{selected}}">
+              <view class="tr BetConfirmDialog-tr">
+                <view class="td">
+                  {{item.match.h_cn_abbr}}
+                  VS
+                  {{item.match.a_cn_abbr}}
+                </view>
+                <view class="td BetConfirmDialog-betContent">
+                  <view class="BetConfirmDialog-betType">
+                    {{betContent[item.type]}}
+                    <view class="BetConfirmDialog-fixedOdds">
+                      {{item.type === 'hhad' ? ((item.match.fixedodds > 0 ? '+' : '') + item.match.fixedodds) : ''}}
+                    </view>
+                  </view>
+                  <view class="BetConfirmDialog-betOption">
+                    {{betOption[item.type][item.option]}}
+                    （{{item.odd}}）
+                  </view>
+                </view>
+              </view>
+            </repeat>
+          </view>
+        </view>
+        <view class="BetConfirmDialog-coins">
+          <view wx:if="{{selected.length > 1}}">
+            {{selected.length + '串1'}}
+          </view>
+          {{betCoins}}{{betMoneyType === 1 ? '金币' : '蓝钻'}}
+          <view class="BetConfirmDialog-earnings">
+            猜对可以赢<span>{{earnings}}{{betMoneyType === 1 ? '金币' : '蓝钻'}}</span>
+          </view>
+        </view>
+      </block>
+      <view class="BetConfirmDialog-msg">
+        <block wx:if="{{betMoneyType === 1}}">
+          （提示：1元 = 100金币）
+        </block>
+      </view>
+      <view class="BetConfirmDialog-bottom">
+        <view class="BetConfirmDialog-betBtnCtn">
+          <button
+            class="BetConfirmDialog-cancelBtn"
+          >
+            取消
+          </button>
+        </view>
+        <form class="BetConfirmDialog-betBtnCtn" @submit="handleBet" report-submit="true">
+          <button
+            class="BetConfirmDialog-betBtn"
+            formType="submit"
+            loading="{{betLoading}}"
+            disabled="{{selected.length === 0}}"
+          >
+            确认
+          </button>
+        </form>
+      </view>
+    </view>
+  </alert>
+  <betSucDialog :showShareImgBtn.sync="showShareImgBtn" />
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+@import '../base/cssBase/table.scss';
+.BetConfirmDialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: max-content;
+  max-height: 100%;
+  border-radius: 4px;
+  background-color: $primary;
+  width: 552rpx;
+  overflow: hidden;
+
+  &-tableCtn {
+    overflow-y: scroll;
+    flex: 1;
+    width: 100%;
+  }
+
+  &-table.table {
+    .td {
+      width: 50%;
+    }
+
+    .th {
+      width: 50%;
+    }
+  }
+
+  &-header {
+    background-color: $orange;
+    color: white;
+    font-size: 36rpx;
+    text-align: center;
+    height: 82rpx;
+    line-height: 82rpx;
+    width: 100%;
+  }
+
+  &-table {
+    font-size: 24rpx;
+    color: rgb(77, 77, 77);
+    border-radius: 4px;
+    border: 1px solid $orange;
+    margin: 10px;
+  }
+
+  &-th {
+    padding: 5px;
+    font-size: 30rpx;
+    color: white;
+    background-color: $orange;
+    box-sizing: border-box;
+  }
+
+  &-tr {
+    padding: 5px;
+    border-bottom: 1px solid $secondary;
+    box-sizing: border-box;
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &-betContent {
+    color: $red;
+    flex-direction: column;
+  }
+
+  &-fixedOdds {
+    color: $green;
+    margin-right: 10px;
+    display: inline-block;
+  }
+
+  &-coins {
+    color: rgb(77, 77, 77);
+    font-size: 26rpx;
+    text-align: center;
+    view {
+      margin-right: 10px;
+      display: inline-block;
+    }
+  }
+
+  &-msg {
+    font-size: 26rpx;
+    color: rgb(53, 153, 18);
+    text-align: center;
+    padding: 10px;
+  }
+
+  &-earnings {
+    span {
+      color: $red;
+    }
+  }
+
+  &-bottom {
+    text-align: center;
+    display: flex;
+    width: 100%;
+    font-size: 36rpx;
+    height: 92rpx;
+  }
+
+  &-betBtnCtn {
+    flex: 1;
+  }
+
+  &-cancelBtn, &-betBtn {
+    background-color: $primary;
+    color: $text-secondary;
+    height: 92rpx;
+    line-height: 92rpx;
+  }
+
+  &-betBtn {
+    color: $red;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import req from '@/network'
+import { connect } from 'wepy-redux'
+import { HAD, HHAD, BET_CONTENT, BET_OPTION, MONEY_TYPE } from '@/utils/const'
+import {
+  updateShowReward,
+  updateRewardTime,
+  updateShowBetConfirm,
+  betSuc,
+  betErr,
+  updateShowBetSuc,
+  resetMatchesData,
+  resetChampionList,
+  resetFinalList,
+  updateShowCharge,
+  updateBetSelected,
+  updateBetShareImgInfo
+} from '@/store/actions'
+import BetSucDialog from '@/components/betSuc'
+import { throttle } from '@/utils/helper'
+import { fromwhere } from '@/config'
+
+@connect({
+  showBetConfirm (state) {
+    return state.bets.showBetConfirm
+  },
+  selected (state) {
+    return state.bets.selected
+  },
+  betCoins (state) {
+    return state.bets.betCoins
+  },
+  betType (state) {
+    return state.bets.betType
+  },
+  betMoneyType (state) {
+    return state.bets.betMoneyType
+  }
+}, {
+  updateShowReward,
+  updateRewardTime,
+  updateShowBetConfirm,
+  betSuc,
+  betErr,
+  updateShowBetSuc,
+  resetMatchesData,
+  resetChampionList,
+  resetFinalList,
+  updateShowCharge,
+  updateBetSelected,
+  updateBetShareImgInfo
+})
+
+export default class BetConfirmDialog extends wepy.component {
+  components = {
+    alert: Alert,
+    betSucDialog: BetSucDialog,
+  }
+
+  props = {
+    betId: {
+      type: String,
+      default: null
+    },
+    shareId: {
+      type: String,
+      default: null
+    }
+  }
+
+  data = {
+    betLoading: false,
+    betContent: BET_CONTENT,
+    betOption: BET_OPTION,
+    showShareImgBtn: false
+  }
+
+  computed = {
+    earnings() {
+      if (!this.selected) {
+        return ''
+      }
+
+      let earnings = ''
+      if (this.betType === 'jcgy' || this.betType === 'jcgj') {
+        let max = 0
+        let min = Infinity
+        const coin = this.betCoins / this.selected.length
+        this.selected.forEach(item => {
+          const earn = Math.floor(coin * item.odds)
+          if (earn < min) {
+            min = earn
+          }
+          if (earn > max) {
+            max = earn
+          }
+        })
+        if (min === max) {
+          earnings = min
+        } else {
+          earnings = `${min} - ${max}`
+        }
+      } else {
+        const odds = this.selected.reduce((acc, item) => {
+          return acc * item.odd
+        }, 1)
+        earnings = Math.floor(this.betCoins * odds)
+      }
+
+      return earnings
+    }
+  }
+
+  methods = {
+    handleBet: throttle(function(e) {
+      if (this.betType === 'jcgy' || this.betType === 'jcgj') {
+        this.betChampion(e)
+        this.showShareImgBtn = false
+      } else {
+        this.betNormal(e)
+        this.showShareImgBtn = true
+      }
+    }, 500),
+  }
+
+  betNormal(e) {
+    if (this.betLoading) { return }
+    this.betLoading = true
+    const formId = e.detail.formId
+
+    let matchids = []
+    let codes = []
+    let odds = []
+    let types = []
+    this.selected.forEach(item => {
+      matchids.push(item.matchId)
+      types.push(item.type)
+      switch (item.type) {
+        case 'had':
+          codes.push(HAD[item.option])
+          break
+        case 'hhad':
+          codes.push(HHAD[item.option])
+          break
+        default:
+          codes.push(item.option)
+      }
+      odds.push(item.odd)
+    })
+
+    const data = {
+      types: types.join(','),
+      matchids: matchids.join(','),
+      codes: codes.join(','),
+      paytype: this.betMoneyType,
+      coins: this.betCoins,
+      diamonds: this.betCoins,
+      odds: odds.join(','),
+      shareId: this.shareId,
+      no: this.betId,
+      fromwhere,
+      formId
+    }
+
+    req.post('/api/Buy/index', data).then(res => {
+      this.methods.betSuc(Object.assign({}, res.data, {
+        matchids: data.matchids,
+        types: data.types
+      }))
+      return res
+    }).then(res => {
+      let endTime
+      let max = 0
+      this.selected.forEach(item => {
+        if (item.match && item.match.b_time > max) {
+          max = item.match.b_time
+          endTime = item.match.formatEndTime
+        }
+      })
+      this.methods.updateRewardTime(endTime)
+      this.methods.updateShowBetSuc(true)
+      this.betLoading = false
+      this.clearAll(res.data.projectid)
+      this.$apply()
+    }).catch(err => {
+      if (err.code === 10003) {
+        this.methods.updateShowCharge(true)
+      }
+      wepy.showToast({ title: err.msg, icon: 'none' })
+      this.methods.betErr(err)
+      this.betLoading = false
+      this.$apply()
+    })
+  }
+
+  betChampion(e) {
+    if (this.betLoading) { return }
+    this.betLoading = true
+    const formId = e.detail.formId
+
+    let matchids = []
+    let codes = []
+    let odds = []
+    this.selected.forEach(item => {
+      matchids.push(item.id)
+      codes.push('h')
+      odds.push(item.odds)
+    })
+
+    const data = {
+      type: this.betType,
+      matchids: matchids.join('/'),
+      codes: codes.join('/'),
+      paytype: this.betMoneyType,
+      coins: this.betCoins,
+      diamonds: this.betCoins,
+      odds: odds.join('/'),
+      shareId: this.shareId,
+      no: this.betId,
+      formId,
+      fromwhere
+    }
+
+    req.post('/api/Champion/bet', data).then(res => {
+      this.methods.betSuc(Object.assign({}, res.data, {
+        matchids: data.matchids,
+        types: data.type
+      }))
+    }).then(res => {
+      this.methods.updateRewardTime('比赛结束后')
+      this.methods.updateShowBetSuc(true)
+      this.betLoading = false
+      this.clearAll()
+      this.$apply()
+    }).catch(err => {
+      if (err.code === 10003) {
+        this.methods.updateShowCharge(true)
+      }
+      wepy.showToast({ title: err.msg, icon: 'none' })
+      this.methods.betErr(err)
+      this.betLoading = false
+      this.$apply()
+    })
+  }
+
+  clearAll(projectid) {
+    if (this.betType === 'jcgj') {
+      if (this.$parent.$parent.selectedChampion) {
+        this.methods.resetChampionList()
+        this.$parent.$parent.selectedChampion = []
+        this.$parent.$parent.$apply()
+      }
+    } else if (this.betType === 'jcgy') {
+      if (this.$parent.$parent.selectedFinal) {
+        this.methods.resetFinalList()
+        this.$parent.$parent.selectedFinal = []
+        this.$parent.$parent.$apply()
+      }
+    } else {
+      if (this.$parent.$parent.selected) {
+        this.methods.resetMatchesData()
+        this.$parent.$parent.selected = []
+        this.$parent.$parent.$apply()
+      }
+
+      let minStart = 0
+      this.selected.forEach(item => {
+        if (!minStart || item.match.b_time < minStart) {
+          minStart = item.match.b_time
+        }
+      })
+
+      const now = Math.floor(Date.now() / 1000)
+      let leftHour = '00'
+      let leftMinue = '00'
+      if (now < minStart) {
+        const timeLeft = minStart - now
+        leftHour = Number.parseInt(timeLeft / (60 * 60))
+        leftMinue = Number.parseInt((timeLeft - leftHour * 60 * 60) / 60)
+        if (leftMinue < 10) {
+          leftMinue = `0${leftMinue}`
+        }
+      }
+
+      this.methods.updateBetShareImgInfo({
+        projectid,
+        selected: this.selected,
+        betCoins: this.betCoins,
+        betMoneyType: this.betMoneyType,
+        betStatus: '0',
+        support: {
+          extraOdds: '0.00',
+          personNum: 0,
+          timeLeft: `${leftHour}:${leftMinue}`
+        }
+      })
+    }
+    this.methods.updateBetSelected({
+      selected: [],
+      betCoins: 0,
+      betType: 'normal',
+      showBetConfirm: false,
+      betMoneyType: MONEY_TYPE.COIN
+    })
+  }
+
+  onClose = () => {
+    this.methods.updateShowBetConfirm(false)
+  }
+
+  onLoad() {
+  }
+}
+</script>

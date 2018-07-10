@@ -1,0 +1,97 @@
+<template>
+  <alert :show.sync="showHomeDialog" :onClose="onClose" >
+    <view class="HomeDialog" slot="content">
+      <view class="HomeDialog-ctn">
+        <image
+          class="HomeDialog-close"
+          src="../img/close-2.png"
+        />
+        <image
+          class="HomeDialog-img"
+          src="../img/home-dialog-img.png"
+          mode="widthFix"
+        />
+      </view>
+    </view>
+  </alert>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.HomeDialog {
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+
+  &-ctn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 100%;
+  }
+
+  &-close {
+    position: absolute;
+    width: 52rpx;
+    height: 52rpx;
+    right: 10%;
+    top: 8%;
+  }
+
+  &-img {
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { connect } from 'wepy-redux'
+import req from '@/network'
+import Session from '@/network/session'
+import {
+  updateShowHomeDialog
+} from '@/store/actions'
+
+@connect({
+  showHomeDialog (state) {
+    return state.user.showHomeDialog
+  }
+}, {
+  updateShowHomeDialog
+})
+
+export default class HomeDialog extends wepy.component {
+  components = {
+    alert: Alert
+  }
+
+  props = {
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+  }
+
+  setSessionStorage() {
+    wx.setStorageSync('showHomeDialogTimeStamp', Date.now())
+  }
+
+  onClose = () => {
+    this.methods.updateShowHomeDialog(false)
+    this.setSessionStorage()
+  }
+
+  onLoad() {
+  }
+}
+</script>

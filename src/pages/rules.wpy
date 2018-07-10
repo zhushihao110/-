@@ -1,0 +1,116 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+  .Rules {
+    &-listCtn {
+      background-color: $primary;
+      margin-top: 5px;
+      padding: 0px 15px;
+    }
+
+    &-title {
+      font-size: 36rpx;
+      color: $text-secondary;
+      height: 82rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 2rpx solid $secondary;
+    }
+
+    &-list {
+      padding: 8px 0px;
+      display: block;
+    }
+
+    &-item {
+      font-size: 30rpx;
+      color: rgb(51, 51, 51);
+      display: block;
+      padding: 7px 0px;
+      padding-left: 36rpx;
+      position: relative;
+    }
+
+    &-number {
+      position: absolute;
+      left: 0;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="Rules">
+    <userTab />
+    <view class="Rules-listCtn">
+      <div class="Rules-title">
+        收徒规则
+      </div>
+      <div class="Rules-list">
+        <repeat for="{{rules}}" index="index" key="index" item="item">
+          <div class="Rules-item">
+            <div class="Rules-number">
+              {{index + 1}}、
+            </div>
+            {{item}}
+          </div>
+        </repeat>
+      </div>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import UserTab from '@/components/userTab'
+  import {
+    fetchRulesSuc,
+    fetchRulesErr
+  } from '@/store/actions'
+  import LoginDialog from '@/components/loginDialog'
+
+  @connect({
+    rules (state) {
+      return state.invitations.rules
+    }
+  }, {
+    fetchRulesSuc,
+    fetchRulesErr
+  })
+
+  export default class Rules extends wepy.page {
+    config = {
+      navigationBarTitleText: '师徒'
+    }
+
+    components = {
+      userTab: UserTab,
+      loginDialog: LoginDialog
+    }
+
+    data = {
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+    }
+
+    events = {
+    }
+
+    onLoad() {
+      req.get('/api/Enlightening/getInfo').then(res => {
+        this.methods.fetchRulesSuc(res.data)
+      }).catch(res => {
+        this.methods.fetchRulesErr(res)
+      }).then(res => {
+        console.log('success')
+      })
+    }
+  }
+</script>

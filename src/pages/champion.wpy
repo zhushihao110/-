@@ -1,0 +1,643 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+@import '../base/cssBase/table.scss';
+  .Champion {
+    &-tabs {
+      display: flex;
+      box-sizing: border-box;
+      padding: 9px;
+      background-color: $primary;
+    }
+
+    &-tab {
+      flex: 1;
+      border-radius: 8rpx;
+      font-size: 26rpx;
+      color: $red;
+      border: 2rpx solid $red;
+      text-align: center;
+      padding: 5px 0;
+
+      &:first-child {
+        border-radius: 8rpx 0 0 8rpx;
+      }
+
+      &:last-child {
+        border-radius: 0 8rpx 8rpx 0;
+      }
+    }
+
+    &-tab.is-selected {
+      background-color: $red;
+      color: $text-primary;
+    }
+
+    &-listCtn {
+      margin-top: 10px;
+    }
+
+    &-table {
+      font-size: 26rpx;
+      background-color: $primary;
+      color: $text-secondary;
+      padding: 0 12px;
+    }
+
+    &-head {
+      border-bottom: 2rpx solid rgba(218, 29, 30, 0.2);
+      height: 50rpx;
+    }
+
+    &-item {
+      color: rgb(173, 61, 39);
+      border-bottom: 2rpx solid rgba(218, 29, 30, 0.2);
+      padding: 5px 0;
+    }
+
+    &-star {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      span {
+        font-size: 20rpx;
+      }
+    }
+
+    &-logoCtn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: $text-secondary;
+    }
+
+    &-logo {
+      width: 60rpx;
+      height: 60rpx;
+    }
+
+    &-championNum {
+      color: $red;
+    }
+
+    &-item.is-selected {
+      background-color: rgb(240, 230, 163);
+    }
+
+    &-item.is-disabled {
+      background-color: $secondary;
+    }
+
+    &-table.is-expand {
+      padding-bottom: 304rpx;
+    }
+
+    &-listFilter {
+      box-sizing: border-box;
+      overflow-x: scroll;
+      white-space: nowrap;
+      color: $text-secondary;
+      font-size: 26rpx;
+      height: 64rpx;
+      background-color: $primary;
+      margin-bottom: 10px;
+    }
+
+    &-filterItem {
+      box-sizing: border-box;
+      margin: auto 30rpx;
+      height: 64rpx;
+      line-height: 64rpx;
+      display: inline-block;
+    }
+
+    &-filterItem.is-selected {
+      border-bottom: 4rpx solid $red;
+    }
+
+    &-gyMatch {
+      min-width: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-secondary;
+      span {
+        font-size: 20rpx;
+        color: rgb(173, 61, 39);
+      }
+    }
+
+    &-gyLTeam, &-gyRTeam {
+      flex: 1;
+    }
+
+    &-gyLTeam {
+      text-align: right;
+    }
+
+    &-gyRTeam {
+      text-align: left;
+    }
+
+    &-gyOdds {
+      width: 25%;
+    }
+
+    &-gyRate {
+      width: 25%;
+    }
+
+    &-gyLogo {
+      margin: 0 5px;
+    }
+  }
+</style>
+<template>
+  <loginDialog />
+  <view class="Champion">
+    <view class="Champion-tabs" @tap="handleSwitchTab">
+      <div
+        class="Champion-tab"
+        :class="{is-selected: tab === 'jcgj'}"
+        data-type="jcgj"
+      >
+        猜冠军
+      </div>
+      <div
+        class="Champion-tab"
+        :class="{is-selected: tab === 'jcgy'}"
+        data-type="jcgy"
+      >
+        猜冠亚军
+      </div>
+    </view>
+    <view wx:if="{{tab === 'jcgj'}}" class="Champion-listCtn">
+      <block wx:if="{{loadingChampionList}}">
+        <loading />
+      </block>
+      <block wx:elif="{{loadChampionFail}}">
+        <noData1 :msg.sync="loadChampionFail" />
+      </block>
+      <block wx:else>
+        <view
+          class="table Champion-table"
+          :class="{is-expand: tab === 'jcgj' && selectedChampion.length > 0}"
+        >
+          <div class="tr Champion-head">
+            <div class="th">
+              球队
+            </div>
+            <div class="th">
+              赔率
+            </div>
+            <div class="th">
+              夺冠概率
+            </div>
+            <div class="th">
+              历史最佳
+            </div>
+            <div class="th">
+              主力球星
+            </div>
+          </div>
+          <repeat for="{{champion.list}}" item="item">
+            <div
+              class="tr Champion-item Champion-item1"
+              :class="{is-selected: item.selected,is-disabled: item.status !== 'selling'}"
+              @tap="handleSelectChampion({{item.id}}, {{item.odds}}, {{item}})"
+            >
+              <div class="td Champion-logoCtn">
+                <image
+                  class="Champion-logo"
+                  src="{{item.logo}}"
+                />
+                {{item.team}}
+              </div>
+              <div class="td Champion-odds">{{item.odds}}</div>
+              <div class="td Champion-rate">{{item.rate}}</div>
+              <div class="td Champion-championNum">
+                {{item.champion_num}}
+            </div>
+              <div class="td Champion-star">
+                {{item.starName}}
+                <span>{{item.starTeam}}</span>
+              </div>
+            </div>
+          </repeat>
+        </view>
+      </block>
+    </view>
+
+    <view wx:elif="{{tab === 'jcgy'}}" class="Champion-listCtn">
+      <block wx:if="{{loadingFinalList}}">
+        <loading />
+      </block>
+      <block wx:elif="{{loadFinalListFail}}">
+        <noData2 :msg.sync="loadFinalListFail" />
+      </block>
+      <block wx:else>
+        <view class="Champion-listFilter">
+          <repeat for="{{filterArr}}" item="item">
+            <view
+              class="Champion-filterItem"
+              :class="{is-selected: filter === item.key}"
+              @tap="handleSwitchFilter({{item.key}})"
+            >
+              {{item.value}}
+            </view>
+          </repeat>
+        </view>
+        <view
+          class="table Champion-table"
+          :class="{is-expand: tab === 'jcgy' && selectedFinal.length > 0}"
+        >
+          <div class="tr Champion-head">
+            <div class="th Champion-gyMatch">
+              球队
+            </div>
+            <div class="th Champion-gyOdds">
+              赔率
+            </div>
+            <div class="th Champion-gyRate">
+              冠亚军概率
+            </div>
+          </div>
+          <repeat for="{{champion.filterFinalList}}" item="item2">
+            <div
+              class="tr Champion-item Champion-item2"
+              :class="{is-selected: item2.selected,is-disabled: item2.status !== 'selling'}"
+              @tap="handleSelectFinal({{item2.id}}, {{item2.odds}}, {{item2}})"
+            >
+              <div 
+                wx:if="{{item2.lteam === '其它'}}"
+                class="td Champion-gyMatch"
+              >
+                {{item2.lteam}}
+              </div>
+              <div 
+                wx:else
+                class="td Champion-gyMatch"
+              >
+                <div class="Champion-gyLTeam">
+                  {{item2.lteam}}
+                </div>
+                <image
+                  class="Champion-logo Champion-gyLogo"
+                  src="{{item2.llogo}}"
+                />
+                <span>
+                VS
+                </span>
+                <image
+                  class="Champion-logo Champion-gyLogo"
+                  src="{{item2.rlogo}}"
+                />
+                <div class="Champion-gyRTeam">
+                  {{item2.rteam}}
+                </div>
+              </div>
+              <div class="td Champion-gyOdds">
+                {{item2.odds}}
+              </div>
+              <div class="td Champion-gyRate">
+                {{item2.rate}}
+              </div>
+            </div>
+          </repeat>
+        </view>
+      </block>
+    </view>
+    <block wx:if="{{tab === 'jcgj'}}">
+      <championBetPanel1
+        wx:if="{{selectedChampion.length > 0}}"
+        :selected.sync="selectedChampion"
+        :type.sync="tab"
+        :shareId.sync="shareId"
+        :betId.sync="betId"
+      />
+    </block>
+    <block wx:elif="{{tab === 'jcgy'}}">
+      <championBetPanel2
+        wx:if="{{selectedFinal.length > 0}}"
+        :selected.sync="selectedFinal"
+        :type.sync="tab"
+        :shareId.sync="shareId"
+        :betId.sync="betId"
+      />
+    </block>
+
+    <backHome />
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import { FINAL_FILTER, PLAY_TYPE, MSG } from '@/utils/const'
+  import ChampionBetPanel from '@/components/championBetPanel'
+  import LoginDialog from '@/components/loginDialog'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import BackHome from '@/components/backHome'
+  import {
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    fetchChampionListSuc,
+    fetchChampionListErr,
+    fetchFinalListSuc,
+    fetchFinalListErr,
+    updateChampionList,
+    resetChampionList,
+    updateFinalList,
+    resetFinalList,
+    filterFinalList,
+    postShareSuc,
+    postShareErr,
+    initChampionList,
+    initFinalList
+  } from '@/store/actions'
+
+  @connect({
+    userInfo (state) {
+      return state.user.info
+    },
+    champion (state) {
+      return state.champion
+    },
+    share (state) {
+      return state.home.share
+    },
+    shareBets (state) {
+      return state.bets.shareBets
+    },
+    resentBet (state) {
+      return state.bets.resentBet
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    hypFlag (state) {
+      return state.home.flag.hyp
+    }
+  }, {
+    fetchUserInfoSuc,
+    fetchUserInfoErr,
+    fetchChampionListSuc,
+    fetchChampionListErr,
+    fetchFinalListSuc,
+    fetchFinalListErr,
+    updateChampionList,
+    resetChampionList,
+    updateFinalList,
+    resetFinalList,
+    filterFinalList,
+    postShareSuc,
+    postShareErr,
+    initChampionList,
+    initFinalList
+  })
+
+  export default class Champion extends wepy.page {
+    config = {
+      navigationBarTitleText: '冠亚军竞猜'
+    }
+
+    components = {
+      championBetPanel1: ChampionBetPanel,
+      championBetPanel2: ChampionBetPanel,
+      loginDialog: LoginDialog,
+      backHome: BackHome,
+      loading: Loading,
+      noData1: NoData,
+      noData2: NoData,
+    }
+
+    data = {
+      tab: 'jcgj',
+      filter: 'all',
+      selectedChampion: [],
+      selectedFinal: [],
+      filterArr: FINAL_FILTER,
+      query: {},
+      betId: null,
+      shareId: null,
+      loadingChampionList: true,
+      loadChampionFail: '',
+      loadingFinalList: true,
+      loadFinalListFail: '',
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      handleSwitchTab(e) {
+        this.tab = e.target.dataset.type
+      },
+      handleSelectChampion(id, odds, match) {
+        if (match.status !== 'selling') return
+        const option = {
+          id,
+          odds,
+          match
+        }
+
+        const index = this.selectedChampion.findIndex(item => {
+          return item.id === option.id
+        })
+        if (index !== -1) {
+          this.selectedChampion.splice(index, 1)
+          this.methods.updateChampionList({
+            id: option.id,
+            data: { selected: false }
+          })
+        } else {
+          this.selectedChampion = [...this.selectedChampion, option]
+          this.methods.updateChampionList({
+            id: option.id,
+            data: { selected: true }
+          })
+        }
+      },
+      handleSelectFinal(id, odds, match) {
+        if (match.status !== 'selling') return
+        const option = {
+          id,
+          odds,
+          match
+        }
+
+        const index = this.selectedFinal.findIndex(item => {
+          return item.id === option.id
+        })
+        if (index !== -1) {
+          this.selectedFinal.splice(index, 1)
+          this.methods.updateFinalList({
+            id: option.id,
+            data: { selected: false }
+          })
+        } else {
+          this.selectedFinal = [...this.selectedFinal, option]
+          this.methods.updateFinalList({
+            id: option.id,
+            data: { selected: true }
+          })
+        }
+      },
+      handleSwitchFilter(filter) {
+        this.filter = filter
+        this.methods.filterFinalList(filter)
+        this.selectedFinal = []
+      }
+    }
+
+    events = {
+    }
+
+    fetchList1() {
+      this.loadingChampionList = true
+      return new Promise((resolve, reject) => req.get('/api/Match/gjlist').then(res => {
+        this.methods.fetchChampionListSuc(res.data)
+        this.loadChampionFail = ''
+      }).then(res => {
+        this.selectedChampion = []
+        this.$apply()
+        resolve()
+      }).catch(err => {
+        this.loadChampionFail = MSG.LOAD_FAIL
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.fetchChampionListErr(err)
+        reject(err)
+      }).then(() => {
+        this.loadingChampionList = false
+        this.$apply()
+      }))
+    }
+
+    fetchList2() {
+      this.loadingFinalList = true
+      return new Promise((resolve, reject) => req.get('/api/Match/gylist').then(res => {
+        this.methods.fetchFinalListSuc(res.data)
+        this.loadFinalListFail = ''
+      }).then(res => {
+        this.selectedFinal = []
+        this.$apply()
+        resolve()
+      }).catch(err => {
+        this.loadFinalListFail = MSG.LOAD_FAIL
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.fetchFinalListErr(err)
+        reject(err)
+      }).then(() => {
+        this.loadingFinalList = false
+        this.$apply()
+      }))
+    }
+
+    onShow() {
+      Promise.all([this.fetchList1(), this.fetchList2()]).then(() => {
+        if (this.query && this.query.betId && this.query.shareId) {
+          this.shareId = this.query.shareId
+          this.betId = this.query.betId
+          return req.post('/api/Jcrecode/invitation', {
+            no: this.betId,
+            shareId: this.shareId
+          }, {
+            'content-type': 'application/x-www-form-urlencoded'
+          }).then(res => {
+            this.methods.postShareSuc(res.data)
+          }).catch(res => {
+            this.methods.postShareErr(res)
+          }).then(res => {
+            if (this.shareBets && this.shareBets[0]) {
+              let selected = []
+              if (this.shareBets[0].type === PLAY_TYPE.JCGJ) {
+                // 竞猜冠军
+                selected = this.shareBets.reduce((acc, share) => {
+                  const current = this.champion.list.find(item => {
+                    return item.id === share['id']
+                  })
+
+                  const bet = {
+                    id: share['id'],
+                    odds: current && current['odds']
+                  }
+
+                  if (bet.id && bet.odds) {
+                    this.methods.updateChampionList({
+                      id: bet.id,
+                      data: { selected: true }
+                    })
+                    acc.push(bet)
+                  }
+                  return acc
+                }, [])
+
+                this.selectedChampion = selected
+                this.$apply()
+              } else if (this.shareBets[0].type === PLAY_TYPE.JCGY) {
+                // 竞猜冠亚
+                selected = this.shareBets.reduce((acc, share) => {
+                  const current = this.champion.filterFinalList.find(item => {
+                    return item.id === share['id']
+                  })
+
+                  const bet = {
+                    id: share['id'],
+                    odds: current && current['odds']
+                  }
+
+                  if (bet.id && bet.odds) {
+                    this.methods.updateFinalList({
+                      id: bet.id,
+                      data: { selected: true }
+                    })
+                    acc.push(bet)
+                  }
+                  return acc
+                }, [])
+
+                this.selectedFinal = selected
+                this.tab = 'jcgy'
+                this.$apply()
+              }
+            }
+          })
+        }
+      })
+    }
+
+    onLoad(options) {
+      this.query = options
+    }
+
+    onUnLoad() {
+      this.methods.initChampionList()
+      this.methods.initFinalList()
+    }
+
+    onShareAppMessage(options) {
+      let title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_others
+      let path = '/pages/matches'
+      let imageUrl = ''
+      if (options.from === 'button') {
+        const types = this.resentBet.types
+        if (types) {
+          title = this.shamFlag || this.hypFlag ? '世界杯资讯' : `[${this.userInfo.nickName || ''}@我]${this.share.sh_jcresults}`
+
+          path = `/pages/champion?betId=${this.resentBet.no}&shareId=${this.userInfo.id}`
+          imageUrl = this.shamFlag || this.hypFlag ? '' : this.share.sh_jcresults_img
+        }
+      }
+
+      console.log(path)
+      return {
+        title,
+        path,
+        imageUrl
+      }
+    }
+  }
+</script>

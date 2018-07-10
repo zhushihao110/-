@@ -1,0 +1,106 @@
+<template>
+  <alert class="OfficialGuideDialog" :show.sync="showOfficialGuide" :onClose="onClose" >
+    <view class="OfficialGuideDialog" slot="content">
+      <view class="OfficialGuideDialog-title">
+        关注公众号领福利
+      </view>
+      <view class="OfficialGuideDialog-msg">
+        在客服会话中回复“2”，获得官方公众号二维码，关注公众号领取福利！
+      </view>
+      <image
+        class="OfficialGuideDialog-img"
+        src="../img/official-guide-img.png"
+      />
+      <button
+        class="OfficialGuideDialog-btn"
+        open-type="contact"
+        session-from="{kefu:['197']}"
+      >
+        好  的
+      </button>
+    </view>
+  </alert>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.OfficialGuideDialog {
+  background-color: $primary;
+  width: 480rpx;
+  min-height: 690rpx;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28rpx;
+  padding-top: 0;
+
+  &-title {
+    font-size: 30rpx;
+    color: $text-secondary;
+    height: 76rpx;
+    line-height: 76rpx;
+  }
+
+  &-msg {
+    font-size: 24rpx;
+    color: rgb(153, 153, 153);
+    text-align: center;
+  }
+
+  &-img {
+    margin-top: 20rpx;
+    margin-bottom: 60rpx;
+    width: 292rpx;
+    height: 380rpx;
+  }
+
+  &-btn {
+    background-color: $orange;
+    color: $text-primary;
+    font-size: 30rpx;
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { connect } from 'wepy-redux'
+import { updateShowOfficialGuide } from '@/store/actions'
+
+@connect({
+  showOfficialGuide(state) {
+    return state.user.showOfficialGuide
+  }
+}, {
+  updateShowOfficialGuide
+})
+
+export default class OfficialGuideDialog extends wepy.component {
+  components = {
+    alert: Alert
+  }
+
+  props = {
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+  }
+
+  onClose = () => {
+    this.methods.updateShowOfficialGuide(false)
+  }
+
+  onLoad() {
+  }
+}
+</script>

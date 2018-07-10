@@ -1,0 +1,84 @@
+<template>
+  <view wx:if="{{userInfo.id}}" class="Coin" @tap="openCharge">
+    <image class="Coin-goldIcon" src="../img/00-jinbi-icon.png" />
+    <view class="Coin-num">{{userInfo.coin}}</view>
+    <image wx:if="{{chargeFlag}}" class="Coin-chargeIcon" src="../img/00-chongzhi.png" />
+  </view>
+  <charge />
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.Coin {
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  background-color: rgb(204, 204, 204);
+  height: 50rpx;
+  min-width: 210rpx;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  padding-left: 12rpx;
+
+  &-num {
+    display: inline-block;
+    padding: 0px 6px;
+    flex: 1;
+    color: rgb(242, 242, 242);
+  }
+
+  &-goldIcon {
+    height: 40rpx;
+    width: 40rpx;
+  }
+
+  &-chargeIcon {
+    height: 50rpx;
+    width: 100rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import {
+  updateShowCharge
+} from '@/store/actions'
+import Charge from '@/components/charge'
+
+@connect({
+  userInfo (state) {
+    return state.user.info
+  },
+  chargeFlag (state) {
+    return state.home.flag.charge
+  },
+}, {
+  updateShowCharge
+})
+
+export default class Coin extends wepy.component {
+  props = {
+  }
+
+  components = {
+    charge: Charge,
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+    openCharge() {
+      this.methods.updateShowCharge(true)
+    }
+  }
+
+  onLoad() {
+  }
+}
+</script>

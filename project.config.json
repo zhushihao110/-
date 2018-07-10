@@ -1,0 +1,120 @@
+{
+	"description": "Xiaoxiongyouxi Xinyue Studio Guess Wechat mini Program",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"appid": "wx4d7fe99c3d31db1a",
+	"projectname": "guess",
+	"miniprogramRoot": "./dist",
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": 0,
+					"name": "测试收徒",
+					"pathName": "pages/index",
+					"query": "userId=2"
+				},
+				{
+					"id": 1,
+					"name": "直接进入全部赛事页",
+					"pathName": "pages/matches",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "直接进入我的",
+					"pathName": "pages/user",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "直接进入规则页",
+					"pathName": "pages/rules",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "直接进入竞猜记录",
+					"pathName": "pages/betHistory",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "我的任务",
+					"pathName": "pages/quests",
+					"query": ""
+				},
+				{
+					"id": 6,
+					"name": "冠军列表",
+					"pathName": "pages/champion",
+					"query": "冠军列表"
+				},
+				{
+					"id": -1,
+					"name": "徒弟页",
+					"pathName": "pages/myInvite",
+					"query": ""
+				},
+				{
+					"id": 8,
+					"name": "比赛详情",
+					"pathName": "pages/matchDetail",
+					"query": "id=1312"
+				},
+				{
+					"id": 9,
+					"name": "商品详情",
+					"pathName": "pages/goodsDetail",
+					"query": "id=3"
+				},
+				{
+					"id": -1,
+					"name": "我的礼品",
+					"pathName": "pages/myOrder",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "赠送金币",
+					"pathName": "pages/gift",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "礼品商城",
+					"pathName": "pages/mall",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "竞猜详情",
+					"pathName": "pages/betDetail",
+					"query": "id=860"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,191 @@
+<template>
+  <alert :show.sync="showLogin" :onClose="onClose" >
+    <view class="LoginDialog" slot="content">
+      <image
+        class="LoginDialog-icon"
+        src="../img/login-dialog-icon.png"
+      />
+      {{loading}}
+      <button
+        class="LoginDialog-btn"
+        open-type="getUserInfo"
+        loading="{{loading}}"
+        @getuserinfo="handleLogin"
+        @tap.stop="handleBufferTap"
+      >
+        登录
+      </button>
+    </view>
+  </alert>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.LoginDialog {
+  background-color: $primary;
+  width: 520rpx;
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 28px 25px;
+  padding-top: 88rpx;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: max-content;
+
+  &-icon {
+    width: 141rpx;
+    height: 137rpx;
+    position: absolute;
+    top: -57rpx;
+  }
+
+  &-btn {
+    width: 100%;
+    border-radius: 4px;
+    color: white;
+    background-color: $orange;
+    font-size: 36rpx;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { login } from '@/network/login'
+import { connect } from 'wepy-redux'
+import req from '@/network'
+import { USER_TYPE } from '@/utils/const'
+import {
+  updateShowLogin,
+  updateUserInfo,
+  fetchDailyQuestsSuc,
+  postInviteSuc,
+  postInviteErr,
+  clearShareUserId,
+  fetchRedPointSuc,
+  markCityMatchUserSuc,
+  markCityMatchUserErr,
+  fetchCityMatchInfoSuc,
+  fetchCityMatchInfoErr,
+  fetchExtraQuestsSuc
+} from '@/store/actions'
+
+@connect({
+  showLogin (state) {
+    return state.user.showLogin
+  },
+  shareUserId (state) {
+    return state.user.shareUserId
+  },
+  cityMatchToken (state) {
+    return state.user.cityMatchToken
+  },
+  userInfo (state) {
+    return state.user.info
+  }
+}, {
+  updateShowLogin,
+  updateUserInfo,
+  fetchDailyQuestsSuc,
+  postInviteSuc,
+  postInviteErr,
+  clearShareUserId,
+  fetchRedPointSuc,
+  markCityMatchUserSuc,
+  markCityMatchUserErr,
+  fetchCityMatchInfoSuc,
+  fetchCityMatchInfoErr,
+  fetchExtraQuestsSuc
+})
+
+export default class LoginDialog extends wepy.component {
+  components = {
+    alert: Alert
+  }
+
+  props = {
+    success: {
+      type: Function,
+      default: () => {}
+    }
+  }
+
+  data = {
+    loading: ''
+  }
+
+  computed = {
+  }
+
+  methods = {
+    handleLogin(e) {
+      this.loading = '登录中...'
+
+      if (e.detail.userInfo) {
+        login(e.detail).then(res => {
+          this.loading = ''
+          this.methods.updateUserInfo(Object.assign({}, e.detail.userInfo, res))
+          this.success && this.success()
+          this.methods.updateShowLogin(false)
+        }).then(res => {
+          req.get('/api/Sign/signIn').then(res => {
+            this.methods.fetchDailyQuestsSuc(res)
+          })
+
+          req.get('/api/Givecoin/redPoint').then(res => {
+            this.methods.fetchRedPointSuc(res.data)
+          })
+
+          req.get('/api/Minetask/morefun').then(res => {
+            this.methods.fetchExtraQuestsSuc(res.data)
+          })
+
+          if (this.shareUserId) {
+            req.post('/api/Enlightening/shoutu', { mid: this.shareUserId }).then(res => {
+              this.methods.postInviteSuc(res.data)
+              this.methods.clearShareUserId()
+            }).catch(res => {
+              this.methods.postInviteErr(res)
+            })
+          }
+
+          if (this.userInfo.type !== USER_TYPE.BLUE_DIAMOND && this.cityMatchToken) {
+            req.post('/api/login/markCitymatch', { token: this.cityMatchToken }).then(res => {
+              this.methods.markCityMatchUserSuc(res.data)
+            }).catch(err => {
+              this.methods.markCityMatchUserErr(err)
+            })
+          } else if (this.userInfo.type === USER_TYPE.BLUE_DIAMOND) {
+            req.get('/api/login/searchPlayer').then(res => {
+              this.methods.fetchCityMatchInfoSuc(res.data)
+            }).catch(err => {
+              this.methods.fetchCityMatchInfoErr(err)
+            })
+          }
+        }).catch(err => {
+          wepy.showToast({ title: err.msg, icon: 'none' })
+          this.loading = ''
+          this.$apply()
+        })
+      } else {
+        this.loading = ''
+        this.methods.updateShowLogin(false)
+      }
+    },
+    handleBufferTap() {
+      this.loading = '登录中...'
+    }
+  }
+
+  onClose = () => {
+    this.methods.updateShowLogin(false)
+  }
+
+  onLoad() {
+  }
+}
+</script>

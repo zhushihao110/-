@@ -1,0 +1,63 @@
+<template>
+  <view class="NoData">
+    <view class="NoData-iconCtn">
+      <image
+        class="NoData-icon"
+        src="../img/nodata.png"
+      />
+    </view>
+    <view class="NoData-msg">
+      {{msg}}
+    </view>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.NoData {
+  width: 100%;
+  padding: 15px 0;
+
+  &-iconCtn {
+    width: 144rpx;
+    margin: 0 auto;
+  }
+
+  &-icon {
+    width: 144rpx;
+    height: 144rpx;
+  }
+
+  &-msg {
+    margin-top: 18px;
+    font-size: 30rpx;
+    color: rgb(153, 153, 153);
+    text-align: center;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+
+export default class NoData extends wepy.component {
+  props = {
+    msg: {
+      type: String,
+      default: '暂无数据'
+    }
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+  }
+
+  onLoad() {
+  }
+}
+</script>

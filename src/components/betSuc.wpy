@@ -1,0 +1,223 @@
+<template>
+  <alert :show.sync="showBetSuc" :onClose="onClose" >
+    <view class="BetSuc" slot="content">
+      <view class="BetSuc-closeCtn">
+        <image
+          class="BetSuc-close"
+          src="../img/close-gold.png"
+        />
+      </view>
+      <view wx:if="{{showShareImgBtn}}" class="BetSuc-msgCtn">
+        <image
+          class="BetSuc-bg"
+          src="../img/bet-suc-bg.png"
+        />
+        <block wx:if="{{helpOddsTotal}}">
+          <image
+            class="BetSuc-odds"
+            src="../img/red-{{helpOddsTotal}}.png"
+            @error="handleImgNotExist"
+            @load="handleImgLoad"
+          />
+          <view
+            wx:if="{{specialOdds}}"
+            class="BetSuc-oddsText"
+          >
+            {{helpOddsTotal}}
+          </view>
+        </block>
+      </view>
+      <view wx:else class="BetSuc-msgCtn">
+        <image
+          class="BetSuc-bg"
+          src="../img/bet-suc-bg-2.png"
+        />
+        <view class="BetSuc-msg">
+          <view>预计{{endTime}}开奖</view>
+          <view class="BetSuc-msg2">分享好友还可赚取金币哦！</view>
+          <view class="BetSuc-msg2">赶快分享吧！</view>
+        </view>
+      </view>
+      <view class="BetSuc-bottom">
+        <button
+          class="BetSuc-btn BetSuc-shareBtn"
+          size="mini"
+          open-type="share"
+        >
+          分享到群
+        </button>
+        <button
+          wx:if="{{showShareImgBtn}}"
+          size="mini"
+          class="BetSuc-btn"
+          @tap="openShareImg"
+        >
+          分享到朋友圈
+        </button>
+        <button
+          wx:else
+          size="mini"
+          class="BetSuc-btn"
+        >
+          确定
+        </button>
+      </view>
+    </view>
+  </alert>
+  <shareBetImgDialog :show.sync="showShareImg" />
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.BetSuc {
+  background-color: $primary;
+  width: 653rpx;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  &-closeCtn {
+    position: absolute;
+    top: -24rpx;
+    right: -24rpx;
+    z-index: $z-top;
+  }
+
+  &-close {
+    width: 53rpx;
+    height: 53rpx;
+  }
+
+  &-msgCtn {
+    position: relative;
+    height: 335rpx;
+  }
+
+  &-bg {
+    width: 653rpx;
+    height: 335rpx;
+  }
+
+  &-odds {
+    width: 68rpx;
+    height: 30rpx;
+    position: absolute;
+    bottom: 86rpx;
+    right: 188rpx;
+  }
+
+  &-oddsText {
+    position: absolute;
+    color: #f40621;
+    font-size: 40rpx;
+    bottom: 72rpx;
+    right: 160rpx;
+  }
+
+  &-msg {
+    position: absolute;
+    bottom: 17rpx;
+    font-size: 32rpx;
+    text-align: center;
+    color: #a66f14;
+    width: 100%;
+  }
+
+  &-msg2 {
+    font-size: 26rpx;
+    color: #80540c;
+  }
+
+  &-bottom {
+    display: flex;
+    background-color: $orange;
+  }
+
+  &-btn {
+    flex: 1;
+    font-size: 36rpx;
+    color: white;
+    background-color: $orange;
+    height: 82rpx;
+    box-sizing: border-box;
+    padding-left: 0rpx;
+    padding-right: 0rpx;
+    border-radius: 8rpx;
+  }
+
+  &-shareBtn {
+
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { connect } from 'wepy-redux'
+import {
+  updateShowBetSuc
+} from '@/store/actions'
+import ShareBetImgDialog from '@/components/shareBetImgDialog'
+
+@connect({
+  share (state) {
+    return state.home.share
+  },
+  endTime (state) {
+    return state.bets.endTime
+  },
+  showBetSuc (state) {
+    return state.bets.showBetSuc
+  },
+  helpOddsTotal (state) {
+    return state.home.helpOddsTotal
+  }
+}, {
+  updateShowBetSuc
+})
+
+export default class BetSuc extends wepy.component {
+  components = {
+    alert: Alert,
+    shareBetImgDialog: ShareBetImgDialog
+  }
+
+  props = {
+    showShareImgBtn: {
+      type: Boolean,
+      default: true
+    }
+  }
+
+  data = {
+    showShareImg: false,
+    specialOdds: false
+  }
+
+  computed = {
+  }
+
+  methods = {
+    openShareImg() {
+      this.showShareImg = true
+    },
+    handleImgNotExist() {
+      this.specialOdds = true
+    },
+    handleImgLoad() {
+      this.specialOdds = false
+    }
+  }
+
+  onClose = () => {
+    this.specialOdds = false
+    this.methods.updateShowBetSuc(false)
+  }
+
+  onLoad() {
+  }
+}
+</script>

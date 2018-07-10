@@ -1,0 +1,889 @@
+<style lang="scss">
+@import '../base/cssBase/index.scss';
+@import '../base/cssBase/table.scss';
+  .Index {
+    &-swiperCtn {
+      position: relative;
+    }
+
+    &-loading {
+      display: block;
+      width: 100%;
+      padding-top: 30%;
+      text-align: center;
+    }
+
+    &-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 10rpx 12rpx;
+      z-index: 2;
+      width: 100%;
+      box-sizing: border-box;
+      background-color: $primary;
+    }
+
+    &-headerLeft {
+      display: flex;
+      align-items: center;
+    }
+
+    &-avatar {
+      height: 60rpx;
+      width: 60rpx;
+      border-radius: 8rpx;
+    }
+
+    &-coin {
+      margin: 0 12rpx;
+    }
+
+    &-questIcon {
+      width: 120rpx;
+      height: 50rpx;
+    }
+
+    &-menuCtn {
+      display: flex;
+      align-items: center;
+      padding: 5px 0;
+      background-color: $primary;
+    }
+
+    &-menuItem {
+      flex: 1 0 33%;
+      font-size: 30rpx;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes twinkling{
+      0% {
+        width: 40rpx;
+        height: 44rpx; 
+      }
+      100% {
+        width: 56rpx;
+        height: 61rpx;
+      }
+    }
+
+    &-menuIconCtn {
+      position: relative;
+    }
+
+    &-menuIcon {
+      width: 136rpx;
+      height: 136rpx;
+      margin-bottom: 12rpx;
+    }
+
+    &-twinkImg {
+      width: 40rpx;
+      height: 44rpx;
+      position: absolute;
+      right: 0;
+      bottom: 24rpx;
+      animation: twinkling 1s infinite alternate;
+    }
+
+    &-swiper {
+      min-height: 333rpx;
+    }
+
+    &-bannerWrp {
+      padding: 0;
+    }
+
+    &-banner {
+      width: 100%;
+      min-height: 333rpx;
+    }
+
+    &-matchCtn {
+      border-radius: 14rpx;
+      margin: 5px;
+      margin-top: 0;
+      padding: 0px 9px;
+      background-color: $primary;
+    }
+
+    &-matchTitle {
+      display: flex;
+      align-items: center;
+      font-size: 26rpx;
+      color: rgb(51, 51, 51);
+      background-color: $primary;
+      padding: 5px 0px;
+      position: relative;
+    }
+
+    &-matchTitleIcon {
+      height: 50rpx;
+      width: 50rpx;
+      margin-right: 6px;
+    }
+
+    &-moreBtn {
+      position: absolute;
+      right: 0;
+      top: 4px;
+      bottom: 4px;
+      font-size: 28rpx;
+      width: 180rpx;
+      border-radius: 8rpx;
+      color: white;
+      background-color: #ff9631;
+      margin-right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      &::after {
+        border: 0;
+      }
+    }
+
+    &-moreIcon {
+      width: 12rpx;
+      height: 21rpx;
+      margin-left: 20rpx;
+    }
+
+    &-noticeListCtn {
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    &-noticeIcon {
+      height: 26rpx;
+      width: 26rpx;
+      padding-right: 10px;
+    }
+
+    &-noticeList {
+      flex: 1;
+    }
+
+    &-noticeSwiper {
+      height: 40rpx;
+      padding: 10px 0;
+    }
+
+    &-noticeItem {
+      font-size: 30rpx;
+      height: 40rpx;
+      line-height: 40rpx;
+      color: rgb(165, 98, 57);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+  
+  .Index2 {
+    &-title {
+      text-align: center;
+    }
+
+    &-msg {
+      font-size: 24rpx;
+      color: $red;
+      background-color: $primary;
+    }
+
+    &-table {
+      font-size: 26rpx;
+      background-color: $primary;
+      color: $text-secondary;
+      padding: 0 12px;
+    }
+
+    &-head {
+      border-bottom: 2rpx solid rgba(218, 29, 30, 0.2);
+      height: 50rpx;
+    }
+
+    &-item {
+      color: rgb(173, 61, 39);
+      border-bottom: 2rpx solid rgba(218, 29, 30, 0.2);
+      padding: 5px 0;
+    }
+
+    &-star {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      span {
+        font-size: 20rpx;
+      }
+    }
+
+    &-logoCtn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: $text-secondary;
+    }
+
+    &-logo {
+      width: 60rpx;
+      height: 60rpx;
+    }
+
+    &-championNum {
+      color: $red;
+    }
+  }
+
+  .Index3 {
+    &-title {
+      text-align: center;
+    }
+
+    &-match {
+      background-color: $primary;
+      border-radius: 8rpx;
+      padding: 0px 6px;
+      margin: 15rpx;
+    }
+
+    &-matchTitle {
+      font-size: 26rpx;
+      color: $text-secondary;
+    }
+
+    &-info {
+      display: flex;
+      align-items: center;
+    }
+
+    &-host {
+      width: 26rpx;
+      height: 26rpx;
+      padding: 0 2rpx;
+    }
+
+    &-teams {
+      flex: 1;
+    }
+
+    &-team {
+      display: flex;
+      align-items: center;
+      margin: 6rpx 0;
+    }
+
+    &-teamName {
+      flex: 1;
+      font-size: 30rpx;
+      color: rgb(77, 77, 77);
+    }
+
+    &-logo {
+      width: 44rpx;
+      height: 44rpx;
+    }
+  }
+ 
+</style>
+<template>
+  <div wx:if="{{!getFlagSuc}}" class="Index-loading">
+    <loading />
+  </div>
+  <block wx:if="{{getFlagSuc && !shamFlag}}">
+    <view class="Index">
+      <view class="Index-swiperCtn">
+        <view class="Index-header">
+          <view class="Index-headerLeft">
+            <avatar
+              class="Index-avatar"
+              :userInfo.sync="userInfo"
+            />
+            <coin wx:if="{{userInfo.id}}" class="Index-coin" />
+            <blueDiamond wx:if="{{userInfo.id}}" />
+          </view>
+          <view class="Index-questCtn" @tap="goToQuests">
+            <image class="Index-questIcon" src="../img/00-renwu-icon.png" />
+          </view>
+        </view>
+
+        <view class="Index-menuCtn">
+          <view class="Index-menuItem" @tap="goToRank">
+            <image class="Index-menuIcon" src="../img/menu-1.png" />
+            排行榜
+          </view>
+          <navigator
+            wx:if="{{homeMenu2Show}}"
+            class="Index-menuItem"
+            target="miniProgram"
+            app-id="wx3ed92adf0cc31a9e"
+            @tap="goToOtherMiniProgram"
+          >
+            <view class="Index-menuIconCtn">
+              <image class="Index-menuIcon" src="../img/pick-team.jpg" />
+            </view>
+            为球队打call
+          </navigator>
+          <view class="Index-menuItem" @tap="openOfficialGuide">
+            <view class="Index-menuIconCtn">
+              <image class="Index-menuIcon" src="../img/menu-3.png" />
+              <image class="Index-twinkImg" src="../img/bonus-icon.png" />
+            </view>
+            公众号领福利
+          </view>
+        </view>
+
+        <!-- <swiper
+          class="Index-swiper"
+          autoplay
+          indicator-dots
+          indicator-active-color="#ffffff"
+          indicator-color="rgba(0, 0, 0, 0.1)"
+        >
+          <repeat for="{{banners}}" key="index" item="item" index="index">
+            <block wx:if="{{item.type === 'share'}}">
+              <swiper-item>
+                <button class="Index-bannerWrp" open-type="share" data-type="invite">
+                  <image
+                    class="Index-banner" src="{{item.img}}"
+                    mode="widthFix"
+                  />
+                </button>
+              </swiper-item>
+            </block>
+            <block wx:else>
+              <swiper-item @tap="handleClickBanner({{item.path}})">
+                <image
+                  class="Index-banner" src="{{item.img}}"
+                  mode="widthFix"
+                />
+              </swiper-item>
+            </block>
+          </repeat>
+        </swiper> -->
+      </view>
+      
+      <view wx:if="{{notice.length}}" class="Index-noticeListCtn">
+        <image
+          class="Index-noticeIcon"
+          src="../img/notice-icon.png"
+        />
+        <view class="Index-noticeList">
+          <swiper
+            class="Index-noticeSwiper"
+            autoplay
+            vertical
+          >
+            <repeat for="{{notice}}">
+              <swiper-item>
+                <view class="Index-noticeItem">
+                  {{item.msg}}
+                </view>
+              </swiper-item>
+            </repeat>
+          </swiper>
+        </view>
+      </view>
+
+      <view class="Index-matchCtn">
+        <div class="Index-matchTitle">
+          <image class="Index-matchTitleIcon" src="../img/00-zuqiuicon2.png" />
+          金币足球
+          <form @submit="goToMatches" report-submit="true">
+            <button
+              class="Index-moreBtn"
+              formType="submit"
+            >
+              投注更多
+              <image class="Index-moreIcon" src="../img/more-white.png" />
+            </button>
+          </form>
+        </div>
+        
+        <block wx:if="{{loadingMatch}}">
+          <loading />
+        </block>
+        <block wx:elif="{{loadMatchFail}}">
+          <noData1 :msg.sync="loadMatchFail" />
+        </block>
+        <block wx:else>
+          <homeMatch1 :match.sync="match1" />
+          <homeMatch2 :match.sync="match2" />
+        </block>
+      </view>
+
+      <view class="Index-matchCtn">
+        <div class="Index-matchTitle">
+          <image class="Index-matchTitleIcon" src="../img/00-zuqiuicon2.png" />
+          世界杯冠亚军竞猜
+          <form @submit="goToChampion" report-submit="true">
+            <button
+              class="Index-moreBtn"
+              formType="submit"
+            >
+              投注更多
+              <image class="Index-moreIcon" src="../img/more-white.png" />
+            </button>
+          </form>
+        </div>
+        <block wx:if="{{loadingGJMatch}}">
+          <loading />
+        </block>
+        <block wx:elif="{{loadGJMatchFail}}">
+          <noData2 :msg.sync="loadGJMatchFail" />
+        </block>
+        <block wx:else>
+          <homeChampionCard />
+        </block>
+      </view>
+    </view>
+    <signInDialog
+      :daily.sync="daily"
+      :onClose="closeSignIn"
+    />
+    <loginDialog />
+    <rewardDialog />
+    <betConfirmDialog />
+    <wechatGroupDialog />
+    <officialGuideDialog />
+    <homeDialog />
+  </block>
+  <block wx:if="{{getFlagSuc && shamFlag}}">
+    <view class="Index2">
+      <view class="Index2-title">
+        参赛队伍
+      </view>
+      <view class="table Index2-table">
+        <view class="Index2-list">
+          <view class="tr Index2-head">
+            <view class="th">
+              球队
+            </view>
+            <view class="th">
+              历史最佳
+            </view>
+            <view class="th">
+              主力球星
+            </view>
+          </view>
+          <repeat for="{{champion.list}}" item="item">
+            <view
+              class="tr Index2-item"
+            >
+              <view class="td Index2-logoCtn">
+                <image
+                  class="Index2-logo"
+                  src="{{item.logo}}"
+                />
+                {{item.team}}
+              </view>
+              <view class="td Index2-championNum">
+                {{item.champion_num}}
+            </view>
+              <view class="td Index2-star">
+                {{item.starName}}
+                <span>{{item.starTeam}}</span>
+              </view>
+            </view>
+          </repeat>
+        </view>
+      </view>
+    </view>
+
+    <!-- <view class="Index3">
+      <view class="Index3-title">
+        近期比赛
+      </view>
+      <view class="Index3-list">
+        <repeat for="{{hostlist}}">
+          <view class="Index3-match">
+            <view class="Index3-matchTitle">
+              <view>
+                {{item.l_cn_abbr}}
+              </view>
+              <view>
+                {{item.formatTime}}
+              </view>
+            </view>
+            <view class="Index3-info">
+              <view class="Index3-teams">
+                <view class="Index3-team">
+                  <image
+                    class="Index3-logo"
+                    src="{{item.h_logo}}"
+                    lazy-load="true"
+                  />
+                  <image
+                    class="Index3-host"
+                    src="../img/host-icon.png"
+                    lazy-load="true"
+                  />
+                  <view class="Index3-teamName">
+                    {{item.h_cn_abbr}}
+                  </view>
+                </view>
+                <view class="Index3-team">
+                  <image
+                    class="Index3-logo"
+                    src="{{item.a_logo}}"
+                    lazy-load="true"
+                  />
+                  <view class="Index3-host" />
+                  <view class="Index3-teamName">
+                    {{item.a_cn_abbr}}
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </repeat>
+      </view>
+    </view> -->
+  </block>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+  import req from '@/network'
+  import { version, fromwhere, homeMenu2Show } from '@/config'
+  import {
+    fetchHotMatchesSuc,
+    fetchHotMatchesErr,
+    postInviteSuc,
+    postInviteErr,
+    fetchChampionListSuc,
+    fetchChampionListErr,
+    fetchVersionFlagSuc,
+    saveShareUserId,
+    fetchNoticeSuc,
+    fetchNoticeErr,
+    initHotMatches,
+    fetchRedPointSuc,
+    updateShowWeChatGroup,
+    updateShowOfficialGuide
+  } from '@/store/actions'
+  import HomeMatch from '@/components/homeMatch'
+  import HomeChampionCard from '@/components/homeChampionCard'
+  import Avatar from '@/components/avatar'
+  import SignInDialog from '@/components/signInDialog'
+  import Loading from '@/components/loading'
+  import NoData from '@/components/noData'
+  import Coin from '@/components/coin'
+  import BlueDiamond from '@/components/blueDiamond'
+  import LoginDialog from '@/components/loginDialog'
+  import RewardDialog from '@/components/rewardDialog'
+  import WechatGroupDialog from '@/components/wechatGroupDialog'
+  import OfficialGuideDialog from '@/components/officialGuideDialog'
+  import BetConfirmDialog from '@/components/betConfirmDialog'
+  import HomeDialog from '@/components/homeDialog'
+  import Session from '@/network/session'
+  import { PLAY_TYPE, MSG } from '@/utils/const'
+  import { compareVersion } from '@/utils/helper'
+
+  @connect({
+    match1 (state) {
+      return state.matches.home[0]
+    },
+    match2 (state) {
+      return state.matches.home[1]
+    },
+    banners (state) {
+      return state.home.banners
+    },
+    userInfo (state) {
+      return state.user.info
+    },
+    share (state) {
+      return state.home.share
+    },
+    resentBet (state) {
+      return state.bets.resentBet
+    },
+    daily (state) {
+      return state.quests.daily
+    },
+    shamFlag (state) {
+      return state.home.flag.sham
+    },
+    hypFlag (state) {
+      return state.home.flag.hyp
+    },
+    getFlagSuc (state) {
+      return state.home.getFlagSuc
+    },
+    notice (state) {
+      return state.home.notice
+    },
+    champion (state) {
+      return state.champion
+    },
+    hostlist (state) {
+      return state.matches.home
+    }
+  }, {
+    fetchHotMatchesSuc,
+    fetchHotMatchesErr,
+    postInviteSuc,
+    postInviteErr,
+    fetchChampionListSuc,
+    fetchChampionListErr,
+    fetchVersionFlagSuc,
+    saveShareUserId,
+    fetchNoticeSuc,
+    fetchNoticeErr,
+    initHotMatches,
+    fetchRedPointSuc,
+    updateShowWeChatGroup,
+    updateShowOfficialGuide
+  })
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '世界杯',
+      enablePullDownRefresh: true
+    }
+
+    components = {
+      homeMatch1: HomeMatch,
+      homeMatch2: HomeMatch,
+      homeChampionCard: HomeChampionCard,
+      coin: Coin,
+      blueDiamond: BlueDiamond,
+      signInDialog: SignInDialog,
+      avatar: Avatar,
+      loginDialog: LoginDialog,
+      rewardDialog: RewardDialog,
+      betConfirmDialog: BetConfirmDialog,
+      loading: Loading,
+      noData1: NoData,
+      noData2: NoData,
+      wechatGroupDialog: WechatGroupDialog,
+      officialGuideDialog: OfficialGuideDialog,
+      homeDialog: HomeDialog
+    }
+
+    data = {
+      query: {},
+      loadingMatch: true,
+      loadMatchFail: '',
+      loadingGJMatch: true,
+      loadGJMatchFail: '',
+      homeMenu2Show: homeMenu2Show
+    }
+
+    mixins = []
+
+    computed = {
+    }
+
+    methods = {
+      goToMatches(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'matches'
+        })
+      },
+      goToQuests() {
+        wepy.navigateTo({
+          url: 'quests'
+        })
+      },
+      goToChampion(e) {
+        const formId = e.detail.formId
+        this.postFormId(formId)
+        wepy.navigateTo({
+          url: 'champion'
+        })
+      },
+      handleClickBanner(path) {
+        if (path) {
+          wepy.navigateTo({
+            url: path
+          }).catch(res => {
+            wepy.switchTab({
+              url: path
+            })
+          })
+        }
+      },
+      goToRank() {
+        wepy.navigateTo({
+          url: 'rank'
+        })
+      },
+      openOfficialGuide() {
+        this.methods.updateShowOfficialGuide(true)
+      },
+      goToOtherMiniProgram() {
+        const info = wepy.getSystemInfoSync()
+        if (compareVersion('2.0.7', info.SDKVersion) === 1) {
+          wepy.navigateToMiniProgram({
+            appId: 'wx3ed92adf0cc31a9e'
+          })
+        }
+      }
+    }
+
+    events = {
+    }
+
+    postFormId(formId) {
+      if (formId) {
+        req.post('/api/Templatemsg/collectFormid', {
+          formIds: formId,
+          fromwhere
+        })
+      }
+    }
+
+    reLoad() {
+      if (!this.getFlagSuc) {
+        req.get('/api/Version/version', {
+          version: version,
+          scene: this.$parent.globalData.scene,
+          label1: this.query.label1,
+          label2: this.query.label2,
+          label3: this.query.label3
+        }).then(res => {
+          this.methods.fetchVersionFlagSuc(res.data)
+        })
+      }
+    }
+
+    onShow() {
+      this.loadingMatch = true
+      req.get('/api/Match/getList', {ishot: 1}).then(res => {
+        this.methods.fetchHotMatchesSuc(res.data)
+        this.loadMatchFail = ''
+      }).catch(err => {
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.fetchHotMatchesErr(err)
+        this.loadMatchFail = MSG.LOAD_FAIL
+      }).then(() => {
+        this.loadingMatch = false
+        this.$apply()
+      })
+
+      this.loadingGJMatch = true
+      req.get('/api/Match/gjlist').then(res => {
+        this.methods.fetchChampionListSuc(res.data)
+        this.loadGJMatchFail = ''
+      }).then(res => {
+        this.selectedChampion = []
+        this.$apply()
+      }).catch(err => {
+        wepy.showToast({ title: err.msg, icon: 'none' })
+        this.methods.fetchChampionListErr(err)
+        this.loadGJMatchFail = MSG.LOAD_FAIL
+      }).then(() => {
+        this.loadingGJMatch = false
+        this.$apply()
+      })
+
+      // 获取首页公告
+      req.get('/api/notice/list', { type: 1 }).then(res => {
+        this.methods.fetchNoticeSuc(res.data)
+      }).catch(err => {
+        this.methods.fetchNoticeErr(err)
+      })
+
+      const session = Session.get()
+      if (session && session.sessionId) {
+        req.get('/api/Givecoin/redPoint').then(res => {
+          this.methods.fetchRedPointSuc(res.data)
+        })
+      }
+    }
+
+    onLoad(options) {
+      this.query = options
+      let userId = options && options.userId
+
+      // 解析B类二维码参数
+      // query.scene = userId-qrmark-label1-label2-label3
+      if (options.scene) {
+        const decodeQuery = decodeURIComponent(options.scene)
+        const decodeQueryArr = decodeQuery.split('-')
+        userId = decodeQueryArr[0]
+      }
+      if (userId) {
+        const session = Session.get()
+        if (session && session.sessionId) {
+          req.post('/api/Enlightening/shoutu', { mid: userId }).then(res => {
+            this.methods.postInviteSuc(res.data)
+          }).catch(res => {
+            this.methods.saveShareUserId(userId)
+            this.methods.postInviteErr(res)
+          })
+        } else {
+          this.methods.saveShareUserId(userId)
+        }
+      }
+    }
+
+    onUnload() {
+      this.methods.initHotMatches()
+    }
+
+    onShareAppMessage(options) {
+      let title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_others
+      let path = '/pages/index'
+      let imageUrl = ''
+      if (options.from === 'button') {
+        if (options.target.dataset && options.target.dataset.type === 'invite') {
+          // 收徒分享
+          title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_shitu
+          path = `/pages/index?userId=${this.userInfo.id}`
+          imageUrl = this.shamFlag || this.hypFlag ? '' : this.share.sh_shituimg
+        } else {
+          // 下注分享
+          const types = this.resentBet.types
+          if (types) {
+            title = this.shamFlag || this.hypFlag ? '世界杯资讯' : `[${this.userInfo.nickName || ''}@我]${this.share.sh_jcresults}`
+            const typesArr = types.split(',')
+            if (types === PLAY_TYPE.JCGJ || types === PLAY_TYPE.JCGY) {
+              // 竞猜冠军
+              path = `/pages/champion?betId=${this.resentBet.no}&shareId=${this.userInfo.id}&userId=${this.userInfo.id}`
+            } else if (typesArr.length > 1) {
+              // 串投
+              title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_helpodds
+              path = `/pages/betDetail?id=${this.resentBet.projectid}&userId=${this.userInfo.id}`
+            } else {
+              // 单投
+              title = this.shamFlag || this.hypFlag ? '世界杯资讯' : this.share.sh_helpodds
+              path = `/pages/betDetail?id=${this.resentBet.projectid}&userId=${this.userInfo.id}`
+            }
+            imageUrl = this.shamFlag || this.hypFlag ? '' : this.share.sh_jcresults_img
+          }
+        }
+      }
+
+      console.log(path)
+      return {
+        title,
+        path,
+        imageUrl
+      }
+    }
+
+    onPullDownRefresh() {
+      const that = this
+      wepy.showNavigationBarLoading() // 在标题栏中显示加载
+
+      // 模拟加载
+      setTimeout(function () {
+        that.onShow()
+        that.reLoad()
+        wepy.hideNavigationBarLoading() // 完成停止加载
+        wepy.stopPullDownRefresh() // 停止下拉刷新
+        // complete
+      }, 1500)
+    }
+  }
+</script>

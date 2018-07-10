@@ -1,0 +1,58 @@
+<template>
+  <view wx:if="{{show}}" class="Alert" @tap="handleClose">
+    <view class="Alert-ctn">
+      <slot name="content"></slot>
+    </view>
+  </view>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.Alert {
+  &-ctn {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: $z-top;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+
+export default class Alert extends wepy.component {
+  props = {
+    show: {
+      type: Boolean,
+      default: false
+    },
+    onClose: {
+      type: Function,
+      default: () => {}
+    }
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+    handleClose() {
+      this.onClose()
+    }
+  }
+
+  onLoad() {
+  }
+}
+</script>

@@ -1,0 +1,160 @@
+<template>
+  <alert :show.sync="showReward" :onClose="onClose" >
+    <view
+      class="RewardDialog"
+      :class="{RewardDialog-fail: type === 1}"
+      slot="content"
+    >
+      <block wx:if="{{type === 2}}">
+        <view class="RewardDialog-header">
+          <view>恭喜你，猜中了！</view>
+          <image class="RewardDialog-headerBG" src="../img/signIn-title.png" />       
+        </view>
+        <view class="RewardDialog-ctn">
+          恭喜你！你投注的方案中奖了，快去看看吧！
+          <button
+            class="RewardDialog-btn"
+            @tap="goToBetHistory"
+          >
+            确  定
+          </button>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="RewardDialog-header">
+          <view>很遗憾，猜错啦！</view>
+          <image class="RewardDialog-headerBG" src="../img/signIn-title-purple.png" />
+        </view>
+        <view class="RewardDialog-ctn">
+          很遗憾，您的投注方案未中奖，别气馁，继续去投注>>
+          <button
+            class="RewardDialog-btn"
+            @tap="goToMatches"
+          >
+            确  定
+          </button>
+        </view>
+      </block>
+    </view>
+  </alert>
+</template>
+
+<style lang="scss" scoped>
+@import '../base/cssBase/index.scss';
+.RewardDialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  &-header {
+    position: relative;
+    width: 699rpx;
+    height: 144rpx;
+    font-size: 48rpx;
+    color: rgb(248, 243, 72);
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 24rpx;
+    view {
+      z-index: $z-first;
+      position: absolute;
+      margin-left: auto;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+    }
+  }
+
+  &-headerBG {
+    position: absolute;
+    width: 699rpx;
+    height: 144rpx;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &-ctn {
+    padding: 20px;
+    padding-top: 30px;
+    margin: 0 auto;
+    margin-top: -25rpx;
+    background-color: $primary;
+    border-radius: 8rpx;
+    width: 520rpx;
+    font-size: 30rpx;
+    color: $red;
+  }
+
+  &-btn {
+    margin-top: 12px;
+    background-color: $orange;
+    color: white;
+  }
+
+  &-fail {
+    .RewardDialog-header {
+      color: rgb(191, 191, 191);
+    }
+
+    .RewardDialog-ctn {
+      color: $text-secondary;
+    }
+
+    .RewardDialog-btn {
+      background-color: rgb(153, 153, 153);
+      color: rgb(238, 238, 238);
+    }
+  }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import Alert from './alert'
+import { connect } from 'wepy-redux'
+import { updateShowReward } from '@/store/actions'
+
+@connect({
+  showReward (state) {
+    return !!state.user.showReward
+  },
+  type (state) {
+    return state.user.showReward
+  }
+}, {
+  updateShowReward
+})
+
+export default class RewardDialog extends wepy.component {
+  components = {
+    alert: Alert
+  }
+
+  props = {
+  }
+
+  data = {
+  }
+
+  computed = {
+  }
+
+  methods = {
+    goToBetHistory() {
+      wepy.navigateTo({ url: '/pages/betHistory?filter=3' })
+    },
+    goToMatches() {
+      wepy.navigateTo({ url: '/pages/matches' })
+    }
+  }
+
+  onClose = () => {
+    this.methods.updateShowReward(false)
+    wx.setStorageSync('showRewardTimeStamp', Date.now()) // eslint-disable-line
+  }
+
+  onLoad() {
+  }
+}
+</script>
